@@ -5,12 +5,30 @@
 \begin{document}
 \maketitle
 
+\section{Problems}
+\begin{itemize}
+\item size
+\item types cannot enter the term logic: need to duplicate much structure in the type system in the terms when you want to model typed functions on the term level.
+In other words, we already have the notion of a typed morphism between sets in the semantics (i.e. the metalogic), but this needs to all be duplicated because you can't have a term-level category whose objects are types.
+\item partial functions, extensionality, equality of terms.
+these problems might be solved by dependent types, or by using more isomorphims (really? npov?), or by using more quotient types (or something like setoids?) (; but we want to explore how to do it in good old HOL).
+\item readable proofs (term/type syntax overloading, proof style and language), usable proof system (automation, proof methods to match intuitions and common practice). (these are just general problems with formalisation and mechanisation)
+\end{itemize}
+
+\section{Brainstorming}
+\begin{itemize}
+\item Category theory wants to be on the meta level, no matter what level you are on. Maybe this is why mathemiticians take the $n$ point-of-view in higher category theory with $\infty$-categories.
+\item Even though the semantics of HOL is based on sets, there is still a successful theory of sets-as-predicates in HOL4. Is this just because they duplicated stuff at the meta level, like we might have to do for category theory?
+\end{itemize}
+
+\section{Introduction}
 The category of sets is often the first place where category theory runs into foundational issues.
-The problem is size.
-Usually, the formal foundation for mathematics is presumed to be ZFC set theory, but since there is no set of all sets in this theory, the collection of objects in the category of sets cannot be defined.
+One problem is size.
+The formal foundation for mathematics is usually presumed to be ZFC set theory, but since there is no set of all sets in this theory, the collection of objects in the category of sets cannot be defined.
 There are two common approaches to dealing with this: Grodenthieck universes, or an axiomatic set theory with a formal treatment of proper classes.
-There are also proposed alternatives from the category theory community: ETCS and other structural set theories; also what does the n point of view say about sets?
-Higher-order logic, dubbed disdainfully by Quine "set theory in sheep's clothing", is a typed formalism with a standard semantics in set theory, that is suitable for formalising large swathes of mathematics.
+There are also alternatives that take category theory as more primitive, for example ETCS and other structural set theories<also what does the n point of view say about sets?>
+
+Higher-order logic, dubbed disdainfully by Quine as ``set theory in sheep's clothing'', is a typed formalism with a standard semantics in set theory, that is suitable for formalising large swathes of mathematics.
 A natural approach to formalising category theory is to use HOLZF, which essentially introduces large Grodenthieck universes.
 Katovsky and O'Keefe have both used HOLZF to formalize the Yoneda lemma in Isabelle/HOL.
 Dealing with the sets is difficult: HOLZF (necessarily?) only gives heriditarily pure sets, so if you want to formalize hom functors, you need to have bijections somewhere between small classes and pure sets.
