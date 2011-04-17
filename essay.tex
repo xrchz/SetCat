@@ -1,0 +1,27 @@
+\documentclass{article}
+\usepackage[a4paper]{geometry}
+\title{The Category of Sets in Higher-Order Logic}
+\author{Ramana Kumar (rk436)}
+\begin{document}
+\maketitle
+
+The category of sets is often the first place where category theory runs into foundational issues.
+The problem is size.
+Usually, the formal foundation for mathematics is presumed to be ZFC set theory, but since there is no set of all sets in this theory, the collection of objects in the category of sets cannot be defined.
+There are two common approaches to dealing with this: Grodenthieck universes, or an axiomatic set theory with a formal treatment of proper classes.
+There are also proposed alternatives from the category theory community: ETCS and other structural set theories; also what does the n point of view say about sets?
+Higher-order logic, dubbed disdainfully by Quine "set theory in sheep's clothing", is a typed formalism with a standard semantics in set theory, that is suitable for formalising large swathes of mathematics.
+A natural approach to formalising category theory is to use HOLZF, which essentially introduces large Grodenthieck universes.
+Katovsky and O'Keefe have both used HOLZF to formalize the Yoneda lemma in Isabelle/HOL.
+Dealing with the sets is difficult: HOLZF (necessarily?) only gives heriditarily pure sets, so if you want to formalize hom functors, you need to have bijections somewhere between small classes and pure sets.
+Katovsky attaches a bijection to every locally small category, but this means his locally small categories are not extensional: the same category with different bijections attached would appear as distinct objects in his formalisation.
+We present an approach here to the Yoneda embedding which defines a family of subcategories of set, indexed by a type variable.
+These can all be embedded in pure zfsets via injections.
+But this is the only place we have to deal with zfsets.
+For formalizing Yoneda etc., we can use the classes built into the logic (which are usually sets, but become classes when you add HOLZF) which makes everything smoother.
+Issues: chosen bijections destroy extensionality, chosen bijections are not functorial or natural, which makes certain theorems you want to be true unprovable, ...?
+
+Formalize category theory in its own terms (find the logic mathemeticians actually use, if any? or maybe there isn't one?) or in a suitable logic like dependent type theory. Or, show that your familiar logic HOL is general enough to do it nicely! Or at least show how nice /ugly it can be.
+
+First formalisation of limits in HOL, and stuff about presheaves if possible!
+\end{document}
