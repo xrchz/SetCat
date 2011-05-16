@@ -1,0 +1,23 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath}
+\DeclareMathOperator{\dom}{\mathrm{dom}}
+\DeclareMathOperator{\cod}{\mathrm{cod}}
+\begin{document}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\id}[1]{\operatorname{id}_{#1}}
+\thispagestyle{empty}
+\begin{center}
+Category $\C$, Objects $X\in\C$,
+\end{center}
+\vspace{-2em}
+\begin{center}
+Morphisms $f:X\to Y$, Composition $\circ$
+\end{center}
+\vspace{-0.5em}
+\[\id{X}:X\to X\qquad f\circ\id{\dom{f}}=f\qquad\id{\cod{f}}\circ f=f\]
+\vspace{-2.5em}
+\begin{align*}
+\text{$f$, $g$, $h$ composable}&\implies((h\circ g)\circ f)=(h\circ(g\circ f))\\[0.5mm]
+f:X\to Y\land g:Y\to Z&\implies g\circ f:X\to Z
+\end{align*}
+\end{document}

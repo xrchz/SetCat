@@ -1,0 +1,19 @@
+\documentclass[11pt]{article}
+\usepackage{proof,amsmath}
+\begin{document}
+\thispagestyle{empty}
+\begin{align*}
+\infer{\vdash(\lambda{x}.\,t_1)t_2=t_1[t_2/x]}{}\qquad
+\infer{\Gamma\setminus\{t_1\}\vdash t_1\implies t_2}{\Gamma\implies t_2}\\
+\infer{\Gamma_1\cup\dots\cup\Gamma_n\cup\Gamma\vdash t[t_1',\dots,t_n']}{\Gamma_1\vdash t_1=t_1'\dots\Gamma_n\vdash t_n=t_n'&\Gamma\vdash t[t_1,\dots,t_n]}\qquad
+\infer{\vdash t = t}{}\\
+\infer{t\vdash t}{}\qquad
+\infer{\Gamma[\sigma_1,\dots,\sigma_n/\alpha_1,\dots,\alpha_n]\vdash t[\sigma_1,\dots,\sigma_n/\alpha_1,\dots,\alpha_n]}{\Gamma\vdash t}\\
+\infer{\Gamma\vdash(\lambda{x}.\,t_1)=(\lambda{x}.\,t_2)}{\Gamma\vdash t_1=t_2}\qquad
+\infer{\Gamma_1\cup\Gamma_2\vdash t_2}{\Gamma_1\vdash t_1\implies t_2&\Gamma_2\vdash t_1}\\
+\infer{\vdash\forall{b}.\,(b=\top)\lor(b=\bot)}{}\qquad
+\infer{\vdash\forall{P}\,x.\,P\;x\implies P(\epsilon\, P)}{}\\
+\infer{\vdash\forall{f}.\,(\lambda{x}.\,f\;x)=f}{}\qquad
+\infer{\vdash\exists{f}.\,\mathsf{One\_One}\;f\land\lnot(\mathsf{Onto}\;f)}{}
+\end{align*}
+\end{document}
