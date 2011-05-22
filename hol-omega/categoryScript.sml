@@ -61,13 +61,16 @@ val _ = add_rule {
 
 val maps_to_def = Define`f :- x → y = (f.dom = x) ∧ (f.cod = y)`;
 
-val _ = type_abbrev("mor",``:(α,α,β) morphism``);
+set_trace "kinds" 2
+``?t. ((t:∀α.bool) [:unit:] = T) ∧ (t [:ind:] = F)``
+type_of it
+kind_of it
 
 val _ = Hol_datatype `category =
   <| obj : ∀α. α set ;
-     mor : ∀α β. (α,β) mor set ;
-     id_map : ∀α β. α -> β;
-     comp : ∀α β. (α,β) mor -> (α,β) mor -> β |>`;
+     mor : ∀α β. (α,β,γ) morphism set ;
+     id_map : ∀α. α -> γ;
+     comp : ∀α β δ. (α,β,γ) morphism -> (β,δ,γ) morphism -> γ |>`;
 
 val category_component_equality = DB.theorem "category_component_equality";
 
@@ -147,24 +150,26 @@ val compose_in_thm = Q.store_thm(
 srw_tac [][compose_in_def,restrict_def]);
 
 val extensional_category_def = Define`
-  extensional_category c = λ:α β.
-    extensional (c.id_map [:α,β:]) c.obj ∧
-    extensional (UNCURRY (c.comp [:α,β:])) {(f,g) | f ≈> g -: c}`;
+  extensional_category c = λ:α β δ.
+    extensional (c.id_map [:α:]) c.obj ∧
+    extensional (UNCURRY (c.comp [:α,β,δ:])) {(f,g) | f ≈> g -: c}`;
 
 val category_axioms_def = Define`
-  category_axioms c = λ:α β.
-    (∀(f:(α,β)mor). f ∈ c.mor ⇒ f.dom ∈ c.obj) ∧
-    (∀(f:(α,β)mor). f ∈ c.mor ⇒ f.cod ∈ c.obj) ∧
-    (∀a. a ∈ c.obj ⇒ ((id a -:c):(α,β)mor) :- a → a -: c) ∧
-    (∀(f:(α,β)mor). f ∈ c.mor ⇒ (f o (id f.dom -:c) -: c = f)) ∧
-    (∀(f:(α,β)mor). f ∈ c.mor ⇒ ((id f.cod -:c) o f -: c = f)) ∧
-    (∀(f:(α,β)mor) g h. f ≈> g -: c ∧ g ≈> h -: c ⇒
-               (((h o g -: c) o f -: c) = h o g o f -: c -: c)) ∧
-    (∀(f:(α,β)mor) g x y z. f :- x → y -: c ∧ g :- y → z -: c ⇒
-                   g o f -: c :- x → z -: c)`;
+  category_axioms c = λ:α β δ ε.
+    (∀(f:(α,β,γ)morphism). f ∈ c.mor ⇒ f.dom ∈ c.obj) ∧
+    (∀(f:(α,β,γ)morphism). f ∈ c.mor ⇒ f.cod ∈ c.obj) ∧
+    (∀(a:α). a ∈ c.obj ⇒ (id a -:c) :- a → a -: c) ∧
+    (∀(f:(α,β,γ)morphism). f ∈ c.mor ⇒ (f o (id f.dom -:c) -: c = f)) ∧
+    (∀(f:(α,β,γ)morphism). f ∈ c.mor ⇒ ((id f.cod -:c) o f -: c = f)) ∧
+    (∀(f:(α,β,γ)morphism) g (h:(δ,ε,γ)morphism).
+      f ≈> g -: c ∧ g ≈> h -: c ⇒
+        (((h o g -: c) o f -: c) = h o g o f -: c -: c)) ∧
+    (∀(f:(α,β,γ)morphism) (g:(β,δ,γ)morphism) x y z.
+      f :- x → y -: c ∧ g :- y → z -: c ⇒
+        (g o f -: c) :- x → z -: c)`;
 
 val is_category_def = Define`
-  is_category c = λ:α β. extensional_category c [:α,β:] ∧ category_axioms c [:α,β:]`;
+  is_category c = λ:α β δ ε. extensional_category c [:α,β,δ:] ∧ category_axioms c [:α,β,δ,ε:]`;
 
 val compose_thm = Q.store_thm(
 "compose_thm",
@@ -177,8 +182,8 @@ val mk_cat_def = Define`
   mk_cat c = <|
     obj := c.obj;
     mor := c.mor;
-    id_map := λ:α β. restrict c.id_map c.obj;
-    comp := λ:α β. CURRY (restrict (UNCURRY c.comp) {(f,g) | f ≈> g -: c}) |>`;
+    id_map := λ:α. restrict c.id_map c.obj;
+    comp := λ:α β δ. CURRY (restrict (UNCURRY c.comp) {(f,g) | f ≈> g -: c}) |>`;
 
 val mk_cat_maps_to_in = Q.store_thm(
 "mk_cat_maps_to_in",
@@ -216,7 +221,7 @@ val _ = export_rewrites
 
 val extensional_mk_cat = Q.store_thm(
 "extensional_mk_cat",
-`∀α β c. extensional_category (mk_cat c) [:α,β:]`,
+`∀α β δ c. extensional_category (mk_cat c) [:α,β,δ:]`,
 srw_tac [][extensional_category_def,mk_cat_def])
 val _ = export_rewrites["extensional_mk_cat"];
 
@@ -240,12 +245,16 @@ fsrw_tac [][category_axioms_def] >>
 strip_tac >- (
 conj_tac >- (
   qx_gen_tac `f` >>
-  Q.ISPECL_THEN [`c`,`(id f.dom -:c):(α,β) mor`,`f`,`f.dom`] mp_tac maps_to_dom_composable >>
+  Q.ISPECL_THEN [`c`,`id f.dom -:c`,`f`,`f.dom`] mp_tac maps_to_dom_composable >>
   srw_tac [][] ) >>
 conj_tac >- (
   qx_gen_tac `f` >>
-  Q.ISPECL_THEN [`c`,`f`,`(id f.cod -:c):(α,β) mor`,`f.cod`] mp_tac maps_to_cod_composable >>
-  srw_tac [][] ) >>
+  Q.ISPECL_THEN [`c`,`f`,`id f.cod -:c`,`f.cod`] mp_tac maps_to_cod_composable >>
+  Q.ISPECL_THEN [`c`,`f`,`id f.cod -:c`] mp_tac mk_cat_comp >>
+  srw_tac [][] >>
+  `id f.cod -:c  :- f.cod → f.cod -:c` by (
+    first_x_assum (match_mp_tac o (Q.INST_TYPE [`:'a`|->`:'b`]))
+  ) >>
 conj_tac  >- (
   srw_tac [][] >>
   `f ≈> (h o g -: c) -: c` by (
@@ -301,7 +310,7 @@ srw_tac [][is_category_def,category_axioms_def]);
 
 val composable_maps_to = Q.store_thm(
 "composable_maps_to",
-`∀c f g a b. is_category c ∧ f ≈> g -: c ∧ (a = f.dom) ∧ (b = g.cod)
+`∀α β c (f:(α,β) mor) g a b. is_category c ∧ f ≈> g -: c ∧ (a = f.dom) ∧ (b = g.cod)
   ⇒ g o f -:c :- a → b -:c`,
 srw_tac [][composable_in_def] >>
 fsrw_tac [][is_category_def,category_axioms_def] >>
@@ -714,7 +723,7 @@ imp_res_tac iso_objs_thm >>
 imp_res_tac maps_to_obj);
 
 val unit_cat_def = Define`
-  unit_cat = mk_cat <| obj := {()}; mor := {ARB:(unit,unit) mor}; id_map := ARB; comp := ARB |>`;
+  unit_cat = mk_cat <| obj := λα. {()}; mor := {ARB}; id_map := ARB; comp := ARB |>`;
 
 val is_category_unit_cat = Q.store_thm(
 "is_category_unit_cat",
