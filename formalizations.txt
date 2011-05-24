@@ -1,15 +1,43 @@
-Kumar
+Kumar 2011 HOL4
 
-O'Keefe
+Megacz 2011 Coq
 
-Katovsky
+Katovsky 2010 Isabelle/HOL
 
-Huet and Saïbi
+Sozeau 2010 Coq
 
-Simpson
+Sojakova and Rabe 2009 Twelf/DFOL
 
-Weber
+Coquand and Spiwak 2007
+
+Homeier and/or Dawson 2007 HOL-Omega
+
+Kozen, Kreitz and Richter 2006 NuPRL
+
+Wilander 2005
+
+O'Keefe 2004 Isabelle/HOL
+
+Simpson 2004 Coq
+
+Weber 2002 NuPRL
+
+Carvalho 1998 Coq
+
+Huet and Saïbi 1995 (1998? 2000?) Coq
+
+Agerholm 1995 HOL4/HOL-ST
+
+Buisse and Dybjer (and Gaspes?) 1994?
+
+Aczel 1993? Lego
+
+Gilmore and Tsiknis 1990 NaDSet
+
+Dyckhoff 1985
+
+Mohri
 
 the one(s) in Mizar
 
-the one in ML
+the thing in ML
