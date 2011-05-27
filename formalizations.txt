@@ -24,27 +24,43 @@ Wilander 2005 Agda
 http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.63.5498
 
 O'Keefe 2004 Isabelle/HOL
+http://afp.sourceforge.net/entries/Category.shtml
+http://users.cecs.anu.edu.au/~okeefe/work/fcat4cats04.pdf
 
 Simpson 2004 Coq
+http://fr.arxiv.org/abs/math/0410224
+http://math.unice.fr/~carlos/themes/verif.html
 
 Weber 2002 NuPRL
+http://www.cl.cam.ac.uk/~tw333/publications/weber02program.html
 
 Carvalho 1998 Coq
+http://www.cs.math.ist.utl.pt/ftp/pub/CarvalhoA/
+(http://kdbio.inesc-id.pt/~asmc/publications.html)
 
 Huet and Saïbi 1995 (1998? 2000?) Coq
+http://citeseer.ist.psu.edu/viewdoc/summary?doi=10.1.1.39.4193
 
 Agerholm 1995 HOL4/HOL-ST
+http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.22.8437
 
-Buisse and Dybjer (and Gaspes?) 1994?
+Trybulec 2003 (1995) Mizar
+http://mizar.org/JFM/Vol7/altcat_1.html
 
-Aczel 1993? Lego
+(Buisse) and Dybjer (and Gaspes) 1994 ALF
+
+Aczel 1993 Lego
+http://www.cs.man.ac.uk/~petera/LAG/#galois
 
 Gilmore and Tsiknis 1990 NaDSet
+http://dblp.uni-trier.de/rec/bibtex/journals/tcs/GilmoreT93
 
-Dyckhoff 1985
+Byliński 1989 Mizar
+http://mizar.org/JFM/Vol1/cat_1.html
+
+Dyckhoff 1985 Martin-Löf Type Theory (GTSS, NuPRL?)
+https://www.cs.st-andrews.ac.uk/~rd/publications/CTMLTT.pdf
 
 Mohri
-
-the one(s) in Mizar
 
 the thing in ML
