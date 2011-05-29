@@ -1,18 +1,13 @@
-[Saturday 28]
-- prove Yoneda things for set_cat using the isomorphism with ens_cat
-
-[Sunday 29]
-- write a paragraph/bullet points with the important (esp. how foundational issues are treated) points about existing formalizations
-- more details about and comparisons between existing formalizations
-- major section headings for the essay 
-
 [Monday 30]
+- prove Yoneda things for set_cat using the isomorphism with ens_cat
 - make a list of results I would definitely want to have proved in my formalization to mention in the essay
 
 [Tuesday 31]
-- write (1st or 2nd draft of) introduction
+- write a paragraph/bullet points with the important (esp. how foundational issues are treated) points about existing formalizations
+- more details about and comparisons between existing formalizations
 
 [Wednesday 1]
+- write (1st or 2nd draft of) introduction
 
 [Thursday 2]
 - finish some (hopefully all) essential proofs
