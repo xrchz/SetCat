@@ -1,26 +1,19 @@
-[Tuesday 31]
-- prove Yoneda things for set_cat using rep_functor and ens_to_set
-- write a paragraph/bullet points with the important (esp. how foundational issues are treated) points about existing formalizations
-- more details about and comparisons between existing formalizations
-
 [Wednesday 1]
-- make a list of results I would definitely want to have proved in my formalization to mention in the essay
 - write (1st or 2nd draft of) introduction
 
 [Thursday 2]
-- finish some (hopefully all) essential proofs
+- write a paragraph/bullet points with the important (esp. how foundational issues are treated) points about existing formalizations
 
 [Friday 3]
-- write about future things: how existing formalizations could be usefully extended, or whether they should be abandoned, and what we would want from a tool to do a proper formalization of n-category theory
+- try to prove counterexample to zYfunctor injectivity on objects
 
 [Saturday 4]
+- write about future things: how existing formalizations could be usefully extended, or whether they should be abandoned, and what we would want from a tool to do a proper formalization of n-category theory
 
 [Sunday 5]
-- finish remaining or non-essential proofs
+- flesh out outline (subsections and some bullet points)
 
 [Monday 6]
-
-[Tuesday 7]
 - (mostly) finish at least 2 sections of essay and (at least) bullet point the rest
 
 [Wednesday 8]
@@ -34,9 +27,6 @@
 
 [Monday 13]
 - distribute copies to proof-readers
-
-[Tuesday 14]
-- select a binding facility
 
 [Wednesday 15]
 - polish
