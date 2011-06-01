@@ -5,6 +5,17 @@
 \begin{document}
 \maketitle
 \section{Introduction}
+The usefulness of mathematics to any ``real-world'' problem is always mediated by a mathematical model of the problem, an interpretation of the problem as a situation holding between mathematical objects. 
+In the field of mathematical logic, mathematics is applied to itself.
+We find mathematical interpretations of certain \emph{things mathematicians deal with or do} like proofs, languages, theories, interpretations, and models.
+(Model theory, for example, can be seen as a mathematical model of how mathematicians make models of real-world problems. 
+Like many mathematical models, it abstracts.
+Some features of the process of interpretation still elude our understanding.)
+
+Just what mathematical objects are (if they are anything) is a philosophical puzzle.
+The working standard (since the early twentieth century) for what counts as a mathematical object is a \emph{set}.
+The fact that a wide variety of mathematical objects we would like to use can be encoded as sets, coupled with the fact that sets are intuitive as objects (or at least familiar to the educated), makes the identification of mathematical objects with sets appealing from the standpoint of ontological economy.
+But sometimes we would like to bring the sets into the spotlight.
 \section{Background}
 \subsection{Category Theory}
 <composable morphisms>
@@ -22,13 +33,26 @@
 <set-theoretic semantics>
 \section{Formalisation Difficulties}
 \subsection{Foundations and Size}
+<the problem>
+<mention some solutions: Grodenthieck universe(s), a set theory with classes, structural set theory, type theory with universe hierarchy>
 \subsection{Internalisation}
+<Sam's example of options for describing an isomorphism between two one-object categories, where one of the objects is the class of all sets>
+<Proofs ought to apply to any objects with the structure necessary for the proofs to be applicable, because reasoning is always local?>
 \subsection{Equality and Isomorphism}
 \subsection{Mechanisation Difficulties}
 \subsubsection{Readability}
+<hidden arguments>
+<overloaded notation>
+<things one would usually rather not have to give a name>
+<(is the semantics of unique-up-to-isomorphism things accurately captured by Hilbert choice? maybe discuss in a later section)>
 \subsubsection{Automation}
+<e.g. the type of a composite, or associativity of composition often adds several lines of clutter to formal proof>
+<mention algorithms in the literature for deciding equality of morphisms, composability, etc.>
+<could also be proforma theorem style encodings of situations that would make things easier, e.g. put a sequence of compositions into an actual list>
 \section{Existing Mechanisations}
 \subsection{Overview}
+<paragraph summary>
+<table>
 \subsection{Type Theory}
 \subsubsection{Huet and Sa{\"i}bi}
 \subsubsection{Simpson}
@@ -45,10 +69,26 @@
 <Dawson and Homeier>
 \section{A New Approach in HOL}
 \subsection{Design Choices}
+<decisions following Katovsky: polymorphic category record, fixed value outside domain for partial functions (extensionality)>
+<one record of typed morphisms (as in Simpson)>
+<take extensionality further: composability, composites and identities, locally small categories don't have rep functions>
+<notation? exported rewrites?>
 \subsection{$\mathsf{ens\_cat}$ and $\mathsf{set\_cat}$}
+<develop an ens cat theory like O'Keefe's, without asserting the zfset axioms. prove as much as possible there because there are fewer axioms and the proofs are simpler to deal with (no rep/abs functions in the way)>
+<also define a set category as in Katovsky which uses the zfset type>
 \subsection{The Yoneda Embedding}
+<reuse the Yoneda proof for ens cat in for set cat by proving appropriate embeddigns and isomorphisms>
+<minor point: actually use the definitions of full, faithful etc. for Yoneda>
+<explain rep functor and what choices it makes; mention that our locally small categories are extensional unlike Katovsky's>
+<note proof of zfYonedaEmbedding>
+<note failure of zfYonedaInjObj despite YonedaInjObj and despite the result holding for Katovsky>
+<explain the difference: he assumes mor2ZF is injective, which means his categories are slightly more than just locally small>
+<counterexample to zfYonedaInjObj at a particular type, but note cannot prove a generic (polymorphic) counterexample>
 \subsection{Limits}
+<via comma category>
+<have proved set cat has binary products, which would be impossible for ens cat (and hence for O'Keefe)>
 \subsection{Future Work}
+<adjunctions and exponential objects: but may be forced to be external about it>
 <generic (external) definitions of iso etc.>
 <objectless categories>
 <show Yoneda to be component of a nat trans>
