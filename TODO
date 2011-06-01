@@ -1,34 +1,30 @@
-[Wednesday 1]
-- write (1st or 2nd draft of) introduction
-
 [Thursday 2]
 - write a paragraph/bullet points with the important (esp. how foundational issues are treated) points about existing formalizations
 
 [Friday 3]
 - try to prove counterexample to zYfunctor injectivity on objects
+- clean up codebase
 
 [Saturday 4]
-- write about future things: how existing formalizations could be usefully extended, or whether they should be abandoned, and what we would want from a tool to do a proper formalization of n-category theory
-
-[Sunday 5]
-- flesh out outline (subsections and some bullet points)
+- (mostly) finish Background section and (at least) bullet point the rest
 
 [Monday 6]
-- (mostly) finish at least 2 sections of essay and (at least) bullet point the rest
+- finish Background and half of Related Work
 
 [Wednesday 8]
-- finish at least 3 sections of essay
+- finish Related Work and/or half of My Work
 
 [Friday 10]
-- finish at least 4 sections of essay
+- finish Background, Related Work, My Work, half of Future Work
 
 [Sunday 12]
-- finish (at least 1st draft) of all sections
+- finish Future Work, half of Introduction and Conclusion
 
-[Monday 13]
+[Tuesday 14]
+- finish all sections
 - distribute copies to proof-readers
 
-[Wednesday 15]
+[Thursday 16]
 - polish
 - formatting and covers
 - binding
