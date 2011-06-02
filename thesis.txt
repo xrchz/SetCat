@@ -1,0 +1,4 @@
+The foundational difficulties presented by category theory make it difficult to formalise.
+Nevertheless, it is possible to formalise category theory in higher-order logic, extended with a type of small sets, in a way that fits naturally into the idiom of the logic but can still express some basic but foundationally-challenging categorical results.
+It is not obvious that this approach can be pushed very far.
+A more satisfying formalisation of category theory will require a new way to resolve the foundational issues, a different logic, or a new approach to formalisation.
