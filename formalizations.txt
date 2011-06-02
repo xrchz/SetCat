@@ -19,31 +19,32 @@ http://users.cecs.anu.edu.au/~jeremy/pubs/holw-cm/
 
 Kozen, Kreitz and Richter 2006 NuPRL [DBLP:conf/cade/KozenKR06]
 
-Wilander 2005 Agda
+Wilander 2005 Agda [Wilander]
 http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.63.5498
+http://www2.math.uu.se/~wilander/bicat/
 
-O'Keefe 2004 Isabelle/HOL
+O'Keefe 2004 Isabelle/HOL [DBLP:journals/entcs/OKeefe04]
 http://afp.sourceforge.net/entries/Category.shtml
 http://users.cecs.anu.edu.au/~okeefe/work/fcat4cats04.pdf
 
-Simpson 2004 Coq
+Simpson 2004 Coq [Simpson04]
 http://fr.arxiv.org/abs/math/0410224
 http://math.unice.fr/~carlos/themes/verif.html
 
-Weber 2002 NuPRL
+Weber 2002 NuPRL [weber02program]
 http://www.cl.cam.ac.uk/~tw333/publications/weber02program.html
 
-Carvalho 1998 Coq
+Carvalho 1998 Coq [Carvalho]
 http://www.cs.math.ist.utl.pt/ftp/pub/CarvalhoA/
 (http://kdbio.inesc-id.pt/~asmc/publications.html)
 
 Mohri 1997 Lego
 http://dblp.uni-trier.de/rec/bibtex/conf/tphol/Mohri97
 
-Huet and Saïbi 1995 (1998? 2000?) Coq
+Huet and Saïbi 1995 (1998? 2000?) Coq [HuetS00]
 http://citeseer.ist.psu.edu/viewdoc/summary?doi=10.1.1.39.4193
 
-Agerholm 1995 HOL4/HOL-ST
+Agerholm 1995 HOL4/HOL-ST [Agerholm95]
 http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.22.8437
 
 Trybulec 2003 (1995) Mizar
@@ -54,7 +55,7 @@ http://mizar.org/JFM/Vol7/altcat_1.html
 Aczel 1993 Lego
 http://www.cs.man.ac.uk/~petera/LAG/#galois
 
-Gilmore and Tsiknis 1990 NaDSet
+Gilmore and Tsiknis 1990 NaDSet [GilmoreT93]
 http://dblp.uni-trier.de/rec/bibtex/journals/tcs/GilmoreT93
 
 Byliński 1989 Mizar
