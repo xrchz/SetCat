@@ -1,24 +1,23 @@
 Kumar 2011 HOL4
 
-Megacz 2011 Coq
-http://www.cs.berkeley.edu/~megacz/coq-categories/
+Megacz 2011 Coq [Megacz]
+- uses type classes
+- follows development in Awodey's book
+- coverage: ???
 
-Katovsky 2010 Isabelle/HOL
-http://afp.sourceforge.net/entries/Category2.shtml
+Katovsky 2010 Isabelle/HOL [Katovsky]
 
-Sozeau 2010 Coq
-http://mattam.org/repos/coq/cat/
+Sozeau 2010 Coq [Sozeau]
+- uses type classes
 
 Sojakova and Rabe 2009 Twelf/DFOL
 
-Coquand and Spiwak 2007 Coq
-http://dblp.uni-trier.de/rec/bibtex/conf/mkm/CoquandS07
+Coquand and Spiwak 2007 Coq [DBLP:conf/mkm/CoquandS07]
 
 Homeier and/or Dawson 2007 HOL-Omega
 http://users.cecs.anu.edu.au/~jeremy/pubs/holw-cm/
 
-Kozen, Kreitz and Richter 2006 NuPRL
-http://dblp.uni-trier.de/rec/bibtex/conf/cade/KozenKR06
+Kozen, Kreitz and Richter 2006 NuPRL [DBLP:conf/cade/KozenKR06]
 
 Wilander 2005 Agda
 http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.63.5498
