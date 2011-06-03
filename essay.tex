@@ -9,15 +9,57 @@
 <motivation>%300
 <contributions>%300
 \section{Background}%1000
-<category theory>%200
-<mechanisation>%200
-<higher-order logic>%200
-<formalisation difficulties>%400
+\subsection{Category Theory}%200
+Category theory is an abstract theory of functions and composition.
+A category is an arena in which composition takes place, and consists of \emph{morphisms}, abstract functions, \emph{objects}, the possible domains and codomains of the morphisms, and a composition law assigning a composite morphism to each pair of morphisms of which the domain of one matches the codomain of the other.%60
+<many ways of presenting categories>%30
+<higher notions: functors, natural transformations, functor categories, limits, adjunctions, duality, n-categories>%50
+  <example>
+<category theory is very general/meta/applicable: applies not just to particular objects (poset, monoid), but also to the whole class of sets, groups, etc. (concrete categories), to the whole field of mathematical logic (doctrines, institutions etc.), even to itself (category of categories etc.)>%60
+\subsection{Mechanisation}%200
+Results in mathematics are theorems proved by deduction.
+  <The usefulness of mathematics comes from a combination of the truth of theorems, ensured by supposing that the rules of deduction are valid then using only them, and interpretation blah...>
+  <different degrees of formality>
+  <mechanical proof checking is very high degree of formal deduction>%50
+<what is mechanical proof checking>%50
+<the point: 1. tediously long or large formal models>%30
+  <example>
+<the point: 2. consistency of a framework of definitions unobvious>%40
+  <example>
+<in this case, the fact that category theory forces us to question foundations (because it is always meta) make it interesting to see how why and where formalisation suffers, and how it can be ameliorated, even if consistency isn't really suspect>%30
+\subsection{Higher-Order Logic}%200
+Higher-order logic is a formal system that has proved popular
+\subsection{Formalisation Difficulties}%400
+<foundations and size>%100
+  <maths usually based on sets, but want to talk about larger collections than can fit in a set in category theory>
+  <example>
+  <would want to talk about category of categories if possible (but note Coquand's proof that it doesn't exist)>
+
+<internalisation>%50
+  <example>
+<equality and isomorphism>%50
+  <example>
+<mechanisation>
+  <readability>%50
+    <example>
+  <automation>%50
+    <example>
 \section{Existing Mechanisations}%1000
 <overview>%100
 <type theory>%300
+  <Huet+Saibi, plus anything else based on Setoids>%60
+  <Megacz, Sozeau, plus anything else based on type classes>%60
+  <Simpson>%140
+  <type theory not in Coq>%40
 <set theory etc.>%200
+  <Mizar>%60
+  <NaDSet>%100
+  <anything else>%40
 <HOL>%400
+  <Agerholm>%100
+  <Dawson>%50
+  <O'Keefe>%100
+  <Katovsky>%150
 \section{A New Approach in HOL}%1200
 <design>%300
 <ens and set cat>%300
