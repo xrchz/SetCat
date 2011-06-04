@@ -5,28 +5,33 @@
 \author{Ramana Kumar\\MPhil in Advanced Computer Science\\Peterhouse}
 \begin{document}
 \maketitle
-\section{Introduction}%500{{{
-%motivation 300
+\begin{abstract}%{{{
+The foundational difficulties presented by category theory make it difficult to formalise.
+Nevertheless, it is possible to formalise category theory in higher-order logic, extended with a type of small sets, in a way that fits naturally into the idiom of the logic but can still express some basic but foundationally-challenging categorical results.
+It is not obvious that this approach can be pushed very far.
+A more satisfying formalisation of category theory will require a new way to resolve the foundational issues, a different logic, or a new approach to formalisation.
+\end{abstract}%}}}
+\section{Introduction}%400{{{
 Category theory provides a framework for studying various notions common to diverse areas of mathematics.
 It has applications in computer science ranging from the semantics of programming languages and formal systems to models of concurrency <refs>.
 Since its inception, category theory has challenged the traditional foundations of mathematics, namely in set theory, by dealing with collections that are too large to be sets. 
 Several workarounds have been discovered over the years, and it is often possible to set things up so they work fine for the problem at hand, but do not capture the full implied generality of the categorical constructions.
 
-Formalisation is a good way to test the limits of foundational choices, because a formal development must respect those choices without resorting to arguments or constructions by analogy or generalisation that are tempting when the foundations come unstuck.
-Several formalisations of category theory in different frameworks, with varying coverage and purposes, have been developed.
-In this essay, we shall investigate the foundational issues and see some of the solutions, including a new refinement of previous approaches in higher-order logic.
+Formalisation is a good way to test the limits of foundational choices, because a formal development must respect those choices throughout.
+There can be no resort to arguments or constructions by analogy or implied generalisation in a fully formal development, especially in the kind developed mechanically with a proof assistant.
+Several mechanisations of category theory in different frameworks, with varying coverage and purposes, have been developed.
+In this essay, we shall investigate the foundational issues and see some of the solutions, including a new refinement of previous work in higher-order logic.
 
-Higher-order logic is an expressive and convenient formal system in which to formalise much mathematics.
+Higher-order logic is a simple but expressive formal system suitable for the formalisation of many pieces of mathematics.
 As a result, it is the logic implemented by many proof assistants in which formal mathematics has been developed <refs>.
-Notable alternatives are set theory in first-order logic, as in Mizar, and more expressive type theories like the logic of Coq or of Agda. <Metamath?>
-Higher-order logic has a standard semantics in set theory, and therefore cannot capture large categorical constructions directly, unlike systems whose semantics include, for example, infinite hierarchies of universes.
+(Notable alternatives include dependent type theories and first-order set theory.)
+Higher-order logic has a standard semantics in set theory, and therefore cannot capture large categorical constructions directly (unlike systems whose semantics include, for example, infinite hierarchies of universes).
 However, it can be extended with extra axioms asserting the existence of large classes.
 
-%contributions 200
-We describe a formalisation of the category of sets, the simplest foundationally tricky category, in higher-order logic so extended.
+We describe a mechanisation of the category of sets, the simplest foundationally tricky category, in higher-order logic so extended.
 This development is done in a way that fits naturally into the idiom of the logic but can still express some basic but foundationally-challenging categorical results.
-It is not obvious that this approach can be pushed very far.
-We comment on the problems and make brief speculations on what a satisfying formalisation of category theory would require and would look like.
+It is not obvious that our approach can be pushed very far.
+We comment on the problems, compare our mechanisation to others, and make brief speculations on what a satisfying mechanisation of category theory would require and would look like.
 %}}}
 \section{Background}%1200{{{
 We will stay at a relatively high level throughout the essay.
@@ -34,24 +39,31 @@ In this section, we give an overview of category theory and of mechanical formal
 Then we examine the difficulties a formalisation of category theory might face.
 \subsection{Category Theory}%400{{{
 Category theory is an abstract theory of functions and composition.
-A category is an arena in which composition takes place, and consists of \emph{morphisms}, abstract functions, \emph{objects}, the possible domains and codomains of the morphisms, and a composition law, obeying certain conditions.
+A category is an arena in which composition takes place, and consists of \emph{morphisms}, abstract functions, \emph{objects}, the possible domains and codomains of the morphisms, and a \emph{composition law}, obeying certain conditions.
 Let us write $f:A\to B$ for a morphism $f$ with domain $A$ and codomain $B$.
 The conditions for a \emph{category} are that there is a composite morphism $g\circ f:A\to C$ whenever $f:A\to B$ and $g:B\to C$ are morphisms of compatible types, composition is associative ($f\circ(g\circ h)=(f\circ g)\circ h$), and there is an \emph{identity} morphism ${1_A}:A\to A$ for every object (${1_A}\circ f=f$ and $g\circ{1_A}=g$ whenever the composites are defined).%100
 
 A highly intuitive (but foundationally tricky) example is the category sets, whose objects are sets and morphisms are functions\footnote{with specified domain and codomain, so for example the empty functions $\bot:\emptyset\to\emptyset$ and $\bot:\emptyset\to\mathbb{N}$ are distinct}: function composition gives the composition law and every set has an identity function.
 The morphisms in a category do not have to resemble functions so closely.
 %Every group is a category with a single object whose morphisms are the elements of the group with composition given by the group multiplication, since the multiplication in any group must be associative and have an identity element.
-Every partially ordered set is a category with a morphism from $A$ to $B$ exactly when $A\leq B$: transitivity gives composites and reflexitivy gives identities.
-To study a very simple programming language, we might consider a category whose objects are types and morphisms are computable total functions, which is essentially (a subcategory of) the category of sets.
+Every partially ordered set (poset) is a category with a morphism from $A$ to $B$ exactly when $A\leq B$: transitivity gives composites and reflexitivy gives identities.
+To study a very simple programming language, we might consider a category whose objects are types and morphisms are computable total functions.
+This is essentially (a subcategory of) the category of sets.
 For languages with recursion, we might use a category of domains and continuous functions, and there are other categories suited to other language features (side-effects, state, concurrency, and so on).%100
 
-Examples of categories are abundant, and notions defined in terms of categories can reveal links between diverse areas.
+There are many higher notions defined in terms of categories.
 A map from the objects and morphisms of one category to the objects and morphisms of another is called a \emph{functor} when it preserves identities and composites.
 For example, there is a list functor from the category of types to itself that sends a type $\alpha$ to the type of lists with elements of type $\alpha$, and sends a function on elements to the corresponding element-wise function on lists.
 <natural transformations, functor categories, Yoneda>
 <limits, adjunctions, duality>%100
 
-<category theory is very general/meta/applicable: applies not just to particular objects (poset, monoid), but also to the whole class of sets, groups, etc. (concrete categories), to the whole field of mathematical logic (doctrines, institutions etc.), even to itself (category of categories etc.)>%100
+<isomorphisms?>
+
+Composable morphisms are a very general abstraction, so examples of categories are abundant in mathematics and computer science.
+A particular poset is a category, as we saw above, but so is the collection of all posets (with monotone functions as morphisms).
+For every pair of a source and a target category, there is a category of functors of that type with natural transformations as morphisms.
+More strikingly, we can consider a structure whose objects are categories and whose morphisms are functors, and this structure satisfies the conditions for a category.
+We would like the arguments we make about a general category to apply to all instances of categories, but if we are working in set theory, the collection of all posets is troublesome, and wherever we are working, the category of all categories should raise concerns for inconsistency.%100
 %}}}
 \subsection{Mechanisation}%150{{{
 Results in mathematics are theorems proved by deduction.
@@ -68,19 +80,47 @@ For example, formal semantics of a programming language, or a hardware model of 
 The second is to see how and whether a theory fits into a particular formal system, namely the one implemented by the proof assistant, to test either the consistency of the theory or the expressiveness of the formal system.
 <in this case, the fact that category theory forces us to question foundations (because it is always meta) make it interesting to see how why and where formalisation suffers, and how it can be ameliorated, even if consistency isn't really suspect>%70
 %}}}
-\subsection{Higher-Order Logic}%200{{{
-Higher-order logic is a formal system that has proved popular
-<the logic and its characteristics>%50
-<syntax and semantics>%100
-<the theorem prover>%50
+\subsection{Higher-Order Logic}%250{{{
+\newcommand{\bool}{\ensuremath{\mathsf{bool}}}
+Higher-order logic (HOL) is a formal system that has proved popular for formalising purely mathematical results as well as properties of computer hardware and software systems.
+HOL is a natural-deduction calculus with the syntax of the simply typed lambda calculus.
+A term of Boolean type is called a formula.
+Theorems are represented by sequents $\Gamma\vdash \phi$ where $\Gamma$ is a set of formulae called the hypotheses and $\phi$ is a formula called the conclusion.
+We abbreviate $\emptyset\vdash\phi$ by $\vdash\phi$.%30
+
+%A term is either a variable, a constant, an abstraction of a variable over a term, or an application of one term to another.
+%There are three primitive type operators: function types $\alpha\to\beta$ with two arguments $\alpha$ and $\beta$, the type of Booleans, and the type of individuals (both type constants).
+
+A type is either a type variable or a type operator applied to argument types (an operator that takes no arguments is a type constant).
+Every term has a unique type, and most general types for unannotated terms can be inferred automatically.
+Terms whose types include type variables are said to be \emph{polymorphic}.
+For example, there is a polymorphic constant $=$, whose type is $\alpha\to\alpha\to\bool$, representing equality at every type $\alpha$.
+
+In the semantics of HOL, the meaning of a type is a non-empty set, and the meaning of a non-polymorphic term is an element of its type.
+A polymorphic term is interpreted as a dependent function that takes a set for each type variable in the term's type and returns an element of the resulting type.
+
+Boolean connectives can be defined as functions in HOL, for example conjunction has type $\bool\to\bool\to\bool$.
+<Universal quantification?>
+<SELECT term>
+
+<rules of inference>
+
+<definitions>
+HOL provides principles for defining new types and new (term) constants.
+<product types>
+<predicates as sets>
+<record types>
+
+<the theorem prover>%30
 %}}}
-\subsection{Formalisation Difficulties}%450{{{
-<foundations and size>%250
+\subsection{Formalisation Difficulties}%400{{{
+<foundations and size>%200
   <maths usually based on sets, but want to talk about larger collections than can fit in a set in category theory>
   <example>
   <would want to talk about category of categories if possible (but note Coquand's proof that it doesn't exist)>
 
 There are a few more issues than size that make category theory difficult to formalise, which we now review.
+<types getting in the way - e.g. product of alpha sets>
 <internalisation>%60
   <example>
 <equality and isomorphism>%60
@@ -97,36 +137,48 @@ Finally, there are two issues that affect mechanisations, as opposed to unmechan
     <there may be algorithms for doing these things: sometimes the difficulty is integrating the algorithm in the right way to your development within a general-purpose proof assistant>
     <example>
 %}}}%}}}
-\section{Existing Mechanisations}%1050{{{
-<overview>%100
-<type theory>%300
+\section{Existing Mechanisations}%1100{{{
+<overview>%150
+\subsection{Type Theory}%300{{{
   <Huet+Saibi, plus anything else based on Setoids>%60
   <Megacz, Sozeau, plus anything else based on type classes>%60
   <Simpson>%140
   <type theory not in Coq>%40
-<set theory etc.>%200
+%}}}
+\subsection{Set Theory and Others}%200{{{
   <Mizar>%60
   <NaDSet>%100
   <anything else>%40
-<HOL>%450
+%}}}
+\subsection{HOL}%450{{{
   <Agerholm>%100
   <Dawson>%50
   <O'Keefe>%100
   <Katovsky>%200
 %}}}
-\section{A New Approach in HOL}%1250{{{
-\subsection{Design Choices}%300{{{
 %}}}
-\subsection{Two Categories of Sets}%300{{{
+\section{A New Approach in HOL}%1300{{{
+\subsection{Design Choices}%300{{{
+<typed morphisms>
+<use restrict everywhere>
+<categories with objects>
+<pretty syntax + automatic rewrites?>
+%}}}
+\subsection{Two Categories of Sets}%350{{{
+<one following O'Keefe, similar to Mac Lane's Ens, but polymorphic>
+
+<one following Katovsky by using zfsetTheory to make it non-polymorphic>
+
+<isomorphism between the second and one instance of the first>
 %}}}
 \subsection{The Yoneda Embedding}%350{{{
 %}}}
-\subsection{Limits}%200{{{
+\subsection{Limits}%100{{{
 %}}}
-\subsection{Summary}%100{{{
+\subsection{Summary and Problems}%200{{{
 %}}}
 %}}}
-\section{Conclusion}%500{{{
+\section{Conclusion and Future Directions}%500{{{
 <summary>%100
 <immediate future work>%200
 <future directions>%200
