@@ -91,7 +91,8 @@ The extra work for a mechanical formalisation is often warranted by one of two s
 The first is that the model being formalised is intricate or large but not necessarily with much mathematically interesting structure.
 For example, formal semantics of a programming language, or a hardware model of a central processing unit.
 The second is to see how and whether a theory fits into a particular formal system, namely the one implemented by the proof assistant, to test either the consistency of the theory or the expressiveness of the formal system.
-<in this case, the fact that category theory forces us to question foundations (because it is always meta) make it interesting to see how why and where formalisation suffers, and how it can be ameliorated, even if consistency isn't really suspect>%70
+In our case, we are interested in seeing where and why a formalisation of category theory suffers by being developed in higher-order logic, which is a good system for many other areas of mathematics.
+Additionally, we may hope to gain insights about the choices one can make for the foundations of category theory.%70
 %}
 \subsection{Higher-Order Logic}%250%{
 \newcommand{\bool}{\ensuremath{\mathsf{bool}}}
@@ -104,8 +105,8 @@ We abbreviate $\emptyset\vdash\phi$ by $\vdash\phi$.%30
 %A term is either a variable, a constant, an abstraction of a variable over a term, or an application of one term to another.
 %There are three primitive type operators: function types $\alpha\to\beta$ with two arguments $\alpha$ and $\beta$, the type of Booleans, and the type of individuals (both type constants).
 
-A type is either a type variable or a type operator applied to argument types (an operator that takes no arguments is a type constant).
 Every term has a unique type, and most general types for unannotated terms can be inferred automatically.
+A type is either a type variable or a type operator applied to argument types (an operator that takes no arguments is a type constant).
 Terms whose types include type variables are said to be \emph{polymorphic}.
 For example, there is a polymorphic constant $=$, whose type is $\alpha\to\alpha\to\bool$, representing equality at every type $\alpha$.
 
@@ -113,24 +114,33 @@ In the semantics of HOL, the meaning of a type is a non-empty set, and the meani
 A polymorphic term is interpreted as a dependent function that takes a set for each type variable in the term's type and returns an element of the resulting type.
 
 Boolean connectives can be defined as functions in HOL, for example conjunction has type $\bool\to\bool\to\bool$.
-<Universal quantification?>
-<SELECT term>
+In addition to the standard connectives and quantifiers, HOL includes a \emph{Hilbert choice} operator: the term $\epsilon{x}.\,P\; x$ denotes an arbitrary (but fixed) element $c$ such that $P\; c$ holds, if any such element exists, otherwise denotes an arbitrary element of the type of $x$.
+This operator is defined using a verison of the axiom of choice, which is one of the axioms of HOL.
+The primitive rules of inference include, for example, modus ponens, reflexivity of equality, and generalization of free variables.
+Additional rules of inference can be derived.
 
-<rules of inference>
-
-<definitions>
 HOL provides principles for defining new types and new (term) constants.
-<product types>
-<predicates as sets>
-<record types>
+The primitive types are the two-argument operator for function types, that is, $\alpha\to\beta$ with arguments $\alpha$ and $\beta$, the type of Booleans, and the type of individuals.
+A new type can be defined after proving that a certain predicate on an existing type is non-empty.
+Standard types defined in HOL include the product type operator, producing a type $\alpha\times\beta$ from argument types $\alpha$ and $\beta$ and its dual, the sum type operator.
+Generalising sum types, it is possible to define a new type to represent a record given an arbitrary number of field names and types.
+The type $\alpha\to\bool$ is sometimes abbreviated by $\alpha\;\mathsf{set}$, reinforcing the idea that types represent sets, so a predicate on a type is the characteristic function of a set of elements of that type. 
 
-<the theorem prover>%30
+The HOL logic is implemented by several mechanical proof assistants, including Isabelle, HOL4, and HOL-Light.
 %}
 \subsection{Formalisation Difficulties}%400%{
+There are several different ways of defining what a category is.
+For example, we could say a category is a tuple (or record) $(obj,mor,dom,cod,id,comp)$ where $obj$ is a collection of objects, $mor$ a collection of morphisms, $dom$ and $cod$ functions from $mor$ to $obj$, $id$ a function from $obj$ to $mor$, and $comp$ a partial functior from $mor\times mor$ to $mor$.
+Or we could dispense with the $dom$ and $cod$ fields, specifying instead that morphisms come with specified types, independent of the category they are in.
+This is similar to eschewing the total collection of morphisms in favor of a family of collections $\{hom(x,y)\}_{x,y}$ indexed by objects.
+It is even possible to dispense with the $obj$ and $id$ fields by identifying objects with morphisms that behave like identities for composition <ref>, leaving a tuple $(mor,comp)$ or simply a partial function $comp:mor\times mor\to mor$.
+
 <foundations and size>%200
-  <maths usually based on sets, but want to talk about larger collections than can fit in a set in category theory>
-  <example>
-  <would want to talk about category of categories if possible (but note Coquand's proof that it doesn't exist)>
+The first, and main, problem arises when we consider the relationship between the collection $mor$ of morphisms in a category, and the notion of a set in whatever framework we are using.
+If $mor$ is a set, then there is no category whose morphisms are all the functions between sets, since no set can contain all functions <ref>.
+But we would like to talk about the category of sets, which would have this collection of morphisms.
+If we avoid $mor$ and define categories in terms of homs instead, a similar problem comes up when considering, for example, the category of presheaves over the category of sets <really?>.
+<would want to talk about category of categories if possible (but note Coquand's proof that it doesn't exist)>
 
 There are a few more issues than size that make category theory difficult to formalise, which we now review.
 <types getting in the way - e.g. product of alpha sets>
