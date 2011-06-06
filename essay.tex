@@ -140,27 +140,26 @@ Or we could dispense with the $dom$ and $cod$ fields, specifying instead that mo
 This is similar to eschewing the total collection of morphisms in favor of a family of collections $\{hom(x,y)\}_{x,y}$ indexed by objects.
 It is even possible to dispense with the $obj$ and $id$ fields by identifying objects with morphisms that behave like identities for composition <ref>, leaving a tuple $(mor,comp)$ or simply a partial function $comp:mor\times mor\to mor$.
 
-<foundations and size>%200
 The first, and main, problem arises when we consider the relationship between the collection $mor$ of morphisms in a category, and the notion of a set in whatever framework we are using.
 If $mor$ is a set, then there is no category whose morphisms are all the functions between sets, since no set can contain all functions <ref>.
 But we would like to talk about the category of sets, which would have this collection of morphisms.
 If we avoid $mor$ and define categories in terms of homs instead, a similar problem comes up when considering, for example, the category of presheaves over the category of sets <really?>.
-<would want to talk about category of categories if possible (but note Coquand's proof that it doesn't exist)>
 
-There are a few more issues than size that make category theory difficult to formalise, which we now review.
-<types getting in the way - e.g. product of alpha sets>
+We face a more serious problem when trying to form the category of categories (with functors as morphisms), akin to Russel's paradox (the impossibility of a set of all sets that are not members of themselves), and Coquand~\cite{DBLP:conf/lics/Coquand86} has shown that such a category cannot exist when working in a sufficiently strong logic.
+It may be possible to do this kind of general abstract mathematics by working with a non-wellfounded set theory <ref?>.
+The usual solution, however, is to stratify categories into bands of different sizes, and talk just about the category of small categories, which is itself not small.
+
 <internalisation>%60
   <example>
+
+There are a few more issues than size that make category theory difficult to formalise.
+<types getting in the way - e.g. product of alpha sets>
 <equality and isomorphism>%60
   <example>
   <chosen limits, on the nose, etc.>
 
 Finally, there are two issues that affect mechanisations, as opposed to unmechanised formalisation, and are particularly relevant to category theory.
-<mechanisation>
-  <readability>%40
-    <hidden arguments, diagrammatic reasoning>
-    <example>
-  <automation>%40
+These are readability of statements and proofs, and automation of simple arguments. <hidden arguments, example, diagrammatic reasoning>
     <morphism equality and composability (composition associativity), dependent type inference> 
     <there may be algorithms for doing these things: sometimes the difficulty is integrating the algorithm in the right way to your development within a general-purpose proof assistant>
     <example>
@@ -168,24 +167,24 @@ Finally, there are two issues that affect mechanisations, as opposed to unmechan
 \section{Existing Mechanisations}\label{sec:existing}%1100%{
 Category theory has been mechanised to various extents in multiple formal systems over the last twenty years.
 The choice of system affects how foundational decisions are made, which in turn may constrain what can be expressed.
-We may discern three main classes of formal systems: (dependent) type theory, first-order set theory, and higher-order logic.
+We may discern three main classes of formal systems: higher-order logic (the simplest type theory), richer (dependent) type theories, and set theory.
 We list the major formalisations in each class, noting foundational decisions and coverage, and give more detail for the work in HOL.%150
-\subsection{Type Theory}%300%{
+\subsection{Set Theory}%200%{
+  <Mizar \cite{BylinksiCat1,TrybulecAltCat1}>%60
+  <NaDSet \cite{DBLP:journals/tcs/GilmoreT93}>%100
+  <anything else>%40
+%}
+\subsection{Dependent Type Theory}%300%{
   <\cite{DBLP:conf/birthday/HuetS00}, plus anything else based on Setoids>%60
   <\cite{Megacz}, \cite{Sozeau}, plus anything else based on type classes>%60
   <\cite{Simpson04}, ZFC-based but in Coq>%140
   <\cite{weber02program,Wilander,DBLP:conf/cade/KozenKR06} type theory not in Coq>%40
 %}
-\subsection{Set Theory and Others}%200%{
-  <Mizar>%60
-  <NaDSet>%100
-  <anything else>%40
-%}
 \subsection{HOL}%450%{
-  <Agerholm>%100
+  <Agerholm \cite{Agerholm95}>%100
   <Dawson>%50
-  <O'Keefe>%100
-  <Katovsky>%200
+  <O'Keefe \cite{DBLP:journals/entcs/OKeefe04}>%100
+  <Katovsky \cite{Katovsky}>%200
 %}
 %}
 \section{A New Approach in HOL}%1300%{
