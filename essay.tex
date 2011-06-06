@@ -11,37 +11,66 @@ Nevertheless, it is possible to formalise category theory in higher-order logic,
 It is not obvious that this approach can be pushed very far.
 A more satisfying formalisation of category theory will require a new way to resolve the foundational issues, a different logic, or a new approach to formalisation.
 \end{abstract}%}
-\section{Introduction}%200%{
+\section{Introduction}%301/200%{
 Category theory provides a framework for studying various notions common to diverse areas of mathematics.
 It has applications in computer science ranging from the semantics of programming languages and formal systems to models of concurrency <refs>.
 Since its inception, category theory has challenged the traditional foundations of mathematics, namely in set theory, by dealing with collections that are too large to be sets. 
-Several workarounds have been discovered over the years, and it is often possible to set things up so they work fine for the problem at hand, but do not capture the full implied generality of the categorical constructions.
+Several workarounds have been discovered: it is often possible to set things up well for the problem at hand while failing to capture the full generality of the categorical constructions.
 
 Formalisation is a good way to test the limits of foundational choices, because a formal development must respect those choices throughout.
-There can be no resort to arguments or constructions by analogy or implied generalisation in a fully formal development, especially in the kind developed mechanically with a proof assistant.
-Several mechanisations of category theory in different frameworks, with varying coverage and purposes, have been developed.
-In this essay, we shall investigate the foundational issues and see some of the solutions, including a new refinement of previous work in higher-order logic.
+There can be no resort to arguments or constructions by analogy or implied generalisation, especially in formalisations developed mechanically with a proof assistant.
+In this essay, we present a new mechanisation of category theory, refining two previous developments in higher-order logic, and investigate the foundational issues.
 
-Higher-order logic is a simple but expressive formal system suitable for the formalisation of many pieces of mathematics.
+Higher-order logic (HOL) is a simple but expressive formal system suitable for the formalisation of many pieces of mathematics.
 As a result, it is the logic implemented by many proof assistants in which formal mathematics has been developed <refs>.
-Higher-order logic has a standard semantics in set theory, and therefore cannot capture large categorical constructions directly.
+HOL has a standard semantics in set theory, and therefore cannot capture large categorical constructions directly.
 However, it can be extended with extra axioms asserting the existence of large classes.
 
-We describe a mechanisation of the category of sets, the simplest foundationally tricky category, in higher-order logic so extended.
-This development is done in a way that fits naturally into the idiom of the logic but can still express some basic but foundationally-challenging categorical results.
+We formalise the category of sets, the simplest foundationally tricky category, in higher-order logic so extended.
+We try to fit naturally into the idiom of the logic while still being able to express some basic but foundationally-challenging categorical results.
 We comment on the limitations of our approach, compare our mechanisation to others, and make brief speculations on what a more satisfying mechanisation of category theory would require and would look like.
 %}
-\section{Higher-Order Logic}%250%{
+\section{Higher-Order Logic}%460/250%{
+\newcommand{\bool}{\ensuremath{\mathsf{bool}}}
+Higher-order logic (HOL) is a formal system that has proved popular for formalising purely mathematical results as well as properties of computer hardware and software systems.
+HOL is a natural-deduction calculus with the syntax of the simply typed lambda calculus.
+A term of Boolean type is called a \emph{formula}.
+HOL has four formulae specified as axioms and a dozen rules of inference; a \emph{theorem} is a formula proved from the axioms using the rules.
+The HOL logic is implemented by several mechanical proof assistants, including Isabelle, HOL4, and HOL-Light.
+
+Every term has a unique type, and most general types for unannotated terms can be inferred automatically.
+A type is either a type variable or a type operator applied to argument types (an operator taking no arguments is a type constant).
+Terms whose types include type variables are said to be \emph{polymorphic}.
+For example, there is a polymorphic constant $=$, whose type is $\alpha\to\alpha\to\bool$, representing equality at every type $\alpha$.
+In the semantics of HOL, the meaning of a type is a non-empty set, and the meaning of a (non-polymorphic) term is an element of its type.
+(A polymorphic term is interpreted as a function taking a set for each type variable and returning an element of the resulting type.)
+
+A \emph{predicate} is a term of type $\alpha\to\bool$ for some type $\alpha$.
+The type $\alpha\to\bool$ is sometimes abbreviated by $\alpha\;\mathsf{set}$.
+This reinforces the idea that types represent sets: a predicate on $\alpha$ is the characteristic function of a set of elements of type $\alpha$.
+
+Boolean connectives can be defined as functions in HOL, for example conjunction has type $\bool\to\bool\to\bool$.
+In addition to the standard connectives and quantifiers, HOL includes a \emph{Hilbert choice} term that, given a predicate $P$ as argument, denotes an arbitrary (but fixed) element $c$ such that $P\; c$ holds, if any such element exists, otherwise denotes an arbitrary element of the right type.
+Hilbert choice is defined using a verison of the axiom of choice, which is one of the axioms of HOL.
+The primitive rules of inference include, for example, modus ponens, reflexivity of equality, and generalization of free variables.
+Typically, one also uses derived rules of inference that abbreviate applications of several primitive ones.
+
+HOL provides principles for defining new types and new (term) constants.
+The primitive types include function types ($\alpha\to\beta$ with arguments $\alpha$ and $\beta$) and Booleans ($\bool$).
+A new type can be defined after proving that a certain predicate on an existing type is non-empty.
+Standard types defined in HOL include the product type operator, producing a type $\alpha\times\beta$ from arguments $\alpha$ and $\beta$, and its dual the sum type operator.
+Generalising sum types, it is possible to define a new type to represent a record given the desired names and types of the record fields.
+New terms can be defined in terms of existing ones, like in a functional programming language.
 %}
-\section{Composable Morphisms and Categories}%2000%{
+\section{Composable Morphisms and Categories}%4/2000%{
 %}
-\section{A Category of Classes and of Sets}%1500%{
+\section{A Category of Classes and of Sets}%7/1500%{
 %}
-\section{Binary Products and Other Limits}%250%{
+\section{Binary Products and Other Limits}%5/250%{
 %}
-\section{The Yoneda Embedding}%500%{
+\section{The Yoneda Embedding}%3/500%{
 %}
-\section{Conclusions}%500%{
+\section{Conclusions}%1/500%{
 %}
 \bibliographystyle{plain}
 \bibliography{essay}
