@@ -30,7 +30,7 @@ We formalise the category of sets, the simplest foundationally tricky category, 
 We try to fit naturally into the idiom of the logic while still being able to express some basic but foundationally-challenging categorical results.
 We comment on the limitations of our approach, compare our mechanisation to others, and make brief speculations on what a more satisfying mechanisation of category theory would require and would look like.
 %}
-\section{Higher-Order Logic}%460/300%{
+\section{Higher-Order Logic}%472/300%{
 \newcommand{\bool}{\ensuremath{\mathsf{bool}}}
 Higher-order logic (HOL) is a formal system that has proved popular for formalising purely mathematical results as well as properties of computer hardware and software systems.
 HOL is a natural-deduction calculus with the syntax of the simply typed lambda calculus.
@@ -63,7 +63,7 @@ Standard types defined in HOL include the product type operator, producing a typ
 Generalising sum types, it is possible to define a new type to represent a record given the desired names and types of the record fields.
 New terms can be defined in terms of existing ones, like in a functional programming language.
 %}
-\section{Composable Morphisms and Categories}%457/1500%{
+\section{Composable Morphisms and Categories}%575/1500%{
 Category theory is an abstract theory of functions and composition.
 A category is an arena in which composition takes place, and consists of \emph{morphisms}, abstract functions, \emph{objects}, the possible domains and codomains of the morphisms, and a \emph{composition law}, obeying certain conditions.
 We define a type of morphisms in HOL as a polymorphic record $(\alpha,\beta,\gamma)\;\mathsf{morphism}=\langle\mathrm{dom}:\alpha,\,\mathrm{cod}:\beta,\,\mathrm{map}:\gamma\rangle$.
@@ -89,7 +89,7 @@ have defined a polymorphic (and hence quite weak) category of categories. the po
 <more details on functors and nts. we follow O'Keefe in omitting the object function from functors, since it can be inferred. However, we did not omit the object field from the category record - nobody has mechanised a theory like that, and I'm not sure how easy it would be to make it usably familiar, but worth experimenting...
 repeat need for extensionality. characterisation of functor equality. functor composition and nt composition. have defined functor categories.
 %}
-\section{A Category of Classes and of Sets}%239/1500%{
+\section{A Category of Classes and of Sets}%352/1500%{
 \newcommand{\Set}{\ensuremath{\mathbf{Set}}}
 The category $\Set$ of sets has sets and objects and (typed) functions as morphisms.
 A natural approach to defining $\Set$ in HOL is as an instance of the $\mathsf{category}$ record where $\mathrm{obj}:\alpha\;\mathsf{set}\;\mathsf{set}$ and the map field of each morphism is a function $\alpha\to\alpha$.
