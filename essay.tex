@@ -36,7 +36,8 @@ Higher-order logic (HOL) is a formal system that has proved popular for formalis
 HOL is a natural-deduction calculus with the syntax of the simply typed lambda calculus.
 A term of Boolean type is called a \emph{formula}.
 HOL has four formulae specified as axioms and a dozen rules of inference; a \emph{theorem} is a formula proved from the axioms using the rules.
-The HOL logic is implemented by several mechanical proof assistants, including Isabelle, HOL4, and HOL-Light.
+The HOL logic is implemented by several mechanical proof assistants, including Isabelle~\cite{DBLP:conf/tphol/WenzelPN08}, HOL4~\cite{DBLP:conf/tphol/SlindN08}, and HOL-Light~\cite{DBLP:conf/tphol/Harrison09a}.
+Our development was done in HOL4, inspired by existing mechanisations \cite{Katovsky,DBLP:journals/entcs/OKeefe04} in Isabelle.
 
 Every term has a unique type, and most general types for unannotated terms can be inferred automatically.
 A type is either a type variable or a type operator applied to argument types (an operator taking no arguments is a type constant).
@@ -50,8 +51,8 @@ The type $\alpha\to\bool$ is sometimes abbreviated by $\alpha\;\mathsf{set}$.
 This reinforces the idea that types represent sets: a predicate on $\alpha$ is the characteristic function of a set of elements of type $\alpha$.
 
 Boolean connectives can be defined as functions in HOL, for example conjunction has type $\bool\to\bool\to\bool$.
-In addition to the standard connectives and quantifiers, HOL includes a \emph{Hilbert choice} term that, given a predicate $P$ as argument, denotes an arbitrary (but fixed) element $c$ such that $P\; c$ holds, if any such element exists, otherwise denotes an arbitrary element of the right type.
-Hilbert choice is defined using a verison of the axiom of choice, which is one of the axioms of HOL.
+In addition to the standard connectives and quantifiers, HOL includes a \emph{Hilbert choice} term that, given a predicate $P$ as argument, denotes an arbitrary (but fixed) element $c$ such that $P\; c$ holds, if any such element exists, otherwise denotes an arbitrary element (of the right type).
+Hilbert choice is defined using a version of the axiom of choice, which is one of the axioms of HOL.
 The primitive rules of inference include, for example, modus ponens, reflexivity of equality, and generalization of free variables.
 Typically, one also uses derived rules of inference that abbreviate applications of several primitive ones.
 
@@ -71,17 +72,22 @@ We use a polymorphic record for categories as well, abbreviating $(\alpha,\alpha
 (\alpha,\beta)\;\mathsf{category}=\langle&\mathrm{obj}:\alpha\;\mathsf{set},\,\mathrm{mor}:(\alpha,\beta)\;\mathsf{mor}\;\mathsf{set},\,\mathrm{id}:\alpha\to\beta,\\&\mathrm{comp}:(\alpha,\beta)\;\mathsf{mor}\to(\alpha,\beta)\;\mathsf{mor}\to\beta\rangle
 \end{align*}
 Thus an $(\alpha,\beta)\;\mathsf{category}$ has objects of type $\alpha$ and morphisms with a map field of type $\beta$.
-<O'Keefe and Katovsky put dom and cod fields in the category; advantages of keeping morphisms separate: composability and composition can be defined generically, functors and nts are instances of morphisms>
-<why id and comp don't return morphisms: because the dom and cod are determined by category axioms, so don't need to clutter the record>
+The $\mathrm{id}$ and $\mathrm{comp}$ fields, intended to assign an identity morphism to every object and a composite morphism to every pair of composable morphisms, do not return full morphisms, because their $\mathrm{dom}$ and $\mathrm{cod}$ fields are determined by the conditions on a category, rather we define a function $\mathrm{id\_in}\;c\;x=\langle\mathrm{dom}=x,\,\mathrm{cod}=x,\,\mathrm{map}=c.\mathrm{id}\;x\rangle$ and $\mathrm{compose\_in}$ similarly.
+
+A polymorphic record type is used in the two previous formalisations of category theory we shall consider in detail, one by Greg O'Keefe in 2004~\cite{DBLP:journals/entcs/OKeefe04} and another by Alex Katovsky in 2010~\cite{Katovsky}.
+For them, the category record contains additional fields $\mathrm{dom}$ and $\mathrm{cod}$, both of type $\beta\to\alpha$, intended to assign a domain and codomain to each morphism: there is no separate type of morphisms, and maps do not have (categorical) types except in the context of a category.
+<advantages of keeping morphisms separate: composability and composition can be defined generically, functors and nts are instances of morphisms>
+something about defining based on homs rather than separate object and morphism sets: has not been explored in HOL, but possibly used to great effect in another system?
+something about object-free categories.
+
 <an element of category type is not necessarily a category: we impose two conditions, that it satisfies the ``axioms" predicate, and that it is \emph{extensional}, the need for which was noted by Katovsky and is...>
 <in a dependently typed setting, we would not use predicates but rather encode the conditions directly in the type (as in <some related work>)>
 
 <this polymorphic approach, using the $\mathsf{set}$ type operator for a collection, is the natural thing to do in HOL, and was done in both previous work, but is ultimately one source of foundational problems, because there is no type matching $\alpha\;\mathsf{set}$ that could represent all sets, and because the natural product of two categories would have the Cartesian product of the objects from each as its objects, but that precludes forming a category of categories with products since the objects of that would need to have both type $(\alpha,\beta)\;\mathsf{category}\;\mathsf{set}$ and $(\alpha\times\alpha,\beta)\;\mathsf{category}\;\mathsf{set}$, which is impossible, not to mention the fact that even if we didn't want it to have products, using $(\alpha,\beta)\;\mathsf{category}\;\mathsf{set}$ doesn't include categories with different types of objects in the same arena (detailed in the next section!). 
+have defined a polymorphic (and hence quite weak) category of categories. the polymorphism means the same definition is used for categories of all different types, which is great, but at the same time precludes wrapping them up in a single totality, and thus we can't get products and other categorical things as mentioned above....
 
 <more details on functors and nts. we follow O'Keefe in omitting the object function from functors, since it can be inferred. However, we did not omit the object field from the category record - nobody has mechanised a theory like that, and I'm not sure how easy it would be to make it usably familiar, but worth experimenting...
 repeat need for extensionality. characterisation of functor equality. functor composition and nt composition. have defined functor categories.
-
-have defined a polymorphic (and hence quite weak) category of categories. the polymorphism means the same definition is used for categories of all different types, which is great, but at the same time precludes wrapping them up in a single totality, and thus we can't get products and other categorical things as mentioned above....
 %}
 \section{A Category of Classes and of Sets}%239/1500%{
 \newcommand{\Set}{\ensuremath{\mathbf{Set}}}
@@ -94,7 +100,11 @@ The problem is that $\Set$ is usually formulated in an untyped setting, and when
 For example, there is a function from the set of strings $\{\text{``an''},\text{``object''},\text{``in''},\text{``Set''}\}$ to the set of numbers $\{2,3,6\}$ that returns the length of a string, but in HOL, using idiomatic encodings, the former set would have type $\mathsf{string}\;\mathsf{set}$ while the latter would be a $\mathsf{num}\;\mathsf{set}$, and they cannot both be instances of $\alpha\;\mathsf{set}$ at the same time (since $\mathsf{string}$ and $\mathsf{num}$ are different types).
 Clearly, this is a problem at the level of types, so remains even if we take $\mathrm{obj}$ to be the universal set of type $\alpha\;\mathsf{set}\;\mathsf{set}$.
 
-The solution in Katovksy's development is to define $\Set$ in a completely non-polymorphic way, by taking $\mathrm{obj}:\mathsf{zfset}\;\mathsf{set}$ where $\mathsf{zfset}$ is a new type representing sets in the axiomatic set theory ZFC.
+The solution in Katovksy's development is to define $\Set$ in a completely non-polymorphic way, by taking $\mathrm{obj}:\mathsf{zfset}\;\mathsf{set}$ where $\mathsf{zfset}$ is a new type representing sets in the axiomatic set theory ZFC <ref>.
+Contrary to the way types are usually introduced in HOL, that is, by definition, the type $\mathsf{zfset}$ is created as a new primitive type (extending the logic) and its properties are asserted as new axioms of HOL.
+The new axioms are (higher-order versions of) the axioms of ZFC.
+The effect on the semantics is that types must be interpreted as classes (that is, possibly larger than sets), and the universe of HOL types becomes correspondingly larger, since any existing polymorphic type might be instantiated with $\mathsf{zfset}$.
+This method of accessing set theory directly within the HOL logic was introduced in <Mike Gordon HOL-ST> and is implemented in both HOL4 and Isabelle/HOL <Obua HOLZF>.
 %}
 \section{Binary Products and Other Limits}%5/250%{
 %}
