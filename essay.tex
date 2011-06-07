@@ -30,7 +30,7 @@ We formalise the category of sets, the simplest foundationally tricky category, 
 We try to fit naturally into the idiom of the logic while still being able to express some basic but foundationally-challenging categorical results.
 We comment on the limitations of our approach, compare our mechanisation to others, and make brief speculations on what a more satisfying mechanisation of category theory would require and would look like.
 %}
-\section{Higher-Order Logic}%460/250%{
+\section{Higher-Order Logic}%460/300%{
 \newcommand{\bool}{\ensuremath{\mathsf{bool}}}
 Higher-order logic (HOL) is a formal system that has proved popular for formalising purely mathematical results as well as properties of computer hardware and software systems.
 HOL is a natural-deduction calculus with the syntax of the simply typed lambda calculus.
@@ -62,15 +62,47 @@ Standard types defined in HOL include the product type operator, producing a typ
 Generalising sum types, it is possible to define a new type to represent a record given the desired names and types of the record fields.
 New terms can be defined in terms of existing ones, like in a functional programming language.
 %}
-\section{Composable Morphisms and Categories}%4/2000%{
+\section{Composable Morphisms and Categories}%457/1500%{
+Category theory is an abstract theory of functions and composition.
+A category is an arena in which composition takes place, and consists of \emph{morphisms}, abstract functions, \emph{objects}, the possible domains and codomains of the morphisms, and a \emph{composition law}, obeying certain conditions.
+We define a type of morphisms in HOL as a polymorphic record $(\alpha,\beta,\gamma)\;\mathsf{morphism}=\langle\mathrm{dom}:\alpha,\,\mathrm{cod}:\beta,\,\mathrm{map}:\gamma\rangle$.
+We use a polymorphic record for categories as well, abbreviating $(\alpha,\alpha,\beta)\;\mathsf{morphism}$ by $(\alpha,\beta)\;\mathsf{mor}$:
+\begin{align*}
+(\alpha,\beta)\;\mathsf{category}=\langle&\mathrm{obj}:\alpha\;\mathsf{set},\,\mathrm{mor}:(\alpha,\beta)\;\mathsf{mor}\;\mathsf{set},\,\mathrm{id}:\alpha\to\beta,\\&\mathrm{comp}:(\alpha,\beta)\;\mathsf{mor}\to(\alpha,\beta)\;\mathsf{mor}\to\beta\rangle
+\end{align*}
+Thus an $(\alpha,\beta)\;\mathsf{category}$ has objects of type $\alpha$ and morphisms with a map field of type $\beta$.
+<O'Keefe and Katovsky put dom and cod fields in the category; advantages of keeping morphisms separate: composability and composition can be defined generically, functors and nts are instances of morphisms>
+<why id and comp don't return morphisms: because the dom and cod are determined by category axioms, so don't need to clutter the record>
+<an element of category type is not necessarily a category: we impose two conditions, that it satisfies the ``axioms" predicate, and that it is \emph{extensional}, the need for which was noted by Katovsky and is...>
+<in a dependently typed setting, we would not use predicates but rather encode the conditions directly in the type (as in <some related work>)>
+
+<this polymorphic approach, using the $\mathsf{set}$ type operator for a collection, is the natural thing to do in HOL, and was done in both previous work, but is ultimately one source of foundational problems, because there is no type matching $\alpha\;\mathsf{set}$ that could represent all sets, and because the natural product of two categories would have the Cartesian product of the objects from each as its objects, but that precludes forming a category of categories with products since the objects of that would need to have both type $(\alpha,\beta)\;\mathsf{category}\;\mathsf{set}$ and $(\alpha\times\alpha,\beta)\;\mathsf{category}\;\mathsf{set}$, which is impossible, not to mention the fact that even if we didn't want it to have products, using $(\alpha,\beta)\;\mathsf{category}\;\mathsf{set}$ doesn't include categories with different types of objects in the same arena (detailed in the next section!). 
+
+<more details on functors and nts. we follow O'Keefe in omitting the object function from functors, since it can be inferred. However, we did not omit the object field from the category record - nobody has mechanised a theory like that, and I'm not sure how easy it would be to make it usably familiar, but worth experimenting...
+repeat need for extensionality. characterisation of functor equality. functor composition and nt composition. have defined functor categories.
+
+have defined a polymorphic (and hence quite weak) category of categories. the polymorphism means the same definition is used for categories of all different types, which is great, but at the same time precludes wrapping them up in a single totality, and thus we can't get products and other categorical things as mentioned above....
 %}
-\section{A Category of Classes and of Sets}%7/1500%{
+\section{A Category of Classes and of Sets}%239/1500%{
+\newcommand{\Set}{\ensuremath{\mathbf{Set}}}
+The category $\Set$ of sets has sets and objects and (typed) functions as morphisms.
+A natural approach to defining $\Set$ in HOL is as an instance of the $\mathsf{category}$ record where $\mathrm{obj}:\alpha\;\mathsf{set}\;\mathsf{set}$ and the map field of each morphism is a function $\alpha\to\alpha$.
+This approach is the one taken by O'Keefe.
+It captures one important property of the category of sets, namely, that the morphisms are functions under composition.
+However, it does not capture the idea that \emph{every} set should be an object, and therefore fails to have many properties the category of sets ought to have.
+The problem is that $\Set$ is usually formulated in an untyped setting, and when translated to the typed setting it includes functions from sets of elements of one type to those of another.
+For example, there is a function from the set of strings $\{\text{``an''},\text{``object''},\text{``in''},\text{``Set''}\}$ to the set of numbers $\{2,3,6\}$ that returns the length of a string, but in HOL, using idiomatic encodings, the former set would have type $\mathsf{string}\;\mathsf{set}$ while the latter would be a $\mathsf{num}\;\mathsf{set}$, and they cannot both be instances of $\alpha\;\mathsf{set}$ at the same time (since $\mathsf{string}$ and $\mathsf{num}$ are different types).
+Clearly, this is a problem at the level of types, so remains even if we take $\mathrm{obj}$ to be the universal set of type $\alpha\;\mathsf{set}\;\mathsf{set}$.
+
+The solution in Katovksy's development is to define $\Set$ in a completely non-polymorphic way, by taking $\mathrm{obj}:\mathsf{zfset}\;\mathsf{set}$ where $\mathsf{zfset}$ is a new type representing sets in the axiomatic set theory ZFC.
 %}
 \section{Binary Products and Other Limits}%5/250%{
 %}
 \section{The Yoneda Embedding}%3/500%{
 %}
-\section{Conclusions}%1/500%{
+\section{Conclusions}%18/500%{
+<summary of issues facing mechanisations>
+<related work in other systems esp. that can solve major foundational problems>
 %}
 \bibliographystyle{plain}
 \bibliography{essay}
