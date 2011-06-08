@@ -142,7 +142,7 @@ But polymorphism is ultimately one source of foundational problems and because t
 It may be possible to do this kind of general abstract mathematics by working with a non-wellfounded set theory <ref?>.
 The usual solution, however, is to stratify categories into bands of different sizes, and talk just about the category of small categories, which is itself not small.>
 
-<more details on functors and nts. we follow O'Keefe in omitting the object function from functors, since it can be inferred. However, we did not omit the object field from the category record - nobody has mechanised a theory like that, and I'm not sure how easy it would be to make it usably familiar, but worth experimenting...
+<more details on functors and nts. we follow Katovsky in omitting the object function from functors, since it can be inferred. However, we did not omit the object field from the category record - nobody has mechanised a theory like that, and I'm not sure how easy it would be to make it usably familiar, but worth experimenting...
 %For example, we use $(\alpha,\beta,\gamma,\delta)\;\mathsf{functor}$ to abbreviate the type $((\alpha,\beta)\;\mathsf{category},(\gamma,\delta)\;\mathsf{category},(\alpha,\beta)\;\mathsf{mor}\to(\gamma,\delta)\;\mathsf{mor})$ whose instances we intend to be functors from an $(\alpha,\beta)\;\mathsf{category}$ to a $(\gamma,\delta)\;\mathsf{category}$
 repeat need for extensionality. characterisation of functor equality. functor composition and nt composition. have defined functor categories.
 %}
@@ -153,10 +153,16 @@ A natural approach to defining $\Set$ in HOL is as an instance of the $\mathsf{c
 This approach is the one taken by O'Keefe.
 It captures one important property of the category of sets, namely, that the morphisms are functions under composition.
 However, it does not capture the idea that \emph{every} set should be an object, and therefore fails to have many properties the category of sets ought to have.
+
 The problem is that $\Set$ is usually formulated in an untyped setting, and when translated to the typed setting it includes functions from sets of elements of one type to those of another.
 For example, there is a function from the set of strings $\{\text{``an''},\text{``object''},\text{``in''},\text{``Set''}\}$ to the set of numbers $\{2,3,6\}$ that returns the length of a string, but in HOL, using idiomatic encodings, the former set would have type $\mathsf{string}\;\mathsf{set}$ while the latter would be a $\mathsf{num}\;\mathsf{set}$, and they cannot both be instances of $\alpha\;\mathsf{set}$ at the same time (since $\mathsf{string}$ and $\mathsf{num}$ are different types).
 Clearly, this is a problem at the level of types, so remains even if we take $\mathtt{obj}$ to be the universal set of type $\alpha\;\mathsf{set}\;\mathsf{set}$.
 <, because there is no type matching $\alpha\;\mathsf{set}$ that could represent all sets,>
+
+<The first, and main, problem arises when we consider the relationship between the collection $mor$ of morphisms in a category, and the notion of a set in whatever framework we are using.
+If $mor$ is a set, then there is no category whose morphisms are all the functions between sets, since no set can contain all functions <ref>.
+But we would like to talk about the category of sets, which would have this collection of morphisms.
+If we avoid $mor$ and define categories in terms of homs instead, a similar problem comes up when considering, for example, the category of presheaves over the category of sets <really?>.>
 
 The solution in Katovksy's development is to define $\Set$ in a completely non-polymorphic way, by taking $\mathtt{obj}:\mathsf{zfset}\;\mathsf{set}$ where $\mathsf{zfset}$ is a new type representing sets in the axiomatic set theory ZFC <ref>.
 Contrary to the way types are usually introduced in HOL, that is, by definition, the type $\mathsf{zfset}$ is created as a new primitive type (extending the logic) and its properties are asserted as new axioms of HOL.
@@ -164,18 +170,49 @@ The new axioms are (higher-order versions of) the axioms of ZFC.
 The effect on the semantics is that types must be interpreted as classes (that is, possibly larger than sets), and the universe of HOL types becomes correspondingly larger, since any existing polymorphic type might be instantiated with $\mathsf{zfset}$.
 This method of accessing set theory directly within the HOL logic was introduced by Mike Gordon \cite{DBLP:conf/tphol/Gordon96} (and independently by Bob Solovay, who gave a proof of consistency) and is implemented in both HOL4 and Isabelle \cite{DBLP:conf/ictac/Obua06}.
 
-<The first, and main, problem arises when we consider the relationship between the collection $mor$ of morphisms in a category, and the notion of a set in whatever framework we are using.
-If $mor$ is a set, then there is no category whose morphisms are all the functions between sets, since no set can contain all functions <ref>.
-But we would like to talk about the category of sets, which would have this collection of morphisms.
-If we avoid $mor$ and define categories in terms of homs instead, a similar problem comes up when considering, for example, the category of presheaves over the category of sets <really?>.>
-
 <isomorphism between set cat and ens cat at a specific type>
 
 <definition of IsSmall, the zfrep, and rep functor, for other types>
 %}
 \section{Binary Products and Other Limits}%5/250%{
+Like many constructions in category theory (and in abstract mathematics generally), \emph{limits} can be presented in different, equivalent ways, at different levels of generality.
+Examples of limits include products, which generalise Cartesian products of sets, and <..>.
+<universal properties?>
+<one fully general definition gives a limit as a universal cone, and one presentation of cones give them as objects in a certain comma category>
+<we have defined comma categories and used them to define cones and limits>
+<we have also instantiated this general definition to define binary products as <...> and then proved that they are characterised by their less abstract and possibly more familiar <....>>
+
+<set cat has binary products. this is the first mechanisation of limits in HOL (but certainly not at all - refs) and reassuring for the HOLZF approach. the point of set cat is that it may be impossible to prove arbitrary ens cats have limits>
+
+<a few words about the difficulties facing an attempt to work on exponential objects and adjunctions>
+<namely: many equivalent formulations, but most of them would involve constructions that we can't make to be fully general>
 %}
 \section{The Yoneda Embedding}%3/500%{
+\newcommand{\C}{\ensuremath{\mathbb{C}}}
+\newcommand{\op}{\ensuremath{\sp{\mathrm{op}}}}
+\newcommand{\blank}{\rule[0.5ex]{0.6em}{.4pt}}
+<
+The Yoneda embedding provides a representation of a category $\C$ in the category of presheaves $\widehat\C$.
+A \emph{presheaf} is a functor from $\C\op$ to the category of sets.
+Thus $\widehat\C$ is a functor category.
+An embedding is a functor that is \emph{full} and \emph{faithful}, which means each map, induced by the functor, on morphisms of a fixed type is surjective and injective, respectively.
+The importance of the Yoneda embedding comes from the fact that $\widehat{\C}$ inherits much structure from the category of sets (for example, the existence of small limits and colimits) so can be used when $\C$ itself lacks this structure.
+The Yoneda lemma, used to prove that the Yoneda embedding is an embedding, is an important basic milestone in any development about the category of sets, and was one of the main results in both the HOL mechanisations we consider.
+
+The Yoneda embedding sends an object $x$ in $\C$ to the \emph{contravariant hom functor} $\C(\blank,x)$, which in turn sends an object $y$ in $\C$ to the \emph{hom} $\C(y,x)=\{f:y\to x\text{ in $\C$}\}$.
+In order for $\C(\blank,x)$ to be a set-valued presheaf, however, every hom $\C(y,x)$ must be a set.
+A hom can fail to be a set if it is too large.
+A category where every hom is a set is called \emph{locally small}, and it is only for locally small categories that the Yoneda embedding can be defined.
+However the proof of the Yoneda lemma never mentions smallness explicitly, and the argument still goes through when we generalize from the category of sets to an arbitrary category whose objects are appropriately set-like and include the homs of $\C$.
+>
+
+<note O'Keefe does not prove the embedding is one, just proves the lemma (that the bijection exists)>
+
+<statement for ens cat. proof basically as in Katovsky, but made simpler by avoiding representations>
+
+<basically reuse the proof for set cat, to get zYfunctor, along with some theorems about embeddings being preserved etc.>
+
+<discuss the difficulty with injectivity on objects and the tagging solution>
 %}
 \section{Conclusions}%18/500%{
 <summary of issues facing mechanisations>
