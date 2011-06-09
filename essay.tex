@@ -16,7 +16,7 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 \noindent Date
 
 \vspace{2em}
-\noindent Words: 3177
+\noindent Words: 3668
 %}
 \begin{abstract}%{
 The foundational difficulties presented by category theory make it difficult to formalise.
@@ -76,7 +76,7 @@ Standard types defined in HOL include the type $\mathsf{unit}$ with a single ele
 Generalising sum types, it is possible to define a new type to represent a record given the desired names and types of the record fields.
 New terms can be defined in terms of existing ones, like in a functional programming language.
 %}
-\section{Composable Morphisms and Categories}%1214/1400%{
+\section{Composable Morphisms and Categories}%1273/1400%{
 Category theory is an abstract theory of functions and composition.
 A category is an arena in which composition takes place, and consists of \emph{morphisms}, abstract functions, \emph{objects}, the possible domains and codomains of the morphisms, and a \emph{composition law}, obeying certain conditions.
 We define a type of morphisms in HOL as a polymorphic record $(\alpha,\beta,\gamma)\;\mathsf{morphism}=\langle\mathtt{dom}:\alpha,\,\mathtt{cod}:\beta,\,\mathtt{map}:\gamma\rangle$.
@@ -109,7 +109,8 @@ For example, we use $(\alpha,\beta,\gamma,\delta)\;\mathsf{functor}$ to abbrevia
 The $\mathtt{map}$ field of a functor gives its action on morphisms; following Katovsky we omit the action on objects from the record, since it can be defined (using Hilbert choice) in terms of the action on identity morphisms.
 Instances of the $\mathsf{morphism}$ record are not immediately attached to a category, but it could be argued that all composable morphisms occur in some category.
 For example, functors are the morphisms in a category of categories.
-However, this notion is problematic for several reasons, one of which is the fact that objects in our categories must all have the same type, but we make use of functors between categories of different types.
+However, this notion is problematic for several reasons, one of which is that objects in our categories must all have the same type, but we make use of functors between categories of different types.
+Indeed, the separation of elements into different types in the semantics of HOL, which is a feature common to all type theories, presents difficulties whenever we want to collect elements across types into a totality.
 
 Categories are abstract structures--many different things can play the roles of objects and morphisms--so it is natural to use a polymorphic type to model categories in HOL.
 The polymorphism enables the same definition of $\mathtt{id\_in}$, for example, to be used for categories with all different types.
@@ -122,6 +123,7 @@ This stratification can be achieved, to some extent, by \emph{universe polymorph
 When we define the product of an $(\alpha,\beta)\;\mathsf{category}$ and a $(\gamma,\delta)\;\mathsf{category}$, however, it has type $(\alpha\times\gamma,\beta\times\delta)\;\mathsf{category}$.
 Terms with these types could not all be objects of a $(\tau_1,\tau_2)\;\mathsf{category}$ for any (fixed) types $\tau_1$ and $\tau_2$.
 
+Having looked at some of the problems due to the type system and our use of a polymorphic record, we return to describing our development.
 An element of the $\mathsf{category}$ type is not necessarily a category.
 We define a predicate $\mathtt{category\_axioms}:(\alpha,\beta)\;\mathsf{category}\to\mathsf{bool}$ that checks whether a record satisfies the conditions required of a category (composition is associative, every composable pair has a composite, and so on), and include a hypothesis that the predicate is true in our theorems about categories.
 We can prove, for example, $\vdash\forall{c}.\;\mathtt{category\_axioms}\;c\implies\mathtt{category\_axioms}\;(\mathtt{op\_cat}\;c)$.
@@ -136,16 +138,17 @@ As we will see, it is important to respect extensionality whenever possible; thu
 We define $\mathtt{is\_category}\;c=\mathtt{category\_axioms}\;c\land\mathtt{extensional\_category}\;c$, where the second conjunct ensures $c.\mathtt{id}$ and $c.\mathtt{comp}$ are extensional.
 In a dependently typed setting, both the category axioms and extensionality can be encoded directly in the definition of the $\mathsf{category}$ type (as done in~\cite{DBLP:conf/birthday/HuetS00,Sozeau,Megacz} for example).
 
-Extensionality for functors enables us to characterise equality of functors as follows
+Extensionality enables us to characterise equality between natural transformations as follows
 \begin{align*}
-\vdash\forall{f,g}.\;&\mathtt{is\_functor}\;f\land\mathtt{is\_functor}\;g\land(f.\mathtt{dom} = g.\mathtt{dom})\land(f.\mathtt{cod} = g.\mathtt{cod})\land{}\\
-&(\forall{h}.\;h\in f.\mathtt{dom}.\mathtt{mor}\implies(f.\mathtt{map}\;h= g.\mathtt{map}\;h))\implies (f = g)
+\vdash\forall{\eta,\mu}.\;&\mathtt{is\_nt}\;\eta\land\mathtt{is\_nt}\;\mu\land(\eta.\mathtt{dom} = \mu.\mathtt{dom})\land(\eta.\mathtt{cod} = \mu.\mathtt{cod})\land{}\\
+&(\forall{x}.\;x\in \eta.\mathtt{dom}.\mathtt{dom}.\mathtt{obj}\implies(\eta.\mathtt{map}\;x= \mu.\mathtt{map}\;x))\implies (\eta = \mu)
 \end{align*}
-For any category we can define an identity functor that acts on morphisms (and on objects) like the identity function.
-Our theorem about functor equality is used to prove, for example, 
-\[\vdash\forall{f,c}.\;\mathtt{is\_functor}\;f\land(c = f.\mathtt{dom})\implies(f \circ\mathtt{id\_functor}\;c = f)\]
-because our definition of functor composition (the $\circ$ operator above) produces an extensional functor, so comparison with $f$ depends only on categorical properties.
-We have defined, for any two categories, the category of functors between them with natural transformations as morphisms.
+(and similarly for categories and functors).
+Given a functor $F$, we can define an identity natural transformation whose component at $x$ is the identity morphism for $F$'s action on $x$.
+Our theorem about natural transformation equality is used to prove, for example, 
+\[\vdash\forall{\eta}.\;\mathtt{is\_nt}\;\eta\implies(\eta\circ\mathtt{id\_nt}\;\eta.\mathtt{dom} = \eta)\]
+because our definition of natural transformation composition (the $\circ$ operator above) produces an extensional natural transformation, so comparison with $\eta$ depends only on categorical properties.
+We have defined, for any two categories, the category of functors between them with natural transformations as morphisms, where $\mathtt{id\_nt}$ provides identity morphisms.
 %mention postcomp_functor as an example of something proved using functor categories?
 
 An alternative approach to categories gives a set of morphisms, called a \emph{hom}, for each type (pair of objects) rather than giving all the morphisms at once.
@@ -157,33 +160,49 @@ We will return to this point in Section~\ref{Yoneda} when describing locally sma
 Another choice in how to formalise categories is whether to include objects at all: we might avoid the need for an $\mathtt{obj}$ field by identifying objects with identity morphisms, as explained in pages 41--43 of \cite{DBLP:books/daglib/0023249}.
 We have not seen this idea mechanised before; it would be interesting to see the ramifications of doing so on a development.
 %}
-\section{A Category of Classes and of Sets}%483/1400%{
+\section{A Category of Classes and of Sets}%874/1400%{
 \label{Set}
 \newcommand{\Set}{\ensuremath{\mathbf{Set}}}
 The category $\Set$ of sets has sets and objects and (typed) functions as morphisms.
 A natural approach to defining $\Set$ in HOL is as an instance of the $\mathsf{category}$ record where $\mathtt{obj}:\alpha\;\mathsf{set}\;\mathsf{set}$ and the map field of each morphism is a function $\alpha\to\alpha$.
-This approach is the one taken by O'Keefe.
-It captures one important property of the category of sets, namely, that the morphisms are functions under composition.
-However, it does not capture the idea that \emph{every} set should be an object, and therefore fails to have many properties the category of sets ought to have.
+This approach is the one taken by O'Keefe, which we follow by defining a category of ``sets within a universe'', $\mathtt{ens\_cat}\;u$, whose set of objects is $u:\alpha\;\mathsf{set}\;\mathsf{set}$ and whose morphisms are of the form $f:(\alpha\;\mathsf{set},\alpha\to\alpha)\;\mathsf{mor}$ such that $x\in f.\mathtt{dom}\implies f.\mathtt{map}\;x\in f.\mathtt{cod}$ (and $f.\mathtt{map}$ is extensional on $f.\mathtt{dom}$).
+The $\mathtt{ens\_cat}\;u$ category captures one important property of the category of sets, namely, that the morphisms are functions under composition.
+It has precedent in Mac Lane's textbook on category theory~\cite{MacLaneCFTWM}, which defines $\mathbf{Ens}_u$ as above for the purpose of generalising arguments in $\Set$ to larger collections $u$ than that of all sets.
+However, in our polymorphic setting, $\mathtt{ens\_cat}$ does not capture the idea that \emph{every} set should be an object, and therefore fails to have many properties the category of sets ought to have.
 
 The problem is that $\Set$ is usually formulated in an untyped setting, and when translated to the typed setting it includes functions from sets of elements of one type to those of another.
 For example, there is a function from the set of strings $\{\text{``an''},\text{``object''},\text{``in''},\text{``Set''}\}$ to the set of numbers $\{2,3,6\}$ that returns the length of a string, but in HOL, using idiomatic encodings, the former set would have type $\mathsf{string}\;\mathsf{set}$ while the latter would be a $\mathsf{num}\;\mathsf{set}$, and they cannot both be instances of $\alpha\;\mathsf{set}$ at the same time (since $\mathsf{string}$ and $\mathsf{num}$ are different types).
-Clearly, this is a problem at the level of types, so remains even if we take $\mathtt{obj}$ to be the universal set (i.e., constantly true predicate) of type $\alpha\;\mathsf{set}\;\mathsf{set}$.
+Clearly, this is a problem at the level of types, so remains even if we take $u$ to be the universal set (i.e., constantly true predicate) of type $\alpha\;\mathsf{set}\;\mathsf{set}$.
 
 More generally, consider the relationship in any formalisation between the collection of morphisms $c.\mathtt{mor}$ in a category and the notion of a set.
-If $c.\mathtt{mor}$ is itself a set, then there is no category whose morphisms are all the functions between sets, since no set can contain all functions <ref>, so $\Set$ cannot be formalised.
-If we define categories in terms of homs instead, a similar problem comes up when considering, for example, the category of presheaves over the category of sets <really?>.
+If $c.\mathtt{mor}$ is itself a set, then there is no category whose morphisms are all the functions between sets, since no set can contain all functions <ref: Cantor?>, so $\Set$ cannot be formalised.
+(If we define categories in terms of homs instead, a similar problem comes up when considering, for example, the category of functors from $\Set$ to itself <really?>.)
 So if we want $\Set$ we must arrange for $c.\mathtt{mor}$ to be a \emph{class}: some kind of collection that can be larger than a set.
 
-The solution in Katovksy's development is to define $\Set$ in a completely non-polymorphic way, by taking $\mathtt{obj}:\mathsf{zfset}\;\mathsf{set}$ where $\mathsf{zfset}$ is a new type representing sets in the axiomatic set theory ZFC <ref>.
+We can introduce classes into HOL by means of a new type, $\mathsf{zfset}$, representing sets in an axiomatic set theory such as ZFC.
 Contrary to the way types are usually introduced in HOL, that is, by definition, the type $\mathsf{zfset}$ is created as a new primitive type (extending the logic) and its properties are asserted as new axioms of HOL.
 The new axioms are (higher-order versions of) the axioms of ZFC.
-The effect on the semantics is that types must be interpreted as classes (that is, possibly larger than sets), and the universe of HOL types becomes correspondingly larger, since any existing polymorphic type might be instantiated with $\mathsf{zfset}$.
-This method of accessing set theory directly within the HOL logic was introduced by Mike Gordon \cite{DBLP:conf/tphol/Gordon96} (and independently by Bob Solovay, see~\cite{DBLP:conf/ictac/Obua06}) and is implemented in both HOL4 and Isabelle~\cite{DBLP:conf/ictac/Obua06}.
+We also define new terms for ZFC set membership ($\mathtt{in}:\mathsf{zfset}\to\mathsf{zfset}\to\mathsf{bool}$), set union, functions as graphs, and so on.
+The effect on the semantics is that types must be interpreted as classes because any existing polymorphic type might be instantiated with $\mathsf{zfset}$; the constantly true predicate of type $\mathsf{zfset}\;\mathsf{set}$ now represents the class of all ZFC sets.
+This method of accessing set theory within the HOL logic was introduced by Mike Gordon \cite{DBLP:conf/tphol/Gordon96} (and independently by Bob Solovay, see~\cite{DBLP:conf/ictac/Obua06}) and is implemented in both HOL4 and Isabelle~\cite{DBLP:conf/ictac/Obua06}.
+We use it, following Katovksy, to define a non-polymorphic category of sets with $\mathtt{set\_cat}.\mathtt{obj}:\mathsf{zfset}\;\mathsf{set}$ and $\mathtt{set\_cat}.\mathtt{mor}:\mathsf{zfset}\;\mathsf{set}$ also, since functions between ZFC sets can be encoded as ZFC sets.
 
-<isomorphism between set cat and ens cat at a specific type>
+It would be reasonable to formalise all categories non-polymorphically, using sets and classes, so our record would have an $\mathtt{obj}$ field of type $\mathtt{zfset}\;\mathtt{set}$ (although it might be better to use $\mathtt{obj}:\alpha$ and a convention to only intanstiate $\alpha$ by $\mathsf{zfset}\;\mathsf{set}$ or $\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}$ and so on, to allow arbitrarily large categories).
+This approach matches a mathematical view of categories based on set theory extnded with proper classes (as in~\cite{MacLaneCFTWM} for example) if we take $\mathtt{zfset}$ seriously as our representation of sets.
+However, in HOL we have a competing representation of sets, namely the HOL types.
+If we formalise categories purely in terms of $\mathsf{zfset}$, then our categories remain disconnected from any other theories we have formalised in HOL using types such as $\mathsf{num}$ and $\mathsf{string}$.
+It is for this reason we consider the polymorphic approach to be idiomatic.
 
+Nevertheless, we need to use the ``untyped'' $\mathtt{set\_cat}$ if we want to formalise the many properties of $\Set$ that are lost on $\mathtt{ens\_cat}$.
+The reason much mathematics is encoded in set theory in the first place is that the universe of sets supports the encoding of almost all mathematical objects.
+We can tap into this idea by treating a HOL set (of type $\alpha\;\mathsf{set}$ for some type $\alpha$) as a ZFC set, in particular by finding a representative element of type $\mathsf{zfset}$ to which the HOL set corresponds.
+Since HOL types now represent (possibly large) classes, we can only hope to encode small HOL sets.
+Following ideas from Katovksy, we can use an injection into the elements
 <definition of IsSmall, the zfrep, and rep functor, for other types>
+
+Working with $\mathtt{ens\_cat}$ in HOL is easier than with $\mathtt{set\_cat}$, because the morphisms are based on HOL functions directly rather than encodings of ZFC functions as ZFC sets.
+We would expect $\mathtt{ens\_cat}$ to be more general than $\mathtt{set\_cat}$, since it is parameterised over an arbitrary universe of sets, and happily we can prove that $\mathtt{set\_cat}$ is isomorphic as a category to $\mathtt{ens\_cat}\;\{s:\mathsf{zfset}\;\mathsf{set}\mid\mathtt{is\_small}\;s\}$.
+<isomorphism between set cat and ens cat at a specific type>
 %}
 \section{Binary Products and Other Limits}%187/250%{
 \label{limits}
