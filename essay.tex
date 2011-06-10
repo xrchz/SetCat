@@ -16,7 +16,7 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 \noindent Date
 
 \vspace{2em}
-\noindent Words: 3668
+\noindent Words: 3922
 %}
 \begin{abstract}%{
 The foundational difficulties presented by category theory make it difficult to formalise.
@@ -24,7 +24,7 @@ Nevertheless, it is possible to formalise category theory in higher-order logic,
 It is not obvious that this approach can be pushed very far.
 A more satisfying formalisation of category theory will require a new way to resolve the foundational issues, a different logic, or a new approach to formalisation.
 \end{abstract}%}
-\section{Introduction}%295/300%{
+\section{Introduction}%317/300%{
 Category theory provides a framework for studying various notions common to diverse areas of mathematics.
 It has applications in computer science ranging from the semantics of programming languages and formal systems (e.g., \cite{CroleCT,JacobsCLTT}) to models of concurrency~\cite{DBLP:conf/csl/CattaniW96}.
 Since its inception, category theory has challenged the traditional foundations of mathematics, namely in set theory, by dealing with collections that are too large to be sets. 
@@ -42,6 +42,8 @@ However, it can be extended with extra axioms asserting the existence of large c
 We formalise the category of sets, the simplest foundationally tricky category, in higher-order logic so extended.
 We try to fit naturally into the idiom of the logic while still being able to express some basic but foundationally-challenging categorical results.
 We comment on the limitations of our approach, compare our mechanisation to others, and make brief speculations on what a more satisfying mechanisation of category theory would require and would look like.
+
+<Provide an overview of the structure of the essay. Or else make the structure much more navigable from the section headings alone.>
 %}
 \section{Higher-Order Logic}%505/400%{
 \newcommand{\bool}{\ensuremath{\mathsf{bool}}}
@@ -76,7 +78,7 @@ Standard types defined in HOL include the type $\mathsf{unit}$ with a single ele
 Generalising sum types, it is possible to define a new type to represent a record given the desired names and types of the record fields.
 New terms can be defined in terms of existing ones, like in a functional programming language.
 %}
-\section{Composable Morphisms and Categories}%1273/1400%{
+\section{Composable Morphisms and Categories}%1364/1400%{
 Category theory is an abstract theory of functions and composition.
 A category is an arena in which composition takes place, and consists of \emph{morphisms}, abstract functions, \emph{objects}, the possible domains and codomains of the morphisms, and a \emph{composition law}, obeying certain conditions.
 We define a type of morphisms in HOL as a polymorphic record $(\alpha,\beta,\gamma)\;\mathsf{morphism}=\langle\mathtt{dom}:\alpha,\,\mathtt{cod}:\beta,\,\mathtt{map}:\gamma\rangle$.
@@ -123,6 +125,8 @@ This stratification can be achieved, to some extent, by \emph{universe polymorph
 When we define the product of an $(\alpha,\beta)\;\mathsf{category}$ and a $(\gamma,\delta)\;\mathsf{category}$, however, it has type $(\alpha\times\gamma,\beta\times\delta)\;\mathsf{category}$.
 Terms with these types could not all be objects of a $(\tau_1,\tau_2)\;\mathsf{category}$ for any (fixed) types $\tau_1$ and $\tau_2$.
 
+<definition of isomorphisms within a category. separate definition of isomorphism of categories because of the type problems involved with creating a category of category, but we will still need to talk about functors that are isomorphisms. have to repeat theorems for both notions (like that they are symmetric). mention possible generalised approach where the predicate for being an isomorphism takes, rather than a category, a bunch of notions of composition and identity, which can either be specialised to a category or to stuff that should be in a category but isn't.>
+
 Having looked at some of the problems due to the type system and our use of a polymorphic record, we return to describing our development.
 An element of the $\mathsf{category}$ type is not necessarily a category.
 We define a predicate $\mathtt{category\_axioms}:(\alpha,\beta)\;\mathsf{category}\to\mathsf{bool}$ that checks whether a record satisfies the conditions required of a category (composition is associative, every composable pair has a composite, and so on), and include a hypothesis that the predicate is true in our theorems about categories.
@@ -160,7 +164,7 @@ We will return to this point in Section~\ref{Yoneda} when describing locally sma
 Another choice in how to formalise categories is whether to include objects at all: we might avoid the need for an $\mathtt{obj}$ field by identifying objects with identity morphisms, as explained in pages 41--43 of \cite{DBLP:books/daglib/0023249}.
 We have not seen this idea mechanised before; it would be interesting to see the ramifications of doing so on a development.
 %}
-\section{A Category of Classes and of Sets}%874/1400%{
+\section{A Category of Classes and of Sets}%1003/1400%{
 \label{Set}
 \newcommand{\Set}{\ensuremath{\mathbf{Set}}}
 The category $\Set$ of sets has sets and objects and (typed) functions as morphisms.
@@ -197,12 +201,16 @@ Nevertheless, we need to use the ``untyped'' $\mathtt{set\_cat}$ if we want to f
 The reason much mathematics is encoded in set theory in the first place is that the universe of sets supports the encoding of almost all mathematical objects.
 We can tap into this idea by treating a HOL set (of type $\alpha\;\mathsf{set}$ for some type $\alpha$) as a ZFC set, in particular by finding a representative element of type $\mathsf{zfset}$ to which the HOL set corresponds.
 Since HOL types now represent (possibly large) classes, we can only hope to encode small HOL sets.
-Following ideas from Katovksy, we can use an injection into the elements
-<definition of IsSmall, the zfrep, and rep functor, for other types>
+Following ideas from Katovksy, we define a predicate $\mathtt{is\_small}:\alpha\;\mathsf{set}\to\mathsf{bool}$ by $\mathtt{is\_small}\;s=\exists{f,z}.\;\mathtt{INJ}\;f\;s\;\{x\mid x\operatorname{\mathtt{In}} z\}$, that is, a HOL set $s$ is small if there is an injection from $s$ to the (HOL) set of elements of some ZFC set.
 
 Working with $\mathtt{ens\_cat}$ in HOL is easier than with $\mathtt{set\_cat}$, because the morphisms are based on HOL functions directly rather than encodings of ZFC functions as ZFC sets.
-We would expect $\mathtt{ens\_cat}$ to be more general than $\mathtt{set\_cat}$, since it is parameterised over an arbitrary universe of sets, and happily we can prove that $\mathtt{set\_cat}$ is isomorphic as a category to $\mathtt{ens\_cat}\;\{s:\mathsf{zfset}\;\mathsf{set}\mid\mathtt{is\_small}\;s\}$.
-<isomorphism between set cat and ens cat at a specific type>
+We would expect $\mathtt{ens\_cat}$ to be more general than $\mathtt{set\_cat}$, since it is parameterised over an arbitrary universe of sets, and happily we can prove that $\mathtt{set\_cat}$ is isomorphic as a category to the $\mathtt{ens\_cat}$ of small sets of ZFC sets.
+Specifically, we have proved $\vdash\mathtt{cat\_iso}\;\mathtt{set\_to\_ens}$ alongside $\vdash\mathtt{is\_functor}\;\mathtt{set\_to\_ens}$, $\vdash\mathtt{set\_to\_ens}.\mathtt{dom}=\mathtt{set\_cat}$, and $\vdash\mathtt{set\_to\_ens}.\mathtt{cod}=\{s:\mathsf{zfset}\;\mathsf{set}\mid\mathtt{is\_small}\;s\}$.
+For the proof, we use the theorem that an isomorphism of categories is the same as a bijection between the classes of objects and between each hom, and the facts that ZFC sets are determined by their members, and explicitly typed ZFC functions correspond to explicitly typed HOL functions (between ZFC sets) by their action under ZFC function application.
+We define $\mathtt{ens\_to\_set}$ (using Hilbert choice) as the inverse functor.
+This isomorphism provides the initial link between small HOL sets and ZFC sets, but it is useless for arbitrary small HOL sets since the $\mathtt{ens\_cat}$ involved is over a universe of small HOL sets of ZFC sets, that is, of type $\mathsf{zfset}\;\mathsf{set}$ rather than $\alpha\;\mathsf{set}$.
+
+<the zfrep, and rep functor, for other types>
 %}
 \section{Binary Products and Other Limits}%187/250%{
 \label{limits}
