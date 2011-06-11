@@ -45,7 +45,7 @@ We comment on the limitations of our approach, compare our mechanisation to othe
 
 <Provide an overview of the structure of the essay. Or else make the structure much more navigable from the section headings alone.>
 %}
-\section{Higher-Order Logic}%505/400%{
+\section{Higher-Order Logic}%505/500%{
 \newcommand{\bool}{\ensuremath{\mathsf{bool}}}
 Higher-order logic (HOL) is a formal system that has proved popular for formalising purely mathematical results as well as properties of computer hardware and software systems.
 HOL is a natural-deduction calculus with the syntax of the simply typed lambda calculus.
@@ -74,7 +74,7 @@ Typically, one also uses derived rules of inference that abbreviate applications
 HOL provides principles for defining new types and new (term) constants.
 The primitive types include function types ($\alpha\to\beta$ with arguments $\alpha$ and $\beta$) and Booleans ($\bool$).
 A new type can be defined after proving that a certain predicate on an existing type is non-empty.
-Standard types defined in HOL include the type $\mathsf{unit}$ with a single element $()$, the product type operator, producing a type $\alpha\times\beta$ from arguments $\alpha$ and $\beta$, and (its dual) the sum type operator $\alpha+\beta$.
+Standard types defined in HOL include the type $\mathsf{unit}$ with a single element $()$, <option type?>, the product type operator, producing a type $\alpha\times\beta$ from arguments $\alpha$ and $\beta$, and (its dual) the sum type operator $\alpha+\beta$.
 Generalising sum types, it is possible to define a new type to represent a record given the desired names and types of the record fields.
 New terms can be defined in terms of existing ones, like in a functional programming language.
 %}
@@ -226,11 +226,26 @@ Using this bijection and its inverse, we can also define constant $\mathtt{zfel}
 &\vdash\forall{s,z}.\;\mathtt{is\_small}\;s\land z \operatorname{\mathtt{in}} \mathtt{zfrep}\;s\implies\mathtt{zfel}\;s\;(\mathtt{elzf}\;s\;z) = z
 \end{align*}
 
-<rep functor, rep functor embedding>
+Having fixed representative ZFC sets, we can define a functor, $\mathtt{rep\_functor}\;u$, where $u:\alpha\;\mathsf{set}\;\mathsf{set}$ satisfies $\forall{s}.\;s\in u\implies\mathtt{is\_small}\;s$, from $\mathtt{ens\_cat}\;u$ to $\mathtt{ens\_cat}\;\{(s:\mathsf{zfset}\;\mathsf{set})\mid\mathtt{is\_small}\;s\}$.
+The action of $\mathtt{rep\_functor}\;u$ on morphisms is given by
+\begin{align*}
+f\mapsto\langle&\mathtt{dom}=\{z\mid z\operatorname{\mathtt{in}}\mathtt{zfrep}\;f.\mathtt{dom}\},\,\mathtt{cod}=\{z\mid z\operatorname{\mathtt{in}}\mathtt{zfrep}\;f.\mathtt{cod}\},\\
+&\mathtt{map}=\lambda{z}.\;\mathtt{zfel}\;f.\mathtt{cod}\;(f.\mathtt{map}\;(\mathtt{elzf}\;f.\mathtt{dom}\;z)\rangle
+\end{align*}
+Thus, the action on objects is to send a set $s$ (in $u$) to the class of ZFC sets that are members of the chosen representation of $s$ as a ZFC set.
+This kind of translation back and forth between ZFC sets, classes of their elements, and the HOL sets they might represent is more pervasive in Katovksy's formalisation of $\Set$; we try to contain it all in $\mathtt{rep\_functor}\;u$ so the rest of the development is less cluttered. 
 
-<Katovsky, in the context of the Yoneda embedding, attaches an injective function to each locally small category that picks a ZFC set for each morphism in the category.
-The set representing a hom is then given by collecting these sets-representing-morphisms up into a single ZFC set; the fact that there is a ZFC set containing them is what it means for homs to be small.
-This approach is problematic for at least two reasons: firstly, locally small categories are not extensional, because the same category equipped with two different representations of its morphisms would be different records in HOL; secondly, it is unnatural to invent a representation of morphisms as sets in order to prove that a category is locally small.>
+The most important property of $\mathtt{rep\_functor}\;u$ is that it is an \emph{embedding}.
+In general, a functor is an embedding if it is \emph{full} and \emph{faithful}.
+Both notions refer to the action on morphisms considered as from a hom in one category to a hom in the other: full means surjective on homs and faithful means injective on homs.
+An embedding is \emph{essentially injective on objects}, that is, if an embedding sends two objects in the source category to the same object in the target category, then those two objects are isomorphic in the source category.
+We have proved that embeddings are essentially injective, and that $\mathtt{rep\_functor}\;u$ is an embedding in HOL4.
+
+We cannot prove, however, that $\mathtt{rep\_functor}\;u$ is literally injective on objects (if two objects are mapped to the same place they are equal).
+To do so would be to conclude that two small HOL sets $s_1$ and $s_2$ are equal just because $\mathtt{zfrep}\;s_1=\mathtt{zfrep}\;s_2$.
+But our definition of $\mathtt{zfrep}$ does not ensure injectivity: there is no reason Hilbert choice cannot pick the same ZFC set to represent two small HOL sets of the same cardinality.
+Indeed by considering $s_1,s_2\in u$ where $u$ is a proper class larger than the collection of all ZFC sets, which is possible when $u:\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}\;\mathsf{set}$, for example, we see that $\mathtt{zfrep}$ could not be injective.
+It is unfortunate, but not important for our later results, that we cannot ensure literal injectivity of $\mathtt{rep\_functor}\;u$ when $u$ is small.
 %}
 \section{Binary Products and Other Limits}%187/250%{
 \label{limits}
@@ -270,11 +285,15 @@ However the proof of the Yoneda lemma never mentions smallness explicitly, and t
 
 <statement for ens cat. proof basically as in Katovsky, but made simpler by avoiding representations>
 
+<Katovsky, in the context of the Yoneda embedding, attaches an injective function to each locally small category that picks a ZFC set for each morphism in the category.
+The set representing a hom is then given by collecting these sets-representing-morphisms up into a single ZFC set; the fact that there is a ZFC set containing them is what it means for homs to be small.
+This approach is problematic for at least two reasons: firstly, locally small categories are not extensional, because the same category equipped with two different representations of its morphisms would be different records in HOL; secondly, it is unnatural to invent a representation of morphisms as sets in order to prove that a category is locally small.>
+
 <basically reuse the proof for set cat, to get zYfunctor, along with some theorems about embeddings being preserved etc.>
 
 <discuss the difficulty with injectivity on objects and the tagging solution>
 %}
-\section{Conclusions}%38/500%{
+\section{Conclusions}%38/400%{
 <summary of issues facing mechanisations>
 <related work in other systems esp. that can solve major foundational problems>
 <It may be possible to do this kind of general abstract mathematics by working with a non-wellfounded set theory <ref?>.
