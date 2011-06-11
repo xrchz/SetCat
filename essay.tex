@@ -16,7 +16,7 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 \noindent Date
 
 \vspace{2em}
-\noindent Words: 3922
+\noindent Words: 4768
 %}
 \begin{abstract}%{
 The foundational difficulties presented by category theory make it difficult to formalise.
@@ -45,7 +45,7 @@ We comment on the limitations of our approach, compare our mechanisation to othe
 
 <Provide an overview of the structure of the essay. Or else make the structure much more navigable from the section headings alone.>
 %}
-\section{Higher-Order Logic}%505/500%{
+\section{Higher-Order Logic}%507/500%{
 \newcommand{\bool}{\ensuremath{\mathsf{bool}}}
 Higher-order logic (HOL) is a formal system that has proved popular for formalising purely mathematical results as well as properties of computer hardware and software systems.
 HOL is a natural-deduction calculus with the syntax of the simply typed lambda calculus.
@@ -164,7 +164,7 @@ We will return to this point in Section~\ref{Yoneda} when describing locally sma
 Another choice in how to formalise categories is whether to include objects at all: we might avoid the need for an $\mathtt{obj}$ field by identifying objects with identity morphisms, as explained in pages 41--43 of \cite{DBLP:books/daglib/0023249}.
 We have not seen this idea mechanised before; it would be interesting to see the ramifications of doing so on a development.
 %}
-\section{A Category of Classes and of Sets}%1003/1400%{
+\section{A Category of Classes and of Sets}%1549/1400%{
 \label{Set}
 \newcommand{\Set}{\ensuremath{\mathbf{Set}}}
 The category $\Set$ of sets has sets and objects and (typed) functions as morphisms.
@@ -247,21 +247,7 @@ But our definition of $\mathtt{zfrep}$ does not ensure injectivity: there is no 
 Indeed by considering $s_1,s_2\in u$ where $u$ is a proper class larger than the collection of all ZFC sets, which is possible when $u:\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}\;\mathsf{set}$, for example, we see that $\mathtt{zfrep}$ could not be injective.
 It is unfortunate, but not important for our later results, that we cannot ensure literal injectivity of $\mathtt{rep\_functor}\;u$ when $u$ is small.
 %}
-\section{Binary Products and Other Limits}%187/250%{
-\label{limits}
-Like many constructions in category theory (and in abstract mathematics generally), \emph{limits} can be presented in different, equivalent ways, at different levels of generality.
-Examples of limits include products, which generalise Cartesian products of sets, and <..>.
-<universal properties?>
-<one fully general definition gives a limit as a universal cone, and one presentation of cones give them as objects in a certain comma category>
-<we have defined comma categories and used them to define cones and limits>
-<we have also instantiated this general definition to define binary products as <...> and then proved that they are characterised by their less abstract and possibly more familiar <....>>
-
-<set cat has binary products. this is the first mechanisation of limits in HOL (but certainly not at all - refs) and reassuring for the HOLZF approach. the point of set cat is that it may be impossible to prove arbitrary ens cats have limits>
-
-<a few words about the difficulties facing an attempt to work on exponential objects and adjunctions>
-<namely: many equivalent formulations, but most of them would involve constructions that we can't make to be fully general>
-%}
-\section{The Yoneda Embedding}%317/500%{
+\section{The Yoneda Embedding}%438/500%{
 \label{Yoneda}
 \newcommand{\C}{\ensuremath{\mathbb{C}}}
 \newcommand{\op}{\ensuremath{\sp{\mathrm{op}}}}
@@ -292,6 +278,34 @@ This approach is problematic for at least two reasons: firstly, locally small ca
 <basically reuse the proof for set cat, to get zYfunctor, along with some theorems about embeddings being preserved etc.>
 
 <discuss the difficulty with injectivity on objects and the tagging solution>
+%}
+\section{Binary Products and Other Limits}%308/250%{
+\label{limits}
+Like many constructions in category theory (and in abstract mathematics generally), \emph{limits} can be presented in different, equivalent ways, at different levels of generality.
+One fully general definition gives a limit as a \emph{universal} \emph{cone}, and one presentation of cones give them as objects in a certain \emph{comma category}.
+We have defined comma categories in HOL4 and used them to define cones and limits.
+We have also instantiated this general definition to define binary products as limits of a functor, called $\mathtt{product\_diagram}$, from $\mathtt{discrete\_cat}\;\{1,2\}$, and then proved that these products are characterised by a less abstract and possibly more familiar description:
+\begin{align*}
+&\vdash\forall{c,a,b,l}.\;\mathtt{is\_category}\;c\land a\in c.\mathtt{obj}\land b \in c.\mathtt{obj}\implies\\
+&\quad\mathtt{is\_limit}\;(\mathtt{product\_diagram}\;c\;a\;b)\;l\iff\\
+&\quad\exists{ab,p_1,p_2}.\;(l = \mathtt{mk\_cone}\;(\mathtt{product\_diagram}\;c\;a\;b)\;ab\;(\lambda{n}.\; \mathtt{if}\;n = 1\;\mathtt{then}\;p_1\;\mathtt{else}\;p_2))\land{}\\
+&\quad\quad p_1\operatorname{\mathtt{:-}}ab \to a\operatorname{\mathtt{-:}}c\land p_2\operatorname{\mathtt{:-}}ab \to b\operatorname{\mathtt{-:}}c\land{}\\
+&\quad\quad\forall{ab',p_1',p_2'}.\;
+p_1'\operatorname{\mathtt{:-}} ab' \to a \operatorname{\mathtt{-:}}c\land
+p_2'\operatorname{\mathtt{:-}} ab' \to b \operatorname{\mathtt{-:}}c\implies\\
+&\quad\quad\quad\exists!{m}.\;
+m\operatorname{\mathtt{:-}}p\to ab\operatorname{\mathtt{-:}}c\land(p_1\circ m\operatorname{\mathtt{-:}}c = p_1')\land(p_2\circ m\operatorname{\mathtt{-:}}c = p_2')
+\end{align*}
+The notation $f\operatorname{\mathtt{:-}}x\to y\operatorname{\mathtt{-:}}c$ is shorthand for $f.\mathtt{dom}=x\land f.\mathtt{cod}=y\land f\in c.\mathtt{mor}$, and similarly the use of $\operatorname{\mathtt{-:}}$ with $\circ$ signifies composition in $c$.
+
+The characterisation of binary products above says that for every pair of objects $a$ and $b$ in a category $c$, there exists a canonical product object $ab$ with projections $p_1$ and $p_2$.
+We can use Hilbert choice to define constants $a\times b\operatorname{\mathtt{-:}}c$ , $\pi_1^{a,b,c}$, and $\pi_2^{a,b,c}$ to denote these terms whenever they exist.
+<readability?>
+
+<set cat has binary products. this is the first mechanisation of limits in HOL (but certainly not at all - refs) and reassuring for the HOLZF approach. the point of set cat is that it may be impossible to prove arbitrary ens cats have limits>
+
+<a few words about the difficulties facing an attempt to work on exponential objects and adjunctions>
+<namely: many equivalent formulations, but most of them would involve constructions that we can't make to be fully general>
 %}
 \section{Conclusions}%38/400%{
 <summary of issues facing mechanisations>
