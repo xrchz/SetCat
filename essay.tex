@@ -210,7 +210,27 @@ For the proof, we use the theorem that an isomorphism of categories is the same 
 We define $\mathtt{ens\_to\_set}$ (using Hilbert choice) as the inverse functor.
 This isomorphism provides the initial link between small HOL sets and ZFC sets, but it is useless for arbitrary small HOL sets since the $\mathtt{ens\_cat}$ involved is over a universe of small HOL sets of ZFC sets, that is, of type $\mathsf{zfset}\;\mathsf{set}$ rather than $\alpha\;\mathsf{set}$.
 
-<the zfrep, and rep functor, for other types>
+To view small HOL sets over an arbitrary type as being in the category of ZFC sets, we must choose a ZFC set to represent each small HOL set.
+We choose representatives globally, and once-and-for-all, using Hilbert choice.
+First, we prove that a class is small only if it is in bijection with the elements of a ZFC set (remember the definition of smallness only required an injection):
+\begin{align*}
+\vdash\forall{s}.\;\mathtt{is\_small}\;s\implies\exists{b,z}.\;&\mathtt{BIJ}\;b\;s\;\{\mathtt{SOME}\;x\mid x\operatorname{\mathtt{in}}z\}\land{}\\
+&\forall{x}.\;x\notin s\implies(b\;x=\mathtt{NONE})
+\end{align*}
+(Here we ensure extensionality of the bijection $b$ with the $\mathsf{option}$ type ($\mathtt{SOME}$ versus $\mathtt{NONE}$) rather than with $\mathtt{ARB}$, because $\mathtt{ARB}$ may be in $z$ and we would rather be able to tell whether $x\in s$ from the value of $b\;x$.)
+Given this existence theorem, it makes sense to define using Hilbert choice for every small HOL set $s:\alpha\;\mathsf{set}$ a bijection $(\mathtt{zfbij}\;s):\alpha\to\mathsf{zfset}\;\mathsf{option}$ and a class of ZFC sets $(\mathtt{zfrep}\;s):\mathsf{zfset}\;\mathsf{set}$ that is the image of $(\mathtt{zfbij}\;s)$ under $\mathtt{SOME}$.
+Using this bijection and its inverse, we can also define constant $\mathtt{zfel}$ and $\mathtt{elzf}$ satisfying the following theorems
+\begin{align*}
+&\vdash\forall{s,z}.\;\mathtt{is\_small}\;s\implies(z\operatorname{\mathtt{in}}\mathtt{zfrep}\;s\iff\exists{x}.\; x \in s \land z = \mathtt{zfel}\;s\;x)\\
+&\vdash\forall{s,x}.\;\mathtt{is\_small}\;s\land x \in s\implies\mathtt{elzf}\;s\;(\mathtt{zfel}\;s\;x) = x\\
+&\vdash\forall{s,z}.\;\mathtt{is\_small}\;s\land z \operatorname{\mathtt{in}} \mathtt{zfrep}\;s\implies\mathtt{zfel}\;s\;(\mathtt{elzf}\;s\;z) = z
+\end{align*}
+
+<rep functor, rep functor embedding>
+
+<Katovsky, in the context of the Yoneda embedding, attaches an injective function to each locally small category that picks a ZFC set for each morphism in the category.
+The set representing a hom is then given by collecting these sets-representing-morphisms up into a single ZFC set; the fact that there is a ZFC set containing them is what it means for homs to be small.
+This approach is problematic for at least two reasons: firstly, locally small categories are not extensional, because the same category equipped with two different representations of its morphisms would be different records in HOL; secondly, it is unnatural to invent a representation of morphisms as sets in order to prove that a category is locally small.>
 %}
 \section{Binary Products and Other Limits}%187/250%{
 \label{limits}
