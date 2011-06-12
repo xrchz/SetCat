@@ -16,7 +16,7 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 \noindent Date
 
 \vspace{2em}
-\noindent Words: 5502
+\noindent Words: 5594
 %}
 \begin{abstract}%{
 The foundational difficulties presented by category theory make it difficult to formalise.
@@ -79,7 +79,7 @@ Standard types defined in HOL include the type $\mathsf{unit}$ with a single ele
 Generalising sum types, it is possible to define a new type to represent a record given the desired names and types of the record fields.
 New terms can be defined in terms of existing ones, like in a functional programming language.
 %}
-\section{Composable Morphisms and Categories}%1563/1400%{
+\section{Composable Morphisms and Categories}%1575/1500%{
 Category theory is an abstract theory of functions and composition.
 A category is an arena in which composition takes place, and consists of \emph{morphisms}, abstract functions, \emph{objects}, the possible domains and codomains of the morphisms, and a \emph{composition law}, obeying certain conditions.
 We define a type of morphisms in HOL as a polymorphic record $(\alpha,\beta,\gamma)\;\mathsf{morphism}=\langle\mathtt{dom}:\alpha,\,\mathtt{cod}:\beta,\,\mathtt{map}:\gamma\rangle$.
@@ -110,6 +110,7 @@ The advantage of keeping morphisms independent of categories (also done by Simps
 Functors and natural transformations can be defined as instances of morphisms (between categories and between functors respectively) rather than as new record types.
 For example, we use $(\alpha,\beta,\gamma,\delta)\;\mathsf{functor}$ to abbreviate the type \[((\alpha,\beta)\;\mathsf{category},(\gamma,\delta)\;\mathsf{category},(\alpha,\beta)\;\mathsf{mor}\to(\gamma,\delta)\;\mathsf{mor})\;\mathsf{morphism}\] whose instances we intend to be functors from an $(\alpha,\beta)\;\mathsf{category}$ to a $(\gamma,\delta)\;\mathsf{category}$.
 The $\mathtt{map}$ field of a functor gives its action on morphisms; following Katovsky we omit the action on objects from the record, since it can be defined (using Hilbert choice) in terms of the action on identity morphisms.
+
 Instances of the $\mathsf{morphism}$ record are not immediately attached to a category, but it could be argued that all composable morphisms occur in some category.
 For example, functors are the morphisms in a category of categories.
 However, this notion is problematic for several reasons, one of which is that objects in our categories must all have the same type, but we make use of functors between categories of different types.
@@ -126,15 +127,17 @@ This stratification can be achieved, to some extent, by \emph{universe polymorph
 When we define the product of an $(\alpha,\beta)\;\mathsf{category}$ and a $(\gamma,\delta)\;\mathsf{category}$, however, it has type $(\alpha\times\gamma,\beta\times\delta)\;\mathsf{category}$.
 Terms with these types could not all be objects of a $(\tau_1,\tau_2)\;\mathsf{category}$ for any (fixed) types $\tau_1$ and $\tau_2$.
 
+Let us look now at a longer example of this problem.
 In category theory, the notion of \emph{isomorphism} plays a role similar to, and often more important than, equality.
 An isomorphism is a morphism with an inverse (for composition), and two objects are isomorphic if there is an isomorphism between them.
-We define what it means for pair of morphisms to be inverses:
+We define what it means for a pair of morphisms to be inverses:
 \begin{align*}
 \mathtt{iso\_pair}\;c\;f\;g=f\leadsto g\operatorname{\mathtt{-:}}c\land f\circ g\operatorname{\mathtt{-:}}c=\mathtt{id}\;g.\mathtt{dom}\operatorname{\mathtt{-:}}c\land g\circ f\operatorname{\mathtt{-:}}c=\mathtt{id}\;f.\mathtt{dom}\operatorname{\mathtt{-:}}c
 \end{align*}
 The notation $f\leadsto g\operatorname{\mathtt{-:}}c$ abbreviates composability within a category: $f.\mathtt{cod}=g.\mathtt{dom}\land f\in c.\mathtt{mor}\land g\in c.\mathtt{mor}$.
 Similarly $f\circ g\operatorname{\mathtt{-:}}c$ abbreviates composition ($\mathtt{compose\_in}$) and $\mathtt{id}\;x\operatorname{-:}c$ an identity morphism ($\mathtt{id\_in}$).
 We define $\mathtt{iso}\;c\;f=\exists{g}.\;\mathtt{iso\_pair}\;c\;f\;g$.
+
 The morphism $f$ in the definition of $\mathtt{iso}$ has type $(\alpha,\beta)\;\mathsf{mor}$, where $\alpha$ is the type of both the domain and codomain of the morphism.
 Therefore if we want to consider an isomorphism between categories (a functor that is an isomorphism), we cannot use $\mathtt{iso}$ unless the functor is between categories of the same type (e.g., we could instantiate $\alpha$ with $(\gamma,\delta)\;\mathsf{category}$ then $f$ would have type $(\gamma,\delta,\gamma,\delta)\;\mathsf{functor}$).
 We define another notion, $\mathtt{cat\_iso}$, to cover functors of arbitrary types, by replacing all the ``$\operatorname{\mathtt{-:}}c$'' notions above with their instances in the (undefinable) category of categories. 
@@ -182,11 +185,11 @@ The approaches are essentially equivalent, because if we defined categories in t
 Another choice in how to formalise categories is whether to include objects at all: we might avoid the need for an $\mathtt{obj}$ field by identifying objects with identity morphisms, as explained in pages 41--43 of \cite{DBLP:books/daglib/0023249}.
 We have not seen this idea mechanised before; it would be interesting to see the ramifications of doing so on a development.
 %}
-\section{A Category of Classes and of Sets}%1469/1400%{
+\section{A Category of Classes and of Sets}%1477/1400%{
 \label{Set}
 \newcommand{\Set}{\ensuremath{\mathbf{Set}}}
-The category $\Set$ of sets has sets and objects and (typed) functions as morphisms.
-A natural approach to defining $\Set$ in HOL is as an instance of the $\mathsf{category}$ record where $\mathtt{obj}:\alpha\;\mathsf{set}\;\mathsf{set}$ and the map field of each morphism is a function $\alpha\to\alpha$.
+The category $\Set$ of sets has sets as objects and functions\footnote{with specified domain and codomain, so for example the empty functions $\bot:\emptyset\to\emptyset$ and $\bot:\emptyset\to\mathbb{N}$ are distinct} as morphisms.
+A natural approach to defining $\Set$ in HOL is as an instance of the $\mathsf{category}$ record where $\mathtt{obj}:\alpha\;\mathsf{set}\;\mathsf{set}$ and the $\mathtt{map}$ field of each morphism is a function $\alpha\to\alpha$.
 This approach is the one taken by O'Keefe, which we follow by defining a category of ``sets within a universe'':
 \begin{align*}
 &\mathtt{ens\_cat}\;(u:\alpha\;\mathsf{set}\;\mathsf{set})=\\
@@ -204,7 +207,7 @@ For example, there is a function from the set of strings $\{\text{``an''},\text{
 Clearly, this is a problem at the level of types, so remains even if we take $u$ to be the universal set of type $\alpha\;\mathsf{set}\;\mathsf{set}$.
 
 More generally, consider the relationship in any formalisation between the collection of morphisms $c.\mathtt{mor}$ in a category and the notion of a set.
-If $c.\mathtt{mor}$ is itself a set, then there is no category whose morphisms are all the functions between sets because no set can contain all functions, so $\Set$ cannot be formalised.
+If $c.\mathtt{mor}$ is itself a set, then there is no category whose morphisms are all the functions between sets because no set can contain all functions.
 So if we want $\Set$ we must arrange for $c.\mathtt{mor}$ to be a \emph{class}: some kind of collection that can be larger than a set.
 
 We can introduce classes into HOL by means of a new type, $\mathsf{zfset}$, representing sets in an axiomatic set theory such as ZFC.
@@ -213,9 +216,9 @@ The new axioms are (higher-order versions of) the axioms of ZFC.
 We also define new terms for ZFC set membership ($\mathtt{in}:\mathsf{zfset}\to\mathsf{zfset}\to\mathsf{bool}$), set union, functions as graphs, and so on.
 The effect on the semantics is that types must be interpreted as classes because any existing polymorphic type might be instantiated with $\mathsf{zfset}$; the constantly true predicate of type $\mathsf{zfset}\;\mathsf{set}$ now represents the class of all ZFC sets.
 This method of accessing set theory within the HOL logic was introduced by Mike Gordon \cite{DBLP:conf/tphol/Gordon96} (and independently by Bob Solovay, see~\cite{DBLP:conf/ictac/Obua06}) and is implemented in both HOL4 and Isabelle~\cite{DBLP:conf/ictac/Obua06}.
-We use it, following Katovksy, to define a non-polymorphic category of sets with $\mathtt{set\_cat}.\mathtt{obj}:\mathsf{zfset}\;\mathsf{set}$ and $\mathtt{set\_cat}.\mathtt{mor}:\mathsf{zfset}\;\mathsf{set}$ also, since functions between ZFC sets can be encoded as ZFC sets.
+We use it, following Katovksy, to define a non-polymorphic category of sets with $\mathtt{set\_cat}.\mathtt{obj}:\mathsf{zfset}\;\mathsf{set}$ and $\mathtt{set\_cat}.\mathtt{mor}:\mathsf{zfset}\;\mathsf{set}$ also (since functions between ZFC sets can be encoded as ZFC sets).
 
-It would be reasonable to formalise all categories non-polymorphically, using sets and classes, so our original $\mathsf{category}$ record would have an $\mathtt{obj}$ field of type $\mathtt{zfset}\;\mathtt{set}$ (although it might be better to use $\mathtt{obj}:\alpha$ and a convention to only intanstiate $\alpha$ by $\mathsf{zfset}\;\mathsf{set}$ or $\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}$ and so on, to allow arbitrarily large categories).
+It would be reasonable to formalise all categories non-polymorphically, using sets and classes, so our original $\mathsf{category}$ record would have an $\mathtt{obj}$ field of type $\mathtt{zfset}\;\mathtt{set}$ (although it might be better to use $\mathtt{obj}:\alpha$ and a convention to only instanstiate $\alpha$ by $\mathsf{zfset}\;\mathsf{set}$ or $\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}$ and so on, to allow arbitrarily large categories).
 This approach matches a mathematical view of categories based on set theory extnded with proper classes (as in~\cite{MacLaneCFTWM} for example) if we take $\mathtt{zfset}$ seriously as our representation of sets.
 However, in HOL we have a competing representation of sets, namely the HOL types.
 If we formalise categories purely in terms of $\mathsf{zfset}$, then our categories remain disconnected from any other theories we have formalised in HOL using types such as $\mathsf{num}$ and $\mathsf{string}$.
@@ -225,10 +228,10 @@ Nevertheless, we need to use the ``untyped'' $\mathtt{set\_cat}$ if we want to f
 The reason much mathematics is encoded in set theory in the first place is that the universe of sets supports the encoding of almost all mathematical objects.
 We can tap into this idea by treating a HOL set (of type $\alpha\;\mathsf{set}$ for some type $\alpha$) as a ZFC set, in particular by finding a representative element of type $\mathsf{zfset}$ to which the HOL set corresponds.
 Since HOL types now represent (possibly large) classes, we can only hope to encode small HOL sets.
-Following ideas from Katovksy, we define a predicate $\mathtt{is\_small}:\alpha\;\mathsf{set}\to\mathsf{bool}$ by $\mathtt{is\_small}\;s=\exists{f,z}.\;\mathtt{INJ}\;f\;s\;\{x\mid x\operatorname{\mathtt{In}} z\}$, that is, a HOL set $s$ is small if there is an injection from $s$ to the (HOL) set of elements of some ZFC set.
+Following ideas from Katovksy, we define a predicate $\mathtt{is\_small}:\alpha\;\mathsf{set}\to\mathsf{bool}$ by $\mathtt{is\_small}\;s=\exists{f,z}.\;\mathtt{INJ}\;f\;s\;\{x\mid x\operatorname{\mathtt{in}} z\}$, that is, a HOL set $s$ is small if there is an injection from $s$ to the (HOL) set of elements of some ZFC set.
 
 Working with $\mathtt{ens\_cat}$ in HOL is easier than with $\mathtt{set\_cat}$, because the morphisms are based on HOL functions directly rather than encodings of ZFC functions as ZFC sets.
-We would expect $\mathtt{ens\_cat}$ to be more general than $\mathtt{set\_cat}$, since it is parameterised over an arbitrary universe of sets, and happily we can prove that $\mathtt{set\_cat}$ is isomorphic as a category to the $\mathtt{ens\_cat}$ of small sets of ZFC sets.
+We would expect $\mathtt{ens\_cat}$ to be more general than $\mathtt{set\_cat}$, since it is parameterised over an arbitrary universe of sets, and, happily, we can prove that $\mathtt{set\_cat}$ is isomorphic as a category to the $\mathtt{ens\_cat}$ of small sets of ZFC sets.
 Specifically, we have proved $\vdash\mathtt{cat\_iso}\;\mathtt{set\_to\_ens}$ alongside $\vdash\mathtt{is\_functor}\;\mathtt{set\_to\_ens}$, $\vdash\mathtt{set\_to\_ens}.\mathtt{dom}=\mathtt{set\_cat}$, and $\vdash\mathtt{set\_to\_ens}.\mathtt{cod}=\{s:\mathsf{zfset}\;\mathsf{set}\mid\mathtt{is\_small}\;s\}$.
 %For the proof, we use the theorem that an isomorphism of categories is the same as a bijection between the classes of objects and between each hom, and the facts that ZFC sets are determined by their members, and explicitly typed ZFC functions correspond to explicitly typed HOL functions (between ZFC sets) by their action under ZFC function application.
 We define $\mathtt{ens\_to\_set}$ (using Hilbert choice) as the inverse functor.
@@ -243,7 +246,7 @@ First, we prove that a class is small only if it is in bijection with the elemen
 \end{align*}
 (Here we ensure extensionality of the bijection $b$ with the $\mathsf{option}$ type ($\mathtt{SOME}$ versus $\mathtt{NONE}$) rather than with $\mathtt{ARB}$, because $\mathtt{ARB}$ may be in $z$ and we would rather be able to tell whether $x\in s$ from the value of $b\;x$.)
 Given this existence theorem, it makes sense to define using Hilbert choice for every small HOL set $s:\alpha\;\mathsf{set}$ a bijection $(\mathtt{zfbij}\;s):\alpha\to\mathsf{zfset}\;\mathsf{option}$ and a class of ZFC sets $(\mathtt{zfrep}\;s):\mathsf{zfset}\;\mathsf{set}$ that is the image of $(\mathtt{zfbij}\;s)$ under $\mathtt{SOME}$.
-Using this bijection and its inverse, we can also define constant $\mathtt{zfel}$ and $\mathtt{elzf}$ satisfying the following theorems
+Using this bijection and its inverse, we can also define constants $\mathtt{zfel}$ and $\mathtt{elzf}$ satisfying the following theorems
 \begin{align*}
 &\vdash\forall{s,z}.\;\mathtt{is\_small}\;s\implies(z\operatorname{\mathtt{in}}\mathtt{zfrep}\;s\iff\exists{x}.\; x \in s \land z = \mathtt{zfel}\;s\;x)\\
 &\vdash\forall{s,x}.\;\mathtt{is\_small}\;s\land x \in s\implies\mathtt{elzf}\;s\;(\mathtt{zfel}\;s\;x) = x\\
@@ -263,15 +266,15 @@ The most important property of $\mathtt{rep\_functor}\;u$ is that it is an \emph
 In general, a functor is an embedding if it is \emph{full} and \emph{faithful}.
 Both notions refer to the action on morphisms of a fixed type: full means surjective on homs and faithful means injective on homs.
 An embedding is \emph{essentially injective on objects}, that is, if an embedding sends two objects in the source category to the same object in the target category, then those two objects are isomorphic in the source category.
-We have proved that embeddings are essentially injective, and that $\mathtt{rep\_functor}\;u$ is an embedding in HOL.
+We have proved, in HOL, that embeddings are essentially injective, and that $\mathtt{rep\_functor}\;u$ is an embedding.
 
 We cannot prove, however, that $\mathtt{rep\_functor}\;u$ is literally injective on objects (if two objects are mapped to the same place they are equal).
 To do so would be to conclude that two small HOL sets $s_1$ and $s_2$ are equal just because $\mathtt{zfrep}\;s_1=\mathtt{zfrep}\;s_2$.
 But our definition of $\mathtt{zfrep}$ does not ensure injectivity: there is no reason Hilbert choice cannot pick the same ZFC set to represent two small HOL sets of the same cardinality.
 Indeed by considering $s_1,s_2\in u$ where $u$ is a proper class larger than the collection of all ZFC sets, which is possible when $u:\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}\;\mathsf{set}$, for example, we see that $\mathtt{zfrep}$ could not be injective.
-It is unfortunate, but not important for our later results, that we cannot ensure literal injectivity of $\mathtt{rep\_functor}\;u$ when $u$ is small.
+It is unfortunate, but not fatal to our later results, that we cannot ensure literal injectivity of $\mathtt{rep\_functor}\;u$ when $u$ is small.
 %}
-\section{The Yoneda Embedding}%790/500%{
+\section{The Yoneda Embedding}%857/600%{
 \label{Yoneda}
 \newcommand{\op}{\ensuremath{\sp{\mathrm{op}}}}
 \newcommand{\blank}{\rule[0.5ex]{0.6em}{.4pt}}
@@ -300,26 +303,28 @@ The two main definitions are of the Yoneda functor itself, and the natural trans
 The notation $c(x,f)$ stands for the action of the covariant hom functor on the morphism $f$, namely \[c(x,f)=\langle\mathtt{dom}=c(x,f.\mathtt{dom}),\,\mathtt{cod}=c(x,f.\mathtt{cod}),\,\mathtt{map}=\lambda{g}.\;f\circ g\operatorname{\mathtt{-:}}c\rangle\text{.}\]
 The two main theorems are that the Yoneda functor is an embedding, and is also literally injective on objects: $\vdash\mathtt{is\_category}\;c\implies\mathtt{embedding}\;(\mathtt{Yfunctor}\;c)$ and $\vdash\mathtt{is\_category}\;c\implies\mathtt{inj\_obj}\;(\mathtt{Yfunctor}\;c)$.
 
-To get a version of $\mathtt{Yfunctor}\;c$ whose codomain is $[c^\mathrm{op}\to\mathtt{set\_cat}]$, we make use $\mathtt{rep\_functor}$ as well as the isomorphism between $\mathtt{set\_cat}$ and the $\mathtt{ens\_cat}$ of small ZFC sets.
+To get a version of $\mathtt{Yfunctor}\;c$ whose codomain is $[c^\mathrm{op}\to\mathtt{set\_cat}]$, we use $\mathtt{rep\_functor}$ and the isomorphism between $\mathtt{set\_cat}$ and the $\mathtt{ens\_cat}$ of small ZFC sets.
 In the first instance, we might define
 \begin{multline*}
 \mathtt{zYfunctor}\;c=\\(\mathtt{postcomp\_functor}\;(c^\mathrm{op})\;(\mathtt{ens\_to\_set}\circ\mathtt{rep\_functor}\;(\mathtt{homs}\;c)))\circ\mathtt{Yfunctor}\;c
 \end{multline*}
 where $\circ$ is functor composition and $\mathtt{postcomp\_functor}\;b\;f$ converts a functor $f$ from $c_1$ to $c_2$ to a functor from $[b\to c_1]$ to $[b\to c_2]$.
-Using our existing theorems about $\mathtt{Yfunctor}\;c$, along with general theorems about embeddings being preserved by functor composition and by lifting to a functor category, we can quickly prove that $\mathtt{zYfunctor}\;c$ is an embedding whenever $c$ is locally small.
+Using our existing theorems about $\mathtt{Yfunctor}\;c$, along with general theorems about embeddings being preserved by functor composition and by lifting to a functor category, we can easily prove that $\mathtt{zYfunctor}\;c$ is an embedding whenever $c$ is locally small.
 However, we cannot prove that it is injective on objects: the problem is that $\mathtt{rep\_functor}\;(\mathtt{homs}\;c)$ may not be injective on objects (as mentioned above), so if two objects in $c$ have isomorphic contravariant hom functors our embedding might represent them by the same ZFC set.
 
-Mathematically, the Yoneda embedding ought to be injective on objects.
+Mathematically, the Yoneda embedding ought to be (literally) injective on objects.
 We can recover injectivity with a tagging trick (due to Sam Staton), by defining
 \[\mathtt{zYfunctor}\;c=(\mathtt{postcomp\_functor}\;(c^\mathrm{op})\;(\mathtt{tag\_functor}\;c))\circ\mathtt{Yfunctor}\;c\]
-where the action of $\mathtt{tag\_functor}\;c$ on a hom $h$ is the ZFC ordered pair whose first component is the empty ZFC set if $h$ is of the form $c(x,x)$ (otherwise a singleton ZFC set), and whose second component is just the action of $\mathtt{ens\_to\_set}\circ\mathtt{rep\_functor}\;(\mathtt{homs}\;c)$ on $h$.
-The ZFC sets now encode whether they are representing a hom of the form $c(x,x)$ or $c(x,y)$, therefore we can always tell functors $c(\blank,x)$ and $c(\blank,y)$ apart by their action on $x$, even if they are isomorphic functors.
+where the action of $\mathtt{tag\_functor}\;c$ on a hom $h$ is the ZFC ordered pair whose first component is the empty ZFC set if $h$ is of the form $c(x,x)$, otherwise it is a singleton ZFC set, and whose second component is just the action of $\mathtt{ens\_to\_set}\circ\mathtt{rep\_functor}\;(\mathtt{homs}\;c)$ on $h$.
+The ZFC sets now encode whether they are representing a hom of the form $c(x,x)$ or $c(x,y)$, therefore we can always tell functors $c(\blank,x)$ and $c(\blank,y)$ apart (when $x\neq y$) by their action on $x$, even if they are isomorphic functors.
 
 We end this section with a comment about the other mechanisations' treatment of locally small categories.
 O'Keefe does not extend the logic to include proper classes, so never needs to distinguish locally small categories.
 Katovsky attaches, to categories intended to be locally small, an injective function that picks a ZFC set for each morphism in the category.
 The set representing a hom is then given by collecting these sets-representing-morphisms up into a single ZFC set; if there is such a ZFC set, the hom is small.
 This approach is problematic for at least two reasons: firstly, locally small categories are not extensional, because the same category equipped with two different representations of its morphisms would be different records in HOL; secondly, it is unnatural to invent a representation of morphisms as sets in order to prove that a category is locally small.
+Indeed, there is a locally small category that cannot be represented with Katovsky's approach, namely, $\mathtt{discrete\_cat}\;\mathtt{UNIV}$ where $\mathtt{UNIV}$ is the universal set of type $(\mathsf{zfset}\to\mathsf{zfset})\;\mathsf{set}$ (the class of all functions between ZFC sets).
+This category is locally small because each hom contains at most one morphism, but there is no injective representation of all functions as ZFC sets (because there are too many functions) to attach to Katovsky's record.
 %}
 \section{Binary Products and Other Limits}%425/250%{
 \label{limits}
@@ -356,10 +361,10 @@ We can easily define the binary product functor using our work so far on binary 
 However, some of the nicer formulations of adjunctions make use of categories we cannot define.
 We could always define exponential objects directly, ignoring the adjunction, but to do so is to miss out on opportunities for abstraction, for proving a theorem once and using it in many different contexts.
 %}
-\section{Conclusions}%48/400%{
+\section{Conclusions}%47/200%{
 <summary of issues facing mechanisations>
 <related work in other systems esp. that can solve major foundational problems>
-<It may be possible to do this kind of general abstract mathematics by working with a non-wellfounded set theory <ref?>.
+<It may be possible to do this kind of general abstract mathematics by working with a non-wellfounded set theory \cite{RBJones18}.>
 <foundations an old problem, and still being worked out mathematically? \cite{Blass,springerlink:10.1007/BFb0059147,Easwaran}
 %}
 \bibliographystyle{plain}
