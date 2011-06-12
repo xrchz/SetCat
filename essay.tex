@@ -16,7 +16,7 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 \noindent Date
 
 \vspace{2em}
-\noindent Words: 4977
+\noindent Words: 5432
 %}
 \begin{abstract}%{
 The foundational difficulties presented by category theory make it difficult to formalise.
@@ -24,7 +24,7 @@ Nevertheless, it is possible to formalise category theory in higher-order logic,
 It is not obvious that this approach can be pushed very far.
 A more satisfying formalisation of category theory will require a new way to resolve the foundational issues, a different logic, or a new approach to formalisation.
 \end{abstract}%}
-\section{Introduction}%317/300%{
+\section{Introduction}%356/300%{
 Category theory provides a framework for studying various notions common to diverse areas of mathematics.
 It has applications in computer science ranging from the semantics of programming languages and formal systems (e.g., \cite{CroleCT,JacobsCLTT}) to models of concurrency~\cite{DBLP:conf/csl/CattaniW96}.
 Since its inception, category theory has challenged the traditional foundations of mathematics, namely in set theory, by dealing with collections that are too large to be sets. 
@@ -32,7 +32,7 @@ Often, it is possible to set things up well for the problem at hand while failin
 
 Formalisation is a good way to test the limits of foundational choices, because a formal development must respect those choices throughout.
 There can be no resort to arguments or constructions by analogy or implied generalisation, especially in formalisations developed mechanically with a proof assistant.
-In this essay, we present a new mechanisation of category theory, refining two previous developments in higher-order logic, and investigate the foundational issues.
+In this essay, we present a new mechanisation of category theory\footnote{Our proof scripts are available online at \url{https://github.com/xrchz/HOL/tree/category/examples/category}, as well as in the HOL4 repository (\url{http://sf.net/projects/hol/develop}) from revision <...>}, refining two previous developments in higher-order logic, and investigate the foundational issues.
 
 Higher-order logic (HOL) is a simple but expressive formal system suitable for the formalisation of many pieces of mathematics.
 As a result, it is the logic implemented by many proof assistants in which formal mathematics has been developed.
@@ -43,9 +43,10 @@ We formalise the category of sets, the simplest foundationally tricky category, 
 We try to fit naturally into the idiom of the logic while still being able to express some basic but foundationally-challenging categorical results.
 We comment on the limitations of our approach, compare our mechanisation to others, and make brief speculations on what a more satisfying mechanisation of category theory would require and would look like.
 
-<Provide an overview of the structure of the essay. Or else make the structure much more navigable from the section headings alone.>
+This essay is structured as a high-level tour of our mechanisation, with discussions of foundational issues, and comparisons to existing work, as they come up.
+We begin with a brief introduction to HOL, then look at our formalisation of category theory, the category of sets in particular, how we treat the Yoneda embedding, and the start of work on categorical limits.
 %}
-\section{Higher-Order Logic}%500/500%{
+\section{Higher-Order Logic}%504/500%{
 \newcommand{\bool}{\ensuremath{\mathsf{bool}}}
 Higher-order logic (HOL) is a formal system that has proved popular for formalising purely mathematical results as well as properties of computer hardware and software systems.
 HOL is a natural-deduction calculus with the syntax of the simply typed lambda calculus.
@@ -62,7 +63,7 @@ In the semantics of HOL, the meaning of a type is a non-empty set, and the meani
 (A polymorphic term is interpreted as a function taking a set for each type variable and returning an element of the resulting type.)
 
 A \emph{predicate} is a term of type $\alpha\to\bool$ for some type $\alpha$.
-The type $\alpha\to\bool$ can be abbreviated by $\alpha\;\mathsf{set}$: a predicate on $\alpha$ is the characteristic function of a set of elements of type $\alpha$.
+The type $\alpha\to\bool$ can be abbreviated by $\alpha\;\mathsf{set}$: a predicate on $\alpha$ is the characteristic function of a subset of elements of type $\alpha$.
 HOL4 includes much support for the representation of sets as predicates; we will use mathematical notation (such as $\{f\;x\mid P\;x\}$) for HOL sets.
 
 Boolean connectives can be defined as functions in HOL, for example conjunction has type $\bool\to\bool\to\bool$.
@@ -74,11 +75,11 @@ Typically, one also uses derived rules of inference that abbreviate applications
 HOL provides principles for defining new types and new (term) constants.
 The primitive types include function types ($\alpha\to\beta$ with arguments $\alpha$ and $\beta$) and Booleans ($\bool$).
 A new type can be defined after proving that a certain predicate on an existing type is non-empty.
-Standard types defined in HOL include the type $\mathsf{unit}$ with a single element $()$, <option type?>, the product type operator, producing a type $\alpha\times\beta$ from arguments $\alpha$ and $\beta$, and (its dual) the sum type operator $\alpha+\beta$.
+Standard types defined in HOL include the type $\mathsf{unit}$ with a single element $()$, the option type with constructors $\mathtt{NONE}:\alpha\;\mathsf{option}$ and $\mathtt{SOME}:\alpha\to\alpha\;\mathsf{option}$, the product type operator producing a type $\alpha\times\beta$ from arguments $\alpha$ and $\beta$, and (its dual) the sum type operator $\alpha+\beta$.
 Generalising sum types, it is possible to define a new type to represent a record given the desired names and types of the record fields.
 New terms can be defined in terms of existing ones, like in a functional programming language.
 %}
-\section{Composable Morphisms and Categories}%1359/1400%{
+\section{Composable Morphisms and Categories}%1563/1400%{
 Category theory is an abstract theory of functions and composition.
 A category is an arena in which composition takes place, and consists of \emph{morphisms}, abstract functions, \emph{objects}, the possible domains and codomains of the morphisms, and a \emph{composition law}, obeying certain conditions.
 We define a type of morphisms in HOL as a polymorphic record $(\alpha,\beta,\gamma)\;\mathsf{morphism}=\langle\mathtt{dom}:\alpha,\,\mathtt{cod}:\beta,\,\mathtt{map}:\gamma\rangle$.
@@ -125,7 +126,23 @@ This stratification can be achieved, to some extent, by \emph{universe polymorph
 When we define the product of an $(\alpha,\beta)\;\mathsf{category}$ and a $(\gamma,\delta)\;\mathsf{category}$, however, it has type $(\alpha\times\gamma,\beta\times\delta)\;\mathsf{category}$.
 Terms with these types could not all be objects of a $(\tau_1,\tau_2)\;\mathsf{category}$ for any (fixed) types $\tau_1$ and $\tau_2$.
 
-<definition of isomorphisms within a category. separate definition of isomorphism of categories because of the type problems involved with creating a category of category, but we will still need to talk about functors that are isomorphisms. have to repeat theorems for both notions (like that they are symmetric). mention possible generalised approach where the predicate for being an isomorphism takes, rather than a category, a bunch of notions of composition and identity, which can either be specialised to a category or to stuff that should be in a category but isn't.>
+In category theory, the notion of \emph{isomorphism} plays a role similar to, and often more important than, equality.
+An isomorphism is a morphism with an inverse (for composition), and two objects are isomorphic if there is an isomorphism between them.
+We define what it means for pair of morphisms to be inverses:
+\begin{align*}
+\mathtt{iso\_pair}\;c\;f\;g=f\leadsto g\operatorname{\mathtt{-:}}c\land f\circ g\operatorname{\mathtt{-:}}c=\mathtt{id}\;g.\mathtt{dom}\operatorname{\mathtt{-:}}c\land g\circ f\operatorname{\mathtt{-:}}c=\mathtt{id}\;f.\mathtt{dom}\operatorname{\mathtt{-:}}c
+\end{align*}
+The notation $f\leadsto g\operatorname{\mathtt{-:}}c$ abbreviates composability within a category: $f.\mathtt{cod}=g.\mathtt{dom}\land f\in c.\mathtt{mor}\land g\in c.\mathtt{mor}$.
+Similarly $f\circ g\operatorname{\mathtt{-:}}c$ abbreviates composition ($\mathtt{compose\_in}$) and $\mathtt{id}\;x\operatorname{-:}c$ an identity morphism ($\mathtt{id\_in}$).
+We define $\mathtt{iso}\;c\;f=\exists{g}.\;\mathtt{iso\_pair}\;c\;f\;g$.
+The morphism $f$ in the definition of $\mathtt{iso}$ has type $(\alpha,\beta)\;\mathsf{mor}$, where $\alpha$ is the type of both the domain and codomain of the morphism.
+Therefore if we want to consider an isomorphism between categories (a functor that is an isomorphism), we cannot use $\mathtt{iso}$ unless the functor is between categories of the same type (e.g., we could instantiate $\alpha$ with $(\gamma,\delta)\;\mathsf{category}$ then $f$ would have type $(\gamma,\delta,\gamma,\delta)\;\mathsf{functor}$).
+We define another notion, $\mathtt{cat\_iso}$, to cover functors of arbitrary types, by replacing all the ``$\operatorname{\mathtt{-:}}c$'' notions above with their instances in the (undefinable) category of categories. 
+
+Theorems stating properties of isomorphisms (like that the notion is symmetric) need to be repeated for both $\mathtt{iso\_pair}$ and $\mathtt{cat\_iso\_pair}$. 
+This situation is an example of the polymorphic record approach to categories getting in the way of expressing general categorical properties.
+It is possible to define isomorphisms outside of any category in terms of arbitrary notions of composition and identity, to prove theorems about the general definition, and then to specialise it both to the case within a category and to the case where the requisite category is unavailable.
+We have not taken this route, partly because it seems unwieldy: such a definition would need to take two copies each of an identity map and a composition rule to ensure a fully general type.
 
 Having looked at some of the problems due to the type system and our use of a polymorphic record, we return to describing our development.
 An element of the $\mathsf{category}$ type is not necessarily a category.
@@ -165,7 +182,7 @@ The approaches are essentially equivalent, because if we defined categories in t
 Another choice in how to formalise categories is whether to include objects at all: we might avoid the need for an $\mathtt{obj}$ field by identifying objects with identity morphisms, as explained in pages 41--43 of \cite{DBLP:books/daglib/0023249}.
 We have not seen this idea mechanised before; it would be interesting to see the ramifications of doing so on a development.
 %}
-\section{A Category of Classes and of Sets}%1527/1400%{
+\section{A Category of Classes and of Sets}%1469/1400%{
 \label{Set}
 \newcommand{\Set}{\ensuremath{\mathbf{Set}}}
 The category $\Set$ of sets has sets and objects and (typed) functions as morphisms.
@@ -198,7 +215,7 @@ The effect on the semantics is that types must be interpreted as classes because
 This method of accessing set theory within the HOL logic was introduced by Mike Gordon \cite{DBLP:conf/tphol/Gordon96} (and independently by Bob Solovay, see~\cite{DBLP:conf/ictac/Obua06}) and is implemented in both HOL4 and Isabelle~\cite{DBLP:conf/ictac/Obua06}.
 We use it, following Katovksy, to define a non-polymorphic category of sets with $\mathtt{set\_cat}.\mathtt{obj}:\mathsf{zfset}\;\mathsf{set}$ and $\mathtt{set\_cat}.\mathtt{mor}:\mathsf{zfset}\;\mathsf{set}$ also, since functions between ZFC sets can be encoded as ZFC sets.
 
-It would be reasonable to formalise all categories non-polymorphically, using sets and classes, so our record would have an $\mathtt{obj}$ field of type $\mathtt{zfset}\;\mathtt{set}$ (although it might be better to use $\mathtt{obj}:\alpha$ and a convention to only intanstiate $\alpha$ by $\mathsf{zfset}\;\mathsf{set}$ or $\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}$ and so on, to allow arbitrarily large categories).
+It would be reasonable to formalise all categories non-polymorphically, using sets and classes, so our original $\mathsf{category}$ record would have an $\mathtt{obj}$ field of type $\mathtt{zfset}\;\mathtt{set}$ (although it might be better to use $\mathtt{obj}:\alpha$ and a convention to only intanstiate $\alpha$ by $\mathsf{zfset}\;\mathsf{set}$ or $\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}$ and so on, to allow arbitrarily large categories).
 This approach matches a mathematical view of categories based on set theory extnded with proper classes (as in~\cite{MacLaneCFTWM} for example) if we take $\mathtt{zfset}$ seriously as our representation of sets.
 However, in HOL we have a competing representation of sets, namely the HOL types.
 If we formalise categories purely in terms of $\mathsf{zfset}$, then our categories remain disconnected from any other theories we have formalised in HOL using types such as $\mathsf{num}$ and $\mathsf{string}$.
@@ -213,7 +230,7 @@ Following ideas from Katovksy, we define a predicate $\mathtt{is\_small}:\alpha\
 Working with $\mathtt{ens\_cat}$ in HOL is easier than with $\mathtt{set\_cat}$, because the morphisms are based on HOL functions directly rather than encodings of ZFC functions as ZFC sets.
 We would expect $\mathtt{ens\_cat}$ to be more general than $\mathtt{set\_cat}$, since it is parameterised over an arbitrary universe of sets, and happily we can prove that $\mathtt{set\_cat}$ is isomorphic as a category to the $\mathtt{ens\_cat}$ of small sets of ZFC sets.
 Specifically, we have proved $\vdash\mathtt{cat\_iso}\;\mathtt{set\_to\_ens}$ alongside $\vdash\mathtt{is\_functor}\;\mathtt{set\_to\_ens}$, $\vdash\mathtt{set\_to\_ens}.\mathtt{dom}=\mathtt{set\_cat}$, and $\vdash\mathtt{set\_to\_ens}.\mathtt{cod}=\{s:\mathsf{zfset}\;\mathsf{set}\mid\mathtt{is\_small}\;s\}$.
-For the proof, we use the theorem that an isomorphism of categories is the same as a bijection between the classes of objects and between each hom, and the facts that ZFC sets are determined by their members, and explicitly typed ZFC functions correspond to explicitly typed HOL functions (between ZFC sets) by their action under ZFC function application.
+%For the proof, we use the theorem that an isomorphism of categories is the same as a bijection between the classes of objects and between each hom, and the facts that ZFC sets are determined by their members, and explicitly typed ZFC functions correspond to explicitly typed HOL functions (between ZFC sets) by their action under ZFC function application.
 We define $\mathtt{ens\_to\_set}$ (using Hilbert choice) as the inverse functor.
 This isomorphism provides the initial link between small HOL sets and ZFC sets, but it is useless for arbitrary small HOL sets since the $\mathtt{ens\_cat}$ involved is over a universe of small HOL sets of ZFC sets, that is, of type $\mathsf{zfset}\;\mathsf{set}$ rather than $\alpha\;\mathsf{set}$.
 
@@ -246,7 +263,7 @@ The most important property of $\mathtt{rep\_functor}\;u$ is that it is an \emph
 In general, a functor is an embedding if it is \emph{full} and \emph{faithful}.
 Both notions refer to the action on morphisms of a fixed type: full means surjective on homs and faithful means injective on homs.
 An embedding is \emph{essentially injective on objects}, that is, if an embedding sends two objects in the source category to the same object in the target category, then those two objects are isomorphic in the source category.
-We have proved that embeddings are essentially injective, and that $\mathtt{rep\_functor}\;u$ is an embedding in HOL4.
+We have proved that embeddings are essentially injective, and that $\mathtt{rep\_functor}\;u$ is an embedding in HOL.
 
 We cannot prove, however, that $\mathtt{rep\_functor}\;u$ is literally injective on objects (if two objects are mapped to the same place they are equal).
 To do so would be to conclude that two small HOL sets $s_1$ and $s_2$ are equal just because $\mathtt{zfrep}\;s_1=\mathtt{zfrep}\;s_2$.
@@ -254,7 +271,7 @@ But our definition of $\mathtt{zfrep}$ does not ensure injectivity: there is no 
 Indeed by considering $s_1,s_2\in u$ where $u$ is a proper class larger than the collection of all ZFC sets, which is possible when $u:\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}\;\mathsf{set}$, for example, we see that $\mathtt{zfrep}$ could not be injective.
 It is unfortunate, but not important for our later results, that we cannot ensure literal injectivity of $\mathtt{rep\_functor}\;u$ when $u$ is small.
 %}
-\section{The Yoneda Embedding}%598/500%{
+\section{The Yoneda Embedding}%790/500%{
 \label{Yoneda}
 \newcommand{\op}{\ensuremath{\sp{\mathrm{op}}}}
 \newcommand{\blank}{\rule[0.5ex]{0.6em}{.4pt}}
@@ -283,18 +300,28 @@ The two main definitions are of the Yoneda functor itself, and the natural trans
 The notation $c(x,f)$ stands for the action of the covariant hom functor on the morphism $f$, namely \[c(x,f)=\langle\mathtt{dom}=c(x,f.\mathtt{dom}),\,\mathtt{cod}=c(x,f.\mathtt{cod}),\,\mathtt{map}=\lambda{g}.\;f\circ g\operatorname{\mathtt{-:}}c\rangle\text{.}\]
 The two main theorems are that the Yoneda functor is an embedding, and is also literally injective on objects: $\vdash\mathtt{is\_category}\;c\implies\mathtt{embedding}\;(\mathtt{Yfunctor}\;c)$ and $\vdash\mathtt{is\_category}\;c\implies\mathtt{inj\_obj}\;(\mathtt{Yfunctor}\;c)$.
 
-To get a version of $\mathtt{Yfunctor}\;c$ whose codomain is $[c^\mathrm{op}\to\mathtt{set\_cat}]$
-<basically reuse the proof for set cat, to get zYfunctor, along with some theorems about embeddings being preserved etc.>
+To get a version of $\mathtt{Yfunctor}\;c$ whose codomain is $[c^\mathrm{op}\to\mathtt{set\_cat}]$, we make use $\mathtt{rep\_functor}$ as well as the isomorphism between $\mathtt{set\_cat}$ and the $\mathtt{ens\_cat}$ of small ZFC sets.
+In the first instance, we might define
+\begin{multline*}
+\mathtt{zYfunctor}\;c=\\(\mathtt{postcomp\_functor}\;(c^\mathrm{op})\;(\mathtt{ens\_to\_set}\circ\mathtt{rep\_functor}\;(\mathtt{homs}\;c)))\circ\mathtt{Yfunctor}\;c
+\end{multline*}
+where $\circ$ is functor composition and $\mathtt{postcomp\_functor}\;b\;f$ converts a functor $f$ from $c_1$ to $c_2$ to a functor from $[b\to c_1]$ to $[b\to c_2]$.
+Using our existing theorems about $\mathtt{Yfunctor}\;c$, along with general theorems about embeddings being preserved by functor composition and by lifting to a functor category, we can quickly prove that $\mathtt{zYfunctor}\;c$ is an embedding whenever $c$ is locally small.
+However, we cannot prove that it is injective on objects: the problem is that $\mathtt{rep\_functor}\;(\mathtt{homs}\;c)$ may not be injective on objects (as mentioned above), so if two objects in $c$ have isomorphic contravariant hom functors our embedding might represent them by the same ZFC set.
 
-In Katovksy's development, the codomain of $\mathtt{Yfunctor\;c}$ is $\mathtt{set\_cat}$. 
-Therefore, he requires $c$ to be locally small, and specifies that a category is locally small 
-<Katovsky, in the context of the Yoneda embedding, attaches an injective function to each locally small category that picks a ZFC set for each morphism in the category.
-The set representing a hom is then given by collecting these sets-representing-morphisms up into a single ZFC set; the fact that there is a ZFC set containing them is what it means for homs to be small.
-This approach is problematic for at least two reasons: firstly, locally small categories are not extensional, because the same category equipped with two different representations of its morphisms would be different records in HOL; secondly, it is unnatural to invent a representation of morphisms as sets in order to prove that a category is locally small.>
+Mathematically, the Yoneda embedding ought to be injective on objects.
+We can recover injectivity with a tagging trick (due to Sam Staton), by defining
+\[\mathtt{zYfunctor}\;c=(\mathtt{postcomp\_functor}\;(c^\mathrm{op})\;(\mathtt{tag\_functor}\;c))\circ\mathtt{Yfunctor}\;c\]
+where the action of $\mathtt{tag\_functor}\;c$ on a hom $h$ is the ZFC ordered pair whose first component is the empty ZFC set if $h$ is of the form $c(x,x)$ (otherwise a singleton ZFC set), and whose second component is just the action of $\mathtt{ens\_to\_set}\circ\mathtt{rep\_functor}\;(\mathtt{homs}\;c)$ on $h$.
+The ZFC sets now encode whether they are representing a hom of the form $c(x,x)$ or $c(x,y)$, therefore we can always tell functors $c(\blank,x)$ and $c(\blank,y)$ apart by their action on $x$, even if they are isomorphic functors.
 
-<discuss the difficulty with injectivity on objects and the tagging solution>
+We end this section with a comment about the other mechanisations' treatment of locally small categories.
+O'Keefe does not extend the logic to include proper classes, so never needs to distinguish locally small categories.
+Katovsky attaches, to categories intended to be locally small, an injective function that picks a ZFC set for each morphism in the category.
+The set representing a hom is then given by collecting these sets-representing-morphisms up into a single ZFC set; if there is such a ZFC set, the hom is small.
+This approach is problematic for at least two reasons: firstly, locally small categories are not extensional, because the same category equipped with two different representations of its morphisms would be different records in HOL; secondly, it is unnatural to invent a representation of morphisms as sets in order to prove that a category is locally small.
 %}
-\section{Binary Products and Other Limits}%365/250%{
+\section{Binary Products and Other Limits}%356/250%{
 \label{limits}
 Like many constructions in category theory (and in abstract mathematics generally), \emph{limits} can be presented in different, equivalent ways, at different levels of generality.
 One fully general definition gives a limit as a \emph{universal} \emph{cone}, and one presentation of cones give them as objects in a certain \emph{comma category}.
@@ -311,7 +338,7 @@ p_2'\operatorname{\mathtt{:-}} ab' \to b \operatorname{\mathtt{-:}}c\implies\\
 &\quad\quad\quad\exists!{m}.\;
 m\operatorname{\mathtt{:-}}p\to ab\operatorname{\mathtt{-:}}c\land(p_1\circ m\operatorname{\mathtt{-:}}c = p_1')\land(p_2\circ m\operatorname{\mathtt{-:}}c = p_2')
 \end{align*}
-The notation $f\operatorname{\mathtt{:-}}x\to y\operatorname{\mathtt{-:}}c$ is shorthand for $f.\mathtt{dom}=x\land f.\mathtt{cod}=y\land f\in c.\mathtt{mor}$, and similarly the use of $\operatorname{\mathtt{-:}}$ with $\circ$ signifies composition in $c$.
+The notation $f\operatorname{\mathtt{:-}}x\to y\operatorname{\mathtt{-:}}c$ is shorthand for $f.\mathtt{dom}=x\land f.\mathtt{cod}=y\land f\in c.\mathtt{mor}$.
 
 The characterisation of binary products above says that for every pair of objects $a$ and $b$ in a category $c$, there exists a canonical product object $ab$ with projections $p_1$ and $p_2$.
 We can use Hilbert choice to define constants $a\times b\operatorname{\mathtt{-:}}c$ , $\pi_1^{a,b,c}$, and $\pi_2^{a,b,c}$ to denote these terms whenever they exist.
@@ -326,10 +353,11 @@ The fact that $\mathtt{set\_cat}$ has binary products is reassuring for the appr
 <a few words about the difficulties facing an attempt to work on exponential objects and adjunctions>
 <namely: many equivalent formulations, but most of them would involve constructions that we can't make to be fully general>
 %}
-\section{Conclusions}%38/400%{
+\section{Conclusions}%48/400%{
 <summary of issues facing mechanisations>
 <related work in other systems esp. that can solve major foundational problems>
 <It may be possible to do this kind of general abstract mathematics by working with a non-wellfounded set theory <ref?>.
+<foundations an old problem, and still being worked out mathematically? \cite{Blass,springerlink:10.1007/BFb0059147,Easwaran}
 %}
 \bibliographystyle{plain}
 \bibliography{essay}
