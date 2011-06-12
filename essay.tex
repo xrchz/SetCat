@@ -16,7 +16,7 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 \noindent Date
 
 \vspace{2em}
-\noindent Words: 5432
+\noindent Words: 5502
 %}
 \begin{abstract}%{
 The foundational difficulties presented by category theory make it difficult to formalise.
@@ -24,7 +24,7 @@ Nevertheless, it is possible to formalise category theory in higher-order logic,
 It is not obvious that this approach can be pushed very far.
 A more satisfying formalisation of category theory will require a new way to resolve the foundational issues, a different logic, or a new approach to formalisation.
 \end{abstract}%}
-\section{Introduction}%356/300%{
+\section{Introduction}%386/300%{
 Category theory provides a framework for studying various notions common to diverse areas of mathematics.
 It has applications in computer science ranging from the semantics of programming languages and formal systems (e.g., \cite{CroleCT,JacobsCLTT}) to models of concurrency~\cite{DBLP:conf/csl/CattaniW96}.
 Since its inception, category theory has challenged the traditional foundations of mathematics, namely in set theory, by dealing with collections that are too large to be sets. 
@@ -32,7 +32,7 @@ Often, it is possible to set things up well for the problem at hand while failin
 
 Formalisation is a good way to test the limits of foundational choices, because a formal development must respect those choices throughout.
 There can be no resort to arguments or constructions by analogy or implied generalisation, especially in formalisations developed mechanically with a proof assistant.
-In this essay, we present a new mechanisation of category theory\footnote{Our proof scripts are available online at \url{https://github.com/xrchz/HOL/tree/category/examples/category}, as well as in the HOL4 repository (\url{http://sf.net/projects/hol/develop}) from revision <...>}, refining two previous developments in higher-order logic, and investigate the foundational issues.
+In this essay, we present a new mechanisation of category theory\footnote{Our proof scripts are available online at \url{https://github.com/xrchz/HOL/tree/category/examples/category}, as well as in the HOL4 repository (\url{http://sf.net/projects/hol/develop}) from revision <9115?>.}, refining two previous developments in higher-order logic, and investigate the foundational issues.
 
 Higher-order logic (HOL) is a simple but expressive formal system suitable for the formalisation of many pieces of mathematics.
 As a result, it is the logic implemented by many proof assistants in which formal mathematics has been developed.
@@ -321,11 +321,11 @@ Katovsky attaches, to categories intended to be locally small, an injective func
 The set representing a hom is then given by collecting these sets-representing-morphisms up into a single ZFC set; if there is such a ZFC set, the hom is small.
 This approach is problematic for at least two reasons: firstly, locally small categories are not extensional, because the same category equipped with two different representations of its morphisms would be different records in HOL; secondly, it is unnatural to invent a representation of morphisms as sets in order to prove that a category is locally small.
 %}
-\section{Binary Products and Other Limits}%356/250%{
+\section{Binary Products and Other Limits}%425/250%{
 \label{limits}
 Like many constructions in category theory (and in abstract mathematics generally), \emph{limits} can be presented in different, equivalent ways, at different levels of generality.
 One fully general definition gives a limit as a \emph{universal} \emph{cone}, and one presentation of cones give them as objects in a certain \emph{comma category}.
-We have defined comma categories in HOL4 and used them to define cones and limits.
+We have defined comma categories in HOL and used them to define cones and limits.
 We have also instantiated this general definition to define binary products as limits of a functor, called $\mathtt{product\_diagram}$, from $\mathtt{discrete\_cat}\;\{1,2\}$, and then proved that these products are characterised by a less abstract and possibly more familiar description:
 \begin{align*}
 &\vdash\forall{c,a,b,l}.\;\mathtt{is\_category}\;c\land a\in c.\mathtt{obj}\land b \in c.\mathtt{obj}\implies\\
@@ -350,8 +350,11 @@ We have proved that $\mathtt{set\_cat}$ has all limits of shape $\mathtt{discret
 Ours is the first mechanisation of limits in HOL (although limits are covered by many mechanisations in other formal systems).
 The fact that $\mathtt{set\_cat}$ has binary products is reassuring for the approach that models sets with a new type $\mathsf{zfset}$; we would not expect to be able to prove that $\mathtt{ens\_cat}\;u$ has limits for an arbitrary $u$ (nor for the universal set at an arbitrary type).
 
-<a few words about the difficulties facing an attempt to work on exponential objects and adjunctions>
-<namely: many equivalent formulations, but most of them would involve constructions that we can't make to be fully general>
+An important universal construction that is not an instance of a limit is the function space or exponential object.
+One definition gives exponential objects via an exponential functor that is defined as \emph{right adjoint} to the binary product functor.
+We can easily define the binary product functor using our work so far on binary products.
+However, some of the nicer formulations of adjunctions make use of categories we cannot define.
+We could always define exponential objects directly, ignoring the adjunction, but to do so is to miss out on opportunities for abstraction, for proving a theorem once and using it in many different contexts.
 %}
 \section{Conclusions}%48/400%{
 <summary of issues facing mechanisations>
