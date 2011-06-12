@@ -16,7 +16,7 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 \noindent Date
 
 \vspace{2em}
-\noindent Words: 4944
+\noindent Words: 4977
 %}
 \begin{abstract}%{
 The foundational difficulties presented by category theory make it difficult to formalise.
@@ -45,7 +45,7 @@ We comment on the limitations of our approach, compare our mechanisation to othe
 
 <Provide an overview of the structure of the essay. Or else make the structure much more navigable from the section headings alone.>
 %}
-\section{Higher-Order Logic}%507/500%{
+\section{Higher-Order Logic}%500/500%{
 \newcommand{\bool}{\ensuremath{\mathsf{bool}}}
 Higher-order logic (HOL) is a formal system that has proved popular for formalising purely mathematical results as well as properties of computer hardware and software systems.
 HOL is a natural-deduction calculus with the syntax of the simply typed lambda calculus.
@@ -62,7 +62,7 @@ In the semantics of HOL, the meaning of a type is a non-empty set, and the meani
 (A polymorphic term is interpreted as a function taking a set for each type variable and returning an element of the resulting type.)
 
 A \emph{predicate} is a term of type $\alpha\to\bool$ for some type $\alpha$.
-The type $\alpha\to\bool$ can be abbreviated by $\alpha\;\mathsf{set}$, reinforces the idea that types represent sets: a predicate on $\alpha$ is the characteristic function of a set of elements of type $\alpha$.
+The type $\alpha\to\bool$ can be abbreviated by $\alpha\;\mathsf{set}$: a predicate on $\alpha$ is the characteristic function of a set of elements of type $\alpha$.
 HOL4 includes much support for the representation of sets as predicates; we will use mathematical notation (such as $\{f\;x\mid P\;x\}$) for HOL sets.
 
 Boolean connectives can be defined as functions in HOL, for example conjunction has type $\bool\to\bool\to\bool$.
@@ -78,7 +78,7 @@ Standard types defined in HOL include the type $\mathsf{unit}$ with a single ele
 Generalising sum types, it is possible to define a new type to represent a record given the desired names and types of the record fields.
 New terms can be defined in terms of existing ones, like in a functional programming language.
 %}
-\section{Composable Morphisms and Categories}%1365/1400%{
+\section{Composable Morphisms and Categories}%1359/1400%{
 Category theory is an abstract theory of functions and composition.
 A category is an arena in which composition takes place, and consists of \emph{morphisms}, abstract functions, \emph{objects}, the possible domains and codomains of the morphisms, and a \emph{composition law}, obeying certain conditions.
 We define a type of morphisms in HOL as a polymorphic record $(\alpha,\beta,\gamma)\;\mathsf{morphism}=\langle\mathtt{dom}:\alpha,\,\mathtt{cod}:\beta,\,\mathtt{map}:\gamma\rangle$.
@@ -158,29 +158,36 @@ We have defined, for any two categories $c_1$ and $c_2$, the category $[c_1\to c
 An alternative approach to categories gives a set of morphisms, called a \emph{hom}, for each type (pair of objects) rather than giving all the morphisms at once.
 This has not been formalised in HOL, but is used by Huet and Sa{\"i}bi, for example.
 We can define homs after categories: $\mathtt{hom}\;c\;x\;y=\{f\mid f.\mathtt{dom}=x\land f.\mathtt{cod}=y\land f\in c.\mathtt{mor}\}$.
-An advantage of starting with homs instead might be that we could put off mentioning the collection of all morphisms.
-We will return to this point in Section~\ref{Yoneda} when describing locally small categories.
+The approaches are essentially equivalent, because if we defined categories in terms of homs, we could then define the collection of all morphisms in a category as $\mathtt{mor}\;c=\{f\mid\exists{x,y}.\;x\in c.\mathtt{obj}\land y\in c.\mathtt{obj}\land f\in c.\mathtt{hom}\;x\;y\}$.
+%An advantage of starting with homs instead might be that we could put off mentioning the collection of all morphisms.
+%We will return to this point in Section~\ref{Yoneda} when describing locally small categories.
 
 Another choice in how to formalise categories is whether to include objects at all: we might avoid the need for an $\mathtt{obj}$ field by identifying objects with identity morphisms, as explained in pages 41--43 of \cite{DBLP:books/daglib/0023249}.
 We have not seen this idea mechanised before; it would be interesting to see the ramifications of doing so on a development.
 %}
-\section{A Category of Classes and of Sets}%1539/1400%{
+\section{A Category of Classes and of Sets}%1527/1400%{
 \label{Set}
 \newcommand{\Set}{\ensuremath{\mathbf{Set}}}
 The category $\Set$ of sets has sets and objects and (typed) functions as morphisms.
 A natural approach to defining $\Set$ in HOL is as an instance of the $\mathsf{category}$ record where $\mathtt{obj}:\alpha\;\mathsf{set}\;\mathsf{set}$ and the map field of each morphism is a function $\alpha\to\alpha$.
-This approach is the one taken by O'Keefe, which we follow by defining a category of ``sets within a universe'', $\mathtt{ens\_cat}\;u$, whose set of objects is $u:\alpha\;\mathsf{set}\;\mathsf{set}$ and whose morphisms are of the form $f:(\alpha\;\mathsf{set},\alpha\to\alpha)\;\mathsf{mor}$ such that $x\in f.\mathtt{dom}\implies f.\mathtt{map}\;x\in f.\mathtt{cod}$ (and $f.\mathtt{map}$ is extensional on $f.\mathtt{dom}$).
+This approach is the one taken by O'Keefe, which we follow by defining a category of ``sets within a universe'':
+\begin{align*}
+&\mathtt{ens\_cat}\;(u:\alpha\;\mathsf{set}\;\mathsf{set})=\\
+&\quad\langle\mathtt{obj}=u,\\
+&\quad\phantom{\langle}\mathtt{mor}=\{f:(\alpha\;\mathsf{set},\alpha\to\alpha)\;\mathsf{mor}\mid \forall{x}.\;x\in f.\mathtt{dom}\implies f.\mathtt{map}\;x\in f.\mathtt{cod}\},\\
+&\quad\phantom{\langle}\mathtt{id}=\dots,\,\mathtt{comp}=\dots\rangle
+\end{align*}
+(we also ensure the morphisms are extensional).
 The $\mathtt{ens\_cat}\;u$ category captures one important property of the category of sets, namely, that the morphisms are functions under composition.
 It has precedent in Mac Lane's textbook on category theory~\cite{MacLaneCFTWM}, which defines $\mathbf{Ens}_u$ as above for the purpose of generalising arguments in $\Set$ to larger collections $u$ than that of all sets.
-However, in our polymorphic setting, $\mathtt{ens\_cat}$ does not capture the idea that \emph{every} set should be an object, and therefore fails to have many properties the category of sets ought to have.
+However, in our polymorphic setting, $\mathtt{ens\_cat}$ does not capture the idea that \emph{every} set should be an object, even when $u$ is a universal set (i.e., constantly true predicate), and therefore fails to have many properties the category of sets ought to have.
 
 The problem is that $\Set$ is usually formulated in an untyped setting, and when translated to the typed setting it includes functions from sets of elements of one type to those of another.
 For example, there is a function from the set of strings $\{\text{``an''},\text{``object''},\text{``in''},\text{``Set''}\}$ to the set of numbers $\{2,3,6\}$ that returns the length of a string, but in HOL, using idiomatic encodings, the former set would have type $\mathsf{string}\;\mathsf{set}$ while the latter would be a $\mathsf{num}\;\mathsf{set}$, and they cannot both be instances of $\alpha\;\mathsf{set}$ at the same time (since $\mathsf{string}$ and $\mathsf{num}$ are different types).
-Clearly, this is a problem at the level of types, so remains even if we take $u$ to be the universal set (i.e., constantly true predicate) of type $\alpha\;\mathsf{set}\;\mathsf{set}$.
+Clearly, this is a problem at the level of types, so remains even if we take $u$ to be the universal set of type $\alpha\;\mathsf{set}\;\mathsf{set}$.
 
 More generally, consider the relationship in any formalisation between the collection of morphisms $c.\mathtt{mor}$ in a category and the notion of a set.
-If $c.\mathtt{mor}$ is itself a set, then there is no category whose morphisms are all the functions between sets, since no set can contain all functions <ref: Cantor?>, so $\Set$ cannot be formalised.
-(If we define categories in terms of homs instead, a similar problem comes up when considering, for example, the category of functors from $\Set$ to itself <really?>.)
+If $c.\mathtt{mor}$ is itself a set, then there is no category whose morphisms are all the functions between sets because no set can contain all functions, so $\Set$ cannot be formalised.
 So if we want $\Set$ we must arrange for $c.\mathtt{mor}$ to be a \emph{class}: some kind of collection that can be larger than a set.
 
 We can introduce classes into HOL by means of a new type, $\mathsf{zfset}$, representing sets in an axiomatic set theory such as ZFC.
@@ -287,7 +294,7 @@ This approach is problematic for at least two reasons: firstly, locally small ca
 
 <discuss the difficulty with injectivity on objects and the tagging solution>
 %}
-\section{Binary Products and Other Limits}%308/250%{
+\section{Binary Products and Other Limits}%365/250%{
 \label{limits}
 Like many constructions in category theory (and in abstract mathematics generally), \emph{limits} can be presented in different, equivalent ways, at different levels of generality.
 One fully general definition gives a limit as a \emph{universal} \emph{cone}, and one presentation of cones give them as objects in a certain \emph{comma category}.
@@ -308,9 +315,13 @@ The notation $f\operatorname{\mathtt{:-}}x\to y\operatorname{\mathtt{-:}}c$ is s
 
 The characterisation of binary products above says that for every pair of objects $a$ and $b$ in a category $c$, there exists a canonical product object $ab$ with projections $p_1$ and $p_2$.
 We can use Hilbert choice to define constants $a\times b\operatorname{\mathtt{-:}}c$ , $\pi_1^{a,b,c}$, and $\pi_2^{a,b,c}$ to denote these terms whenever they exist.
-<readability?>
+Thus we pick arbitrary, but fixed, objects and morphisms to denote ``the'' limit and its projections, which are characterised just by the universal property.
+This is in line with mathematical practice.
+%<readability?>
 
-<set cat has binary products. this is the first mechanisation of limits in HOL (but certainly not at all - refs) and reassuring for the HOLZF approach. the point of set cat is that it may be impossible to prove arbitrary ens cats have limits>
+We have proved that $\mathtt{set\_cat}$ has all limits of shape $\mathtt{discrete\_cat}\;\{1,2\}$.
+Ours is the first mechanisation of limits in HOL (although limits are covered by many mechanisations in other formal systems).
+The fact that $\mathtt{set\_cat}$ has binary products is reassuring for the approach that models sets with a new type $\mathsf{zfset}$; we would not expect to be able to prove that $\mathtt{ens\_cat}\;u$ has limits for an arbitrary $u$ (nor for the universal set at an arbitrary type).
 
 <a few words about the difficulties facing an attempt to work on exponential objects and adjunctions>
 <namely: many equivalent formulations, but most of them would involve constructions that we can't make to be fully general>
