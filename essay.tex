@@ -16,7 +16,7 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 \noindent Date
 
 \vspace{2em}
-\noindent Words: 5594
+\noindent Words: 5909 (Maximum: 5000)
 %}
 \begin{abstract}%{
 The foundational difficulties presented by category theory make it difficult to formalise.
@@ -361,11 +361,34 @@ We can easily define the binary product functor using our work so far on binary 
 However, some of the nicer formulations of adjunctions make use of categories we cannot define.
 We could always define exponential objects directly, ignoring the adjunction, but to do so is to miss out on opportunities for abstraction, for proving a theorem once and using it in many different contexts.
 %}
-\section{Conclusions}%47/200%{
-<summary of issues facing mechanisations>
-<related work in other systems esp. that can solve major foundational problems>
-<It may be possible to do this kind of general abstract mathematics by working with a non-wellfounded set theory \cite{RBJones18}.>
-<foundations an old problem, and still being worked out mathematically? \cite{Blass,springerlink:10.1007/BFb0059147,Easwaran}
+\section{Conclusions}%361/200%{
+We have looked at a new mechanisation of category theory in higher-order logic.
+The foundational difficulties with category theory reveal themselves as the following issues during mechanisation:
+\begin{itemize}
+\item We cannot collect all categories as the objects of a single category.
+The separation of categories by HOL types seems not to accommodate a stratification by size (one of the mathematical remedies) well.
+\item
+As a result, we are forced to define some things (like $\mathtt{iso}$) multiple times: once within categories, and once for every instance in higher categories that are unavailable.
+\item
+Since HOL functions are total but the type system is relatively weak, we need to restrict partial functions so that they are extensional, that is, comparable by their action on their domains only.
+Extensionality is infectious.
+\item
+We cannot collect all sets up as a single set, so to formalise the category of sets we need to introduce some notion of proper classes.
+\item
+We need to reconcile the elements of classes, which are pure ZFC sets for us, with the existing HOL types, which represent sets at the meta-level, by choosing representative ZFC sets for small classes.
+\end{itemize}
+
+HOL is a pleasant logic in which to formalise much mathematics; it is unfortunate that it has such difficulties with highly abstract mathematics.
+There has been, perhaps, more success in formalising category theory using dependent type theory.
+However, the continuing experimentation with approaches to sets--some use setoids~\cite{DBLP:conf/birthday/HuetS00,Carvalho,Wilander}, others the type class mechanism in Coq~\cite{DBLP:conf/mkm/CoquandS07,Sozeau,Megacz}, and yet others import axiomatic set theory somewhat as we do~\cite{Simpson04}--suggest that dependent type theory is not necessarily the final answer (see also the comment about large categories in \cite{Megacz}).
+
+It may be better to do general abstract mathematics in a non-standard formal system.
+For example, Jones suggests a non-wellfounded set theory~\cite{RBJones18}.
+Gilmore and Tsinkis present category theory without size problems in an unusual natural-deduction-based set theory~\cite{DBLP:journals/tcs/GilmoreT93}. 
+%<Systems and Models, Little Theories?>
+
+The foundations of category theory involve interesting problems that have been tackled mathematically and philosophically from the beginning (e.g., \cite{Blass,springerlink:10.1007/BFb0059147}) but the answers are still not completely settled~\cite{Easwaran}.
+By pursuing formalisation, we are forced to clarify the issues, and may be driven to solutions that could benefit both category theory and the practice of formalisation itself.
 %}
 \bibliographystyle{plain}
 \bibliography{essay}
