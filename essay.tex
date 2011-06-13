@@ -32,7 +32,7 @@ Often, it is possible to set things up well for the problem at hand while failin
 
 Formalisation is a good way to test the limits of foundational choices, because a formal development must respect those choices throughout.
 There can be no resort to arguments or constructions by analogy or implied generalisation, especially in formalisations developed mechanically with a proof assistant.
-In this essay, we present a new mechanisation of category theory\footnote{Our proof scripts are available online at \url{https://github.com/xrchz/HOL/tree/category/examples/category}, as well as in the HOL4 repository (\url{http://sf.net/projects/hol/develop}) from revision <9115?>.}, refining two previous developments in higher-order logic, and investigate the foundational issues.
+In this essay we present a new mechanisation of category theory\footnote{Our proof scripts are available online at \url{https://github.com/xrchz/HOL/tree/category/examples/category}, as well as in the HOL4 repository (\url{http://sf.net/projects/hol/develop}) from revision <9115?>.}, refining two previous developments in higher-order logic, and investigate the foundational issues.
 
 Higher-order logic (HOL) is a simple but expressive formal system suitable for the formalisation of many pieces of mathematics.
 As a result, it is the logic implemented by many proof assistants in which formal mathematics has been developed.
@@ -40,7 +40,7 @@ HOL has a standard semantics in set theory, and therefore cannot capture large c
 However, it can be extended with extra axioms asserting the existence of large classes.
 
 We formalise the category of sets, the simplest foundationally tricky category, in higher-order logic so extended.
-We try to fit naturally into the idiom of the logic while still being able to express some basic but foundationally-challenging categorical results.
+We try to fit naturally into the idiom of the logic while retaining the ability to express some basic but foundationally-challenging categorical results.
 We comment on the limitations of our approach, compare our mechanisation to others, and make brief speculations on what a more satisfying mechanisation of category theory would require and would look like.
 
 This essay is structured as a high-level tour of our mechanisation, with discussions of foundational issues, and comparisons to existing work, as they come up.
@@ -55,7 +55,7 @@ HOL has four formulae specified as axioms and a dozen rules of inference; a \emp
 The HOL logic is implemented by several mechanical proof assistants, including Isabelle~\cite{DBLP:conf/tphol/WenzelPN08}, HOL4~\cite{DBLP:conf/tphol/SlindN08}, and HOL-Light~\cite{DBLP:conf/tphol/Harrison09a}.
 Our development was done in HOL4, inspired by existing mechanisations \cite{Katovsky,DBLP:journals/entcs/OKeefe04} in Isabelle.
 
-Every term $t$ has a unique type $\tau$ (this is written $t:\tau$), and the most general type for an unannotate term can be inferred automatically.
+Every term $t$ has a unique type $\tau$ (this is written $t:\tau$), and the most general type for an unannotated term can be inferred automatically.
 A type is either a type variable or a type operator applied to argument types (an operator taking no arguments is a type constant).
 Terms whose types include type variables are said to be \emph{polymorphic}.
 For example, there is a polymorphic constant $=$, whose type is $\alpha\to\alpha\to\bool$, representing equality at every type $\alpha$.
@@ -74,7 +74,7 @@ Typically, one also uses derived rules of inference that abbreviate applications
 
 HOL provides principles for defining new types and new (term) constants.
 The primitive types include function types ($\alpha\to\beta$ with arguments $\alpha$ and $\beta$) and Booleans ($\bool$).
-A new type can be defined after proving that a certain predicate on an existing type is non-empty.
+New types can be defined (from theorems asserting predicates on existing types are non-empty).
 Standard types defined in HOL include the type $\mathsf{unit}$ with a single element $()$, the option type with constructors $\mathtt{NONE}:\alpha\;\mathsf{option}$ and $\mathtt{SOME}:\alpha\to\alpha\;\mathsf{option}$, the product type operator producing a type $\alpha\times\beta$ from arguments $\alpha$ and $\beta$, and (its dual) the sum type operator $\alpha+\beta$.
 Generalising sum types, it is possible to define a new type to represent a record given the desired names and types of the record fields.
 New terms can be defined in terms of existing ones, like in a functional programming language.
@@ -88,7 +88,8 @@ We use a polymorphic record for categories as well, abbreviating $(\alpha,\alpha
 (\alpha,\beta)\;\mathsf{category}=\langle&\mathtt{obj}:\alpha\;\mathsf{set},\,\mathtt{mor}:(\alpha,\beta)\;\mathsf{mor}\;\mathsf{set},\,\mathtt{id}:\alpha\to\beta,\\&\mathtt{comp}:(\alpha,\beta)\;\mathsf{mor}\to(\alpha,\beta)\;\mathsf{mor}\to\beta\rangle
 \end{align*}
 Thus an $(\alpha,\beta)\;\mathsf{category}$ has objects of type $\alpha$ and morphisms with a map field of type $\beta$.
-The $\mathtt{id}$ and $\mathtt{comp}$ fields, intended to assign an identity morphism to every object and a composite morphism to every pair of composable morphisms, do not return full morphisms, because their $\mathtt{dom}$ and $\mathtt{cod}$ fields are determined by the conditions on a category, rather we define a function $\mathtt{id\_in}\;c\;x=\langle\mathtt{dom}=x,\,\mathtt{cod}=x,\,\mathtt{map}=c.\mathtt{id}\;x\rangle$ and $\mathtt{compose\_in}$ similarly.
+The $\mathtt{id}$ and $\mathtt{comp}$ fields, intended to assign an identity morphism to every object and a composite morphism to every pair of composable morphisms, do not return full morphisms, because their $\mathtt{dom}$ and $\mathtt{cod}$ fields are determined by the conditions on a category.
+Rather we define a function $\mathtt{id\_in}\;c\;x=\langle\mathtt{dom}=x,\,\mathtt{cod}=x,\,\mathtt{map}=c.\mathtt{id}\;x\rangle$ and $\mathtt{compose\_in}$ similarly.
 
 As a very simple example, we might define the discrete category (which has no morphisms except identity morphisms) on a set $s$ as follows:
 \begin{align*}
@@ -111,12 +112,13 @@ Functors and natural transformations can be defined as instances of morphisms (b
 For example, we use $(\alpha,\beta,\gamma,\delta)\;\mathsf{functor}$ to abbreviate the type \[((\alpha,\beta)\;\mathsf{category},(\gamma,\delta)\;\mathsf{category},(\alpha,\beta)\;\mathsf{mor}\to(\gamma,\delta)\;\mathsf{mor})\;\mathsf{morphism}\] whose instances we intend to be functors from an $(\alpha,\beta)\;\mathsf{category}$ to a $(\gamma,\delta)\;\mathsf{category}$.
 The $\mathtt{map}$ field of a functor gives its action on morphisms; following Katovsky we omit the action on objects from the record, since it can be defined (using Hilbert choice) in terms of the action on identity morphisms.
 
-Instances of the $\mathsf{morphism}$ record are not immediately attached to a category, but it could be argued that all composable morphisms occur in some category.
+Instances of the $\mathsf{morphism}$ record are not necessarily attached to instances of the \emph{category} record.
+It could be argued, however, that all composable morphisms occur in some category.
 For example, functors are the morphisms in a category of categories.
 However, this notion is problematic for several reasons, one of which is that objects in our categories must all have the same type, but we make use of functors between categories of different types.
 Indeed, the separation of elements into different types in the semantics of HOL, which is a feature common to all type theories, presents difficulties whenever we want to collect elements across types into a totality.
 
-Categories are abstract structures--many different things can play the roles of objects and morphisms--so it is natural to use a polymorphic type to model categories in HOL.
+Categories are abstract structures---many different things can play the roles of objects and morphisms---so it is natural to use a polymorphic type to model categories in HOL.
 The polymorphism enables the same definition of $\mathtt{id\_in}$, for example, to be used for categories with all different types.
 At the same time, polymorphism prevents us from collecting all categories in a single HOL set: in forming a term of type $(\alpha,\beta)\;\mathsf{category}\;\mathsf{set}$ we fix the types $\alpha$ and $\beta$, and therefore the set denoted cannot contain, for example, an element of type $(\alpha\times\alpha,\beta)\;\mathsf{category}$.
 
@@ -363,7 +365,7 @@ We could always define exponential objects directly, ignoring the adjunction, bu
 %}
 \section{Conclusions}%361/200%{
 We have looked at a new mechanisation of category theory in higher-order logic.
-The foundational difficulties with category theory reveal themselves as the following issues during mechanisation:
+The foundational difficulties posed by category theory reveal themselves as the following issues during mechanisation:
 \begin{itemize}
 \item We cannot collect all categories as the objects of a single category.
 The separation of categories by HOL types seems not to accommodate a stratification by size (one of the mathematical remedies) well.
@@ -380,7 +382,7 @@ We need to reconcile the elements of classes, which are pure ZFC sets for us, wi
 
 HOL is a pleasant logic in which to formalise much mathematics; it is unfortunate that it has such difficulties with highly abstract mathematics.
 There has been, perhaps, more success in formalising category theory using dependent type theory.
-However, the continuing experimentation with approaches to sets--some use setoids~\cite{DBLP:conf/birthday/HuetS00,Carvalho,Wilander}, others the type class mechanism in Coq~\cite{DBLP:conf/mkm/CoquandS07,Sozeau,Megacz}, and yet others import axiomatic set theory somewhat as we do~\cite{Simpson04}--suggest that dependent type theory is not necessarily the final answer (see also the comment about large categories in \cite{Megacz}).
+However, the continuing experimentation with approaches to sets--some use setoids~\cite{DBLP:conf/birthday/HuetS00,Carvalho,Wilander}, others the type class mechanism in Coq~\cite{DBLP:conf/mkm/CoquandS07,Sozeau,Megacz}, and yet others import axiomatic set theory somewhat as we do~\cite{Simpson04}--suggest that dependent type theory is not necessarily the final answer (Megacz~\cite{Megacz} does not formalise large categories because ``Coq's universe polymorphism is only $\pi_1$'').
 
 It may be better to do general abstract mathematics in a non-standard formal system.
 For example, Jones suggests a non-wellfounded set theory~\cite{RBJones18}.
