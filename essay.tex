@@ -16,7 +16,7 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 \noindent Date
 
 \vspace{2em}
-\noindent Words: 5891 (Maximum: 5000)
+\noindent Words: 5824 (Maximum: 5000)
 \vspace{5em}
 %}
 \section*{Acknowledgements}%{
@@ -30,18 +30,16 @@ Nevertheless, it is possible to formalise category theory in higher-order logic,
 It is not obvious that this approach can be pushed very far.
 A more satisfying formalisation of category theory may require new foundations for abstract mathematics.
 \end{abstract}%}
-\section{Introduction}%403/300%{
+\section{Introduction}%374/300%{
 Category theory provides a framework for studying various notions common to diverse areas of mathematics.
 It has applications in computer science ranging from semantics of formal systems (e.g., \cite{CroleCT,JacobsCLTT}) to models of concurrency~\cite{DBLP:conf/csl/CattaniW96}.
 Since its inception, category theory has challenged the traditional foundations of mathematics, namely in set theory, by dealing with collections that fail to be sets.
-It is often possible to set things up well for the problem at hand while failing to capture the full generality of the categorical constructions.
 
 Formalisation is a good way to test the limits of foundational choices, because a formal development must respect those choices throughout.
 There is no resort to arguments by analogy or implied generalisation, especially in formalisations developed mechanically with a proof assistant.
 In this essay we present a new mechanisation of category theory\footnote{Our proof scripts are available online at \url{https://github.com/xrchz/HOL/tree/category/examples/category}, as well as in the HOL4 repository (\url{http://sf.net/projects/hol/develop}) from revision <9115?>.}, refining two previous developments in higher-order logic, and investigate the foundational issues.
 
-Higher-order logic (HOL)\footnote{By HOL we mean the logic implemented by the HOL4 theorem prover~\cite{DBLP:conf/tphol/SlindN08}.} is a simple but expressive formal system.
-It is the logic implemented by many proof assistants in which formal mathematics has been developed.
+Higher-order logic (HOL)\footnote{By HOL we mean the logic implemented by the HOL4 theorem prover~\cite{DBLP:conf/tphol/SlindN08}.} is a simple but expressive formal system, implemented by many proof assistants in which formal mathematics has been developed.
 HOL has a semantics in set theory without inaccessible cardinals, and therefore cannot capture large categorical constructions directly.
 However, it can be extended with extra axioms that assert the existence of large collections. 
 
@@ -55,13 +53,13 @@ We begin with a brief introduction to HOL, then look at our formalisation of cat
 The discussion is suitable for readers unfamiliar with either category theory or theorem proving in HOL, although they may prefer to skim over the displayed formulae giving select definitions and theorems from our development.
 We assume passing acquaintance with introductory logic, set theory, and type theory.
 %}
-\section{Higher-Order Logic}%419/500%{
+\section{Higher-Order Logic}%414/400%{
 \newcommand{\bool}{\ensuremath{\mathsf{bool}}}
-Higher-order logic (HOL) is a formal system that has proved popular for formalising purely mathematical results as well as properties of computer hardware and software.
+Higher-order logic (HOL) is a formal system that has proved popular for formalising mathematics as well as properties of hardware and software.
 HOL is a sequent calculus with the syntax of the simply typed lambda calculus.
 A term of Boolean type is called a \emph{formula}.
 HOL has four formulae specified as axioms and a dozen rules of inference; a \emph{theorem}, $\vdash\phi$, is a formula $\phi$ proved from the axioms using the rules.
-The HOL logic is implemented by several mechanical proof assistants, including Isabelle~\cite{DBLP:conf/tphol/WenzelPN08}, HOL4~\cite{DBLP:conf/tphol/SlindN08}, HOL-Light~\cite{DBLP:conf/tphol/Harrison09a}, and ProofPower~\cite{ProofPower}.
+HOL is implemented by several mechanical proof assistants, including Isabelle~\cite{DBLP:conf/tphol/WenzelPN08}, HOL4~\cite{DBLP:conf/tphol/SlindN08}, HOL-Light~\cite{DBLP:conf/tphol/Harrison09a}, and ProofPower~\cite{ProofPower}.
 Our development was done in HOL4, inspired by existing mechanisations \cite{Katovsky,DBLP:journals/entcs/OKeefe04} in Isabelle.
 
 Every term $t$ has a unique type $\tau$ (this is written $t:\tau$).
@@ -85,7 +83,7 @@ Standard defined types include the type $\mathsf{unit}$ with a single element $(
 Generalising product types, it is possible to define a new type to represent a record given the desired names and types of the record fields.
 New terms can be defined in terms of existing ones, like in a functional programming language.
 %}
-\section{Composable Morphisms and Categories}%1608/1500%{
+\section{Composable Morphisms and Categories}%1575/1500%{
 Category theory is an abstract theory of functions and composition.
 A category is an arena in which composition takes place, and consists of \emph{morphisms}, abstract functions, \emph{objects}, the possible domains and codomains of the morphisms, and a \emph{composition law}, obeying certain conditions.
 We define a type of morphisms in HOL as a polymorphic record $$(\alpha,\beta,\gamma)\;\mathsf{morphism}=\langle\mathtt{dom}:\alpha,\,\mathtt{cod}:\beta,\,\mathtt{map}:\gamma\rangle$$
@@ -150,9 +148,9 @@ Therefore if we want to consider an isomorphism between categories (a functor th
 We define another notion, $\mathtt{cat\_iso}$, to cover functors of arbitrary types, by replacing all the ``$\operatorname{\mathtt{-:}}c$'' notions above as appropriate (e.g., replace $f\circ g\operatorname{\mathtt{-:}}c$ by functor composition).
 
 Theorems stating properties of isomorphisms (like that the notion is symmetric) need to be repeated for both $\mathtt{iso\_pair}$ and $\mathtt{cat\_iso\_pair}$. 
-This situation is an example of the polymorphic record approach to categories getting in the way of expressing general categorical properties.
-It is possible to define isomorphisms outside of any category in terms of arbitrary notions of composition and identity, to prove theorems about the general definition, and then to specialise it both to the case within a category and to the case where the requisite category is unavailable.
-We have not taken this route, partly because it seems unwieldy: such a definition would need to take two copies each of an identity map and a composition rule to ensure a fully general type.
+This situation shows the polymorphic record approach to categories getting in the way of expressing general categorical properties.
+We could define isomorphisms outside of any category in terms of arbitrary notions of composition and identity, prove theorems about the general definition, and then specialise it both to the case within a category and to the case where the requisite category is unavailable.
+We have not taken this route, partly because it seems unwieldy: to ensure a general type such a definition would need to take two copies each of an identity map and a composition rule.
 
 Having looked at some of the problems due to the type system and our use of a polymorphic record, we return to describing our development.
 An element of the $\mathsf{category}$ type is not necessarily a category.
@@ -164,13 +162,12 @@ This is because functions in HOL are total, but we are using them to model parti
 For example, if $x,y\notin c.\mathtt{obj}$ then we want $c.\mathtt{id}\;x=c.\mathtt{id}\;y$ even though the value of $c.\mathtt{id}\;x$ will never feature in any proof within the category $c$.
 We call this kind of restriction \emph{extensionality}\footnote{The adjective ``canonical'' might be better than ``extensional'': we are picking canonical representatives in the collection of total functions that agree on a given domain (thereby making the collection of canonical representatives extensional).}.
 
-It is thanks to extensionality that two different constructions of the same category can be proved equal in HOL.
 We impose the same restriction on other structures involving partial functions, like functors and natural transformations, for example the morphism map of a functor $G$ is restricted to $G.\mathtt{dom}.\mathtt{mor}$.
 A non-extensional function (one that takes values other than $\mathtt{ARB}$ outside its desired domain) can easily be made extensional by changing its value at the relevant points: we use $$\mathtt{restrict}\;f\;s=\lambda{e}.\;\mathtt{if}\;e\in s\;\mathtt{then}\;f\;e\;\mathtt{else}\;\mathtt{ARB}$$ to restrict $f:\alpha\to\beta$ to $s:\alpha\;\mathsf{set}$.
 
 It is important to respect extensionality whenever possible; thus, for example, the actual definition of $\mathtt{id\_in}$ mentioned above is wrapped by a call to $\mathtt{restrict}$ on the set $c.\mathtt{obj}$ even though $c.\mathtt{id}$ is also restricted.
 We define $\mathtt{is\_category}\;c=\mathtt{category\_axioms}\;c\land\mathtt{extensional\_category}\;c$, where the second conjunct ensures $c.\mathtt{id}$ and $c.\mathtt{comp}$ are extensional.
-In a dependently typed setting, both the category axioms and extensionality can be encoded directly in the definition of the $\mathsf{category}$ type (as done in~\cite{DBLP:conf/birthday/HuetS00,Sozeau,Megacz} for example).
+In a dependently typed setting, both the category axioms and extensionality can be encoded directly in the definition of the $\mathsf{category}$ type (as in~\cite{DBLP:conf/birthday/HuetS00,Sozeau,Megacz}).
 
 Extensionality enables us to characterise equality between natural transformations as follows (where $\mathtt{is\_nt}$ is a predicate like $\mathtt{is\_category}$ but for natural transformations):
 \begin{align*}
@@ -179,7 +176,7 @@ Extensionality enables us to characterise equality between natural transformatio
 \end{align*}
 (and similarly for categories and functors).
 Given a functor $F$, we can define an identity natural transformation whose component at $x$ is the identity morphism for $F$'s action on $x$.
-Our theorem about natural transformation equality is used to prove, for example,
+Our theorem about natural transformation equality lets us prove
 \[\vdash\forall{\eta}.\;\mathtt{is\_nt}\;\eta\implies(\eta\circ\mathtt{id\_nt}\;\eta.\mathtt{dom} = \eta)\]
 because our definition of natural transformation composition (the $\circ$ operator above) produces an extensional natural transformation, so comparison with $\eta$ depends only on categorical properties.
 We have defined, for any two categories $c_1$ and $c_2$, the category $[c_1\to c_2]$ of functors between them with natural transformations as morphisms, where $\mathtt{id\_nt}$ provides identity morphisms.
@@ -384,7 +381,7 @@ We can easily define the binary product functor using our work so far on binary 
 However, some of the nicer formulations of adjunctions make use of categories we cannot define.
 We could always define exponential objects directly, ignoring the adjunction, but to do so is to miss out on opportunities for abstraction, for proving a theorem once and using it in many different contexts.
 %}
-\section{Conclusions}%366/200%{
+\section{Conclusions}%366/300%{
 We have looked at a new mechanisation of category theory in higher-order logic.
 The foundational difficulties posed by category theory reveal themselves as the following issues during mechanisation:
 \begin{itemize}
