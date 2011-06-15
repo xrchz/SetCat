@@ -16,13 +16,13 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 \noindent Date
 
 \vspace{2em}
-\noindent Words: 5656 (Maximum: 5000)
+\noindent Words: 5616 (Maximum: 5000)
 \vspace{5em}
 %}
 \section*{Acknowledgements}%{
 I thank my supervisor, Sam Staton, for many helpful discussions and comments.
-I also thank Mike Gordon, Paul Giannaros, and Zongyan Huang for reading drafts and proving valuable criticism.
-Special thanks to Roger Jones for his detailed reading and comments.
+I also thank Mike Gordon, Paul Giannaros, and Zongyan Huang for reading a draft and providing feedback.
+Special thanks to Roger Jones for his detailed reading and criticism.
 %}
 \begin{abstract}%{
 The foundational difficulties presented by category theory make it difficult to formalise.
@@ -289,25 +289,24 @@ But our definition of $\mathtt{zfrep}$ does not ensure injectivity: there is no 
 Indeed by considering $s_1,s_2\in u$ where $u$ is larger than the collection of all ZFC sets, which is possible when $u:\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}\;\mathsf{set}$, we see that $\mathtt{zfrep}$ could not be injective.
 It is unfortunate, but not fatal to our later results, that we cannot ensure literal injectivity of $\mathtt{rep\_functor}\;u$ when $u$ is small.
 %}
-\section{The Yoneda Embedding}%816/600%{
+\section{The Yoneda Embedding}%774/600%{
 \label{Yoneda}
 \newcommand{\op}{\ensuremath{\sp{\mathrm{op}}}}
 \newcommand{\blank}{\rule[0.5ex]{0.6em}{.4pt}}
-The Yoneda embedding provides a representation of a category $c$ in the category of presheaves $\widehat{c}$.
-A \emph{presheaf} is a functor from ${c}\op$ to the category of sets.
-Thus $\widehat{c}$ is a functor category.
-The importance of the Yoneda embedding comes from the fact that $\widehat{c}$ inherits much structure from the category of sets (for example, having small limits and colimits) so can be used when $c$ itself lacks this structure.
-The Yoneda lemma, used to prove that the Yoneda embedding is an embedding, is an important basic milestone in any development about the category of sets, and is one of the main results in both O'Keefe's and Katovksy's developments.
+The Yoneda embedding represents a category $c$ in its category of presheaves $\widehat{c}$.
+A \emph{presheaf} is a functor from ${c}\op$ to $\mathbf{Set}$, thus $\widehat{c}$ is a functor category.
+The importance of the Yoneda embedding is that $\widehat{c}$ inherits much structure from $\mathbf{Set}$ (e.g., having small limits) so can be used when $c$ itself lacks this structure.
+The Yoneda lemma, used to prove that the Yoneda embedding is an embedding, is a basic milestone in any development about the category of sets, and is one of the main results in both O'Keefe's and Katovksy's developments.
 
 The Yoneda embedding sends an object $x$ in $c$ to the \emph{contravariant hom functor} $c(\blank,x)$, which in turn sends an object $y$ in $c$ to $c(y,x)$ (that is, $\mathtt{hom}\;c\;y\;x$).
 In order for $c(\blank,x)$ to be a set-valued presheaf, however, every hom $c(y,x)$ must be a set.
 A category where every hom is a set is called \emph{locally small}, and it is only for locally small categories that the Yoneda embedding can be defined.
-However the proof of the Yoneda lemma never mentions smallness explicitly, and the argument still goes through when we generalise from the category of sets to an arbitrary category whose objects are appropriately set-like and include the homs of $c$.
+However, the proof of the Yoneda lemma never mentions smallness explicitly, and the argument still goes through when we generalise from the category of sets to an arbitrary category whose objects are appropriately set-like and include the homs of $c$.
 
 Therefore, we prove the Yoneda lemma, and define the embedding, for presheaves whose codomain is $\mathtt{ens\_cat}\;u$.
 We require $u$ to contain at least all the homs of $c$.
-O'Keefe, who also proves the Yoneda lemma for ``($\mathtt{ens\_cat}\;u$)-valued'' presheaves, takes $u=\mathtt{UNIV}$; we instead take a universe containing only the homs of $c$ (but we define an inclusion functor that embeds $\mathtt{ens\_cat}\;u_1$ into $\mathtt{ens\_cat}\;u_2$ whenever $u_1\subseteq u_2$).
-We mostly follow Katovsky's organisation of the proof, although our proofs are slightly simpler for avoiding representations as ZFC sets.
+O'Keefe, who also proves the Yoneda lemma for ``($\mathtt{ens\_cat}\;u$)-valued'' presheaves, takes $u=\mathtt{UNIV}$; we instead take a universe containing only the homs of $c$ (but we define an inclusion functor embedding $\mathtt{ens\_cat}\;u_1$ into $\mathtt{ens\_cat}\;u_2$ whenever $u_1\subseteq u_2$).
+We follow Katovsky's organisation of the proof, although our proofs are slightly simpler for avoiding representations as ZFC sets.
 The two main definitions are of the Yoneda functor itself, and the natural transformations between hom functors it produces:
 \begin{align*}
 \mathtt{Yfunctor}\;c&=\langle\mathtt{dom}=c,\,\mathtt{cod}=[c\op\to\mathtt{ens\_cat}\;(\mathtt{homs}\;c)],\,\mathtt{map}=\mathtt{YfunctorNT}\;c\rangle\\
@@ -322,28 +321,28 @@ The two main theorems are that the Yoneda functor is an embedding, and is also l
 \end{align*}
 
 To get a version of $\mathtt{Yfunctor}\;c$ whose codomain is $[c^\mathrm{op}\to\mathtt{set\_cat}]$, we use $\mathtt{rep\_functor}$ and the isomorphism between $\mathtt{set\_cat}$ and the $\mathtt{ens\_cat}$ of small ZFC sets.
-In the first instance, we might define
+We might define
 \begin{multline*}
 \mathtt{zYfunctor}\;c=\\(\mathtt{postcomp\_functor}\;(c^\mathrm{op})\;(\mathtt{ens\_to\_set}\circ\mathtt{rep\_functor}\;(\mathtt{homs}\;c)))\circ\mathtt{Yfunctor}\;c
 \end{multline*}
 where $\circ$ is functor composition and $\mathtt{postcomp\_functor}\;b\;f$ converts a functor $f$ from $c_1$ to $c_2$ to a functor from $[b\to c_1]$ to $[b\to c_2]$.
-Using our existing theorems about $\mathtt{Yfunctor}\;c$, along with general theorems about embeddings being preserved by functor composition and by lifting to a functor category, we can easily prove that $\mathtt{zYfunctor}\;c$ is an embedding whenever $c$ is locally small.
+Using our existing theorems about $\mathtt{Yfunctor}\;c$ (along with general theorems about the preservation of embeddings) we can easily prove that $\mathtt{zYfunctor}\;c$ is an embedding whenever $c$ is locally small.
 However, we cannot prove that it is injective on objects: the problem is that $\mathtt{rep\_functor}\;(\mathtt{homs}\;c)$ may not be injective on objects (as mentioned above), so if two objects in $c$ have isomorphic contravariant hom functors our embedding might represent them by the same ZFC set.
 
 Mathematically, the Yoneda embedding ought to be (literally) injective on objects.
 We can recover injectivity with a tagging trick (due to Sam Staton), by defining
 \[\mathtt{zYfunctor}\;c=(\mathtt{postcomp\_functor}\;(c^\mathrm{op})\;(\mathtt{tag\_functor}\;c))\circ\mathtt{Yfunctor}\;c\]
 where the action of $\mathtt{tag\_functor}\;c$ on a hom $h$ is the ZFC ordered pair whose first component is the empty ZFC set if $h$ is of the form $c(x,x)$, otherwise it is a singleton ZFC set, and whose second component is just the action of $\mathtt{ens\_to\_set}\circ\mathtt{rep\_functor}\;(\mathtt{homs}\;c)$ on $h$.
-The ZFC sets now encode whether they are representing a hom of the form $c(x,x)$ or $c(x,y)$, therefore we can always tell functors $c(\blank,x)$ and $c(\blank,y)$ apart (when $x\neq y$) by their action on $x$, even if they are isomorphic functors.
+The ZFC sets now encode whether they are representing a hom of the form $c(x,x)$ or $c(x,y)$, therefore we can tell functors $c(\blank,x)$ and $c(\blank,y)$ apart (when $x\neq y$) by their action on $x$, even if they are isomorphic functors.
 
 We end this section with a comment about the other mechanisations' treatment of locally small categories.
 O'Keefe only proves the Yoneda lemma for $\mathtt{ens\_cat}$ so never needs to distinguish locally small categories.
 Katovsky attaches, to categories intended to be locally small, an injective function that picks a ZFC set for each morphism in the category.
-The set representing a hom is then given by collecting these sets-representing-morphisms up into a single ZFC set; if there is such a ZFC set, the hom is small.
+The set representing a hom is given by collecting these sets-representing-morphisms as a single ZFC set; if such a ZFC set exists, the hom is small.
 
 Katovsky's approach is problematic for at least two reasons: firstly, locally small categories are not extensional, because the same category equipped with two different representations of its morphisms would be different records in HOL; secondly, it is unnatural to invent a representation of morphisms as sets in order to prove that a category is locally small.
 Indeed, there is a locally small category (albeit using our definition of ``small'') that cannot be represented with Katovsky's approach, namely, $\mathtt{discrete\_cat}\;\mathtt{UNIV}$.
-This category is locally small because each hom contains at most one morphism, but there is no injective representation of all functions as ZFC sets to attach to Katovsky's record.
+This category is locally small because each hom contains at most one morphism, but there is no injective representation of all functions as ZFC sets.
 %}
 \section{Binary Products and Other Limits}%408/250%{
 \label{limits}
