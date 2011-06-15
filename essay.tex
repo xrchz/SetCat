@@ -17,6 +17,12 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 
 \vspace{2em}
 \noindent Words: 5877 (Maximum: 5000)
+\vspace{5em}
+%}
+\section*{Acknowledgements}%{
+I thank my supervisor, Sam Staton, for many helpful discussions.
+I also thank Mike Gordon, Paul Giannaros, and Zongyan Huang for reading drafts and proving valuable criticism.
+Special thanks to Roger Jones for his detailed comments.
 %}
 \begin{abstract}%{
 The foundational difficulties presented by category theory make it difficult to formalise.
@@ -55,7 +61,7 @@ Higher-order logic (HOL) is a formal system that has proved popular for formalis
 HOL is a sequent calculus with the syntax of the simply typed lambda calculus.
 A term of Boolean type is called a \emph{formula}.
 HOL has four formulae specified as axioms and a dozen rules of inference; a \emph{theorem}, $\vdash\phi$, is a formula $\phi$ proved from the axioms using the rules.
-The HOL logic is implemented by several mechanical proof assistants, including Isabelle~\cite{DBLP:conf/tphol/WenzelPN08}, HOL4~\cite{DBLP:conf/tphol/SlindN08}, and HOL-Light~\cite{DBLP:conf/tphol/Harrison09a}.
+The HOL logic is implemented by several mechanical proof assistants, including Isabelle~\cite{DBLP:conf/tphol/WenzelPN08}, HOL4~\cite{DBLP:conf/tphol/SlindN08}, HOL-Light~\cite{DBLP:conf/tphol/Harrison09a}, and ProofPower~\cite{ProofPower}.
 Our development was done in HOL4, inspired by existing mechanisations \cite{Katovsky,DBLP:journals/entcs/OKeefe04} in Isabelle.
 
 Every term $t$ has a unique type $\tau$ (this is written $t:\tau$).
@@ -184,8 +190,9 @@ The approaches are essentially equivalent, because if we defined categories in t
 %An advantage of starting with homs instead might be that we could put off mentioning the collection of all morphisms.
 %We will return to this point in Section~\ref{Yoneda} when describing locally small categories.
 
-Another choice in how to formalise categories is whether to include objects at all: we might avoid the need for an $\mathtt{obj}$ field by identifying objects with identity morphisms, as explained in pages 41--43 of \cite{DBLP:books/daglib/0023249}.
-We have not seen this idea mechanised before; it would be interesting to see the ramifications of doing so on a development.
+Another choice is whether to include objects at all: we might avoid the need for an $\mathtt{obj}$ field by identifying objects with identity morphisms, as explained in pages 41--43 of \cite{DBLP:books/daglib/0023249}.
+This approach is taken by Roger Jones~\cite{RBJones17}, and allows a much slicker presentation than ours (for example, functors are just HOL functions).
+Categories are still polymorphic, but with just one type variable (for morphisms).
 %}
 \section{A Category of Classes and of Sets}%1477/1400%{
 \label{Set}
