@@ -16,7 +16,7 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 \noindent Date
 
 \vspace{2em}
-\noindent Words: 5763 (Maximum: 5000)
+\noindent Words: 5696 (Maximum: 5000)
 \vspace{5em}
 %}
 \section*{Acknowledgements}%{
@@ -53,7 +53,7 @@ We begin with a brief introduction to HOL, then look at our formalisation of cat
 The discussion is suitable for readers unfamiliar with either category theory or theorem proving in HOL, although they may prefer to skim over the displayed formulae giving select definitions and theorems from our development.
 We assume passing acquaintance with introductory logic, set theory, and type theory.
 %}
-\section{Higher-Order Logic}%414/400%{
+\section{Higher-Order Logic}%420/400%{
 \newcommand{\bool}{\ensuremath{\mathsf{bool}}}
 Higher-order logic (HOL) is a formal system that has proved popular for formalising mathematics as well as properties of hardware and software.
 HOL is a sequent calculus with the syntax of the simply typed lambda calculus.
@@ -71,6 +71,7 @@ In the semantics of HOL, the meaning of a type is a non-empty set, and the meani
 A \emph{predicate} is a term of type $\alpha\to\bool$ for some type $\alpha$.
 The type $\alpha\to\bool$ is abbreviated by $\alpha\;\mathsf{set}$: a predicate on $\alpha$ is the characteristic function of a subset of elements of type $\alpha$.
 HOL4 includes much support for the representation of sets as predicates; we will use mathematical notation (such as $\{f\;x\mid P\;x\}$) for HOL sets.
+The constantly true predicate is denoted $\mathtt{UNIV}$.
 
 Boolean connectives can be defined as functions in HOL, for example conjunction has type $\bool\to\bool\to\bool$.
 In addition to the standard connectives and quantifiers, HOL includes a \emph{Hilbert choice} term that, given a predicate $P$ as argument, denotes an arbitrary (but fixed) element $c$ such that $P\; c$ holds, if any such element exists, otherwise denotes an arbitrary element (of the right type).
@@ -193,7 +194,7 @@ Another choice is whether to include objects at all: we might avoid the need for
 This approach is taken by Roger Jones~\cite{RBJones17}, and allows a much slicker presentation than ours (for example, functors are just HOL functions).
 Categories are still polymorphic, but with just one type variable (for morphisms).
 %}
-\section{A Category of Classes and of Sets}%1423/1400%{
+\section{A Category of Classes and of Sets}%1415/1400%{
 \label{Set}
 \newcommand{\Set}{\ensuremath{\mathbf{Set}}}
 The category $\Set$ of sets has sets as objects and functions\footnote{with specified domain and codomain, so for example the empty functions $\bot:\emptyset\to\emptyset$ and $\bot:\emptyset\to\mathbb{N}$ are distinct} as morphisms.
@@ -208,7 +209,7 @@ This approach is the one taken by O'Keefe, which we follow by defining a categor
 (we also ensure the morphisms are extensional).
 The $\mathtt{ens\_cat}\;u$ category captures one important property of $\Set$, namely, that the morphisms are functions under composition.
 It has precedent in Mac Lane's textbook on category theory~\cite{MacLaneCFTWM}, which defines $\mathbf{Ens}_u$ as above for the purpose of generalising arguments in $\Set$ to larger collections $u$ than that of all sets.
-However, in our polymorphic setting, $\mathtt{ens\_cat}$ does not capture the idea that \emph{every} set should be an object, even when $u$ is a universal set (i.e., constantly true predicate), and therefore fails to have many properties a category of sets ought to have.
+However, in our polymorphic setting, $\mathtt{ens\_cat}$ does not capture the idea that \emph{every} set should be an object, even when $u=\mathtt{UNIV}$, and therefore fails to have many properties a category of sets ought to have.
 
 The problem is that $\Set$ is usually formulated in an untyped setting, and when translated to the typed setting it includes functions from sets of elements of one type to those of another.
 For example, there is a function from the set of strings $\{\text{``an''},\text{``object''},\text{``in''},\text{``Set''}\}$ to the set of numbers $\{2,3,6\}$ that returns the length of a string, but in HOL, using idiomatic encodings, the former set would have type $\mathsf{string}\;\mathsf{set}$ while the latter would be a $\mathsf{num}\;\mathsf{set}$, and they cannot both be instances of $\alpha\;\mathsf{set}$ at the same time (since $\mathsf{string}$ and $\mathsf{num}$ are different types).
@@ -288,25 +289,24 @@ But our definition of $\mathtt{zfrep}$ does not ensure injectivity: there is no 
 Indeed by considering $s_1,s_2\in u$ where $u$ is larger than the collection of all ZFC sets, which is possible when $u:\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}\;\mathsf{set}$, we see that $\mathtt{zfrep}$ could not be injective.
 It is unfortunate, but not fatal to our later results, that we cannot ensure literal injectivity of $\mathtt{rep\_functor}\;u$ when $u$ is small.
 %}
-\section{The Yoneda Embedding}%863/600%{
+\section{The Yoneda Embedding}%816/600%{
 \label{Yoneda}
 \newcommand{\op}{\ensuremath{\sp{\mathrm{op}}}}
 \newcommand{\blank}{\rule[0.5ex]{0.6em}{.4pt}}
 The Yoneda embedding provides a representation of a category $c$ in the category of presheaves $\widehat{c}$.
 A \emph{presheaf} is a functor from ${c}\op$ to the category of sets.
 Thus $\widehat{c}$ is a functor category.
-The importance of the Yoneda embedding comes from the fact that $\widehat{c}$ inherits much structure from the category of sets (for example, the existence of small limits and colimits) so can be used when $c$ itself lacks this structure.
+The importance of the Yoneda embedding comes from the fact that $\widehat{c}$ inherits much structure from the category of sets (for example, having small limits and colimits) so can be used when $c$ itself lacks this structure.
 The Yoneda lemma, used to prove that the Yoneda embedding is an embedding, is an important basic milestone in any development about the category of sets, and is one of the main results in both O'Keefe's and Katovksy's developments.
 
 The Yoneda embedding sends an object $x$ in $c$ to the \emph{contravariant hom functor} $c(\blank,x)$, which in turn sends an object $y$ in $c$ to $c(y,x)$ (that is, $\mathtt{hom}\;c\;y\;x$).
 In order for $c(\blank,x)$ to be a set-valued presheaf, however, every hom $c(y,x)$ must be a set.
-A hom can fail to be a set if it is too large.
 A category where every hom is a set is called \emph{locally small}, and it is only for locally small categories that the Yoneda embedding can be defined.
 However the proof of the Yoneda lemma never mentions smallness explicitly, and the argument still goes through when we generalise from the category of sets to an arbitrary category whose objects are appropriately set-like and include the homs of $c$.
 
 Therefore, we prove the Yoneda lemma, and define the embedding, for presheaves whose codomain is $\mathtt{ens\_cat}\;u$.
-Since the Yoneda lemma deals with hom functors, we require $u$ to contain at least all the homs of $c$.
-O'Keefe, who also proves the Yoneda lemma for ``($\mathtt{ens\_cat}\;u$)-valued'' presheaves, takes $u$ to be the universal set; we instead take a universe containing only the homs of $c$ (but we also define an inclusion functor that embeds $\mathtt{ens\_cat}\;u_1$ into $\mathtt{ens\_cat}\;u_2$ whenever $u_1\subseteq u_2$).
+We require $u$ to contain at least all the homs of $c$.
+O'Keefe, who also proves the Yoneda lemma for ``($\mathtt{ens\_cat}\;u$)-valued'' presheaves, takes $u=\mathtt{UNIV}$; we instead take a universe containing only the homs of $c$ (but we define an inclusion functor that embeds $\mathtt{ens\_cat}\;u_1$ into $\mathtt{ens\_cat}\;u_2$ whenever $u_1\subseteq u_2$).
 We mostly follow Katovsky's organisation of the proof, although our proofs are slightly simpler for avoiding representations as ZFC sets.
 The two main definitions are of the Yoneda functor itself, and the natural transformations between hom functors it produces:
 \begin{align*}
@@ -337,17 +337,17 @@ where the action of $\mathtt{tag\_functor}\;c$ on a hom $h$ is the ZFC ordered p
 The ZFC sets now encode whether they are representing a hom of the form $c(x,x)$ or $c(x,y)$, therefore we can always tell functors $c(\blank,x)$ and $c(\blank,y)$ apart (when $x\neq y$) by their action on $x$, even if they are isomorphic functors.
 
 We end this section with a comment about the other mechanisations' treatment of locally small categories.
-O'Keefe does not extend the logic to include proper classes, so never needs to distinguish locally small categories.
+O'Keefe only proves the Yoneda lemma for $\mathtt{ens\_cat}$ so never needs to distinguish locally small categories.
 Katovsky attaches, to categories intended to be locally small, an injective function that picks a ZFC set for each morphism in the category.
 The set representing a hom is then given by collecting these sets-representing-morphisms up into a single ZFC set; if there is such a ZFC set, the hom is small.
 
 Katovsky's approach is problematic for at least two reasons: firstly, locally small categories are not extensional, because the same category equipped with two different representations of its morphisms would be different records in HOL; secondly, it is unnatural to invent a representation of morphisms as sets in order to prove that a category is locally small.
-Indeed, there is a locally small category that cannot be represented with Katovsky's approach, namely, $\mathtt{discrete\_cat}\;\mathtt{UNIV}$ where $\mathtt{UNIV}$ is the universal set of type $(\mathsf{zfset}\to\mathsf{zfset})\;\mathsf{set}$ (the class of all functions between ZFC sets).
-This category is locally small because each hom contains at most one morphism, but there is no injective representation of all functions as ZFC sets (because there are too many functions) to attach to Katovsky's record.
+Indeed, there is a locally small category (albeit using our definition of ``small'') that cannot be represented with Katovsky's approach, namely, $\mathtt{discrete\_cat}\;\mathtt{UNIV}$.
+This category is locally small because each hom contains at most one morphism, but there is no injective representation of all functions as ZFC sets to attach to Katovsky's record.
 %}
-\section{Binary Products and Other Limits}%425/250%{
+\section{Binary Products and Other Limits}%408/250%{
 \label{limits}
-Like many constructions in category theory (and in abstract mathematics generally), \emph{limits} can be presented in different, equivalent ways, at different levels of generality.
+Like many constructions in abstract mathematics, \emph{limits} can be presented in different, equivalent ways, at different levels of generality.
 One fully general definition gives a limit as a \emph{universal} \emph{cone}, and one presentation of cones give them as objects in a certain \emph{comma category}.
 We have defined comma categories in HOL and used them to define cones and limits.
 We have also instantiated this general definition to define binary products as limits of a functor, called $\mathtt{product\_diagram}$, from $\mathtt{discrete\_cat}\;\{1,2\}$, and then proved that these products are characterised by a less abstract and possibly more familiar description (the notation $f\operatorname{\mathtt{:-}}x\to y\operatorname{\mathtt{-:}}c$ is shorthand for $f.\mathtt{dom}=x\land f.\mathtt{cod}=y\land f\in c.\mathtt{mor}$):
@@ -371,7 +371,7 @@ This is in line with mathematical practice.
 
 We have proved that $\mathtt{set\_cat}$ has all limits of shape $\mathtt{discrete\_cat}\;\{1,2\}$.
 Ours is the first mechanisation of limits in HOL (although limits are covered by mechanisations in other formal systems, e.g., \cite{DBLP:conf/birthday/HuetS00,Simpson04}).
-The fact that $\mathtt{set\_cat}$ has binary products is reassuring for the approach that models sets with a new type $\mathsf{zfset}$; we would not expect to be able to prove that $\mathtt{ens\_cat}\;u$ has limits for an arbitrary $u$ (nor for the universal set at an arbitrary type).
+The fact that $\mathtt{set\_cat}$ has binary products is reassuring for the approach that models sets with a new type $\mathsf{zfset}$; we would not expect to be able to prove that $\mathtt{ens\_cat}\;\mathtt{UNIV}$ has limits.
 
 An important universal construction that is not an instance of a limit is the function space or exponential object.
 One definition gives exponential objects via an exponential functor that is defined as \emph{right adjoint} to the binary product functor.
