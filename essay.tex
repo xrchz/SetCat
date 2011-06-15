@@ -16,13 +16,13 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 \noindent Date
 
 \vspace{2em}
-\noindent Words: 5696 (Maximum: 5000)
+\noindent Words: 5656 (Maximum: 5000)
 \vspace{5em}
 %}
 \section*{Acknowledgements}%{
-I thank my supervisor, Sam Staton, for many helpful discussions.
+I thank my supervisor, Sam Staton, for many helpful discussions and comments.
 I also thank Mike Gordon, Paul Giannaros, and Zongyan Huang for reading drafts and proving valuable criticism.
-Special thanks to Roger Jones for his detailed comments.
+Special thanks to Roger Jones for his detailed reading and comments.
 %}
 \begin{abstract}%{
 The foundational difficulties presented by category theory make it difficult to formalise.
@@ -84,7 +84,7 @@ Standard defined types include the type $\mathsf{unit}$ with a single element $(
 Generalising product types, it is possible to define a new type to represent a record given the desired names and types of the record fields.
 New terms can be defined in terms of existing ones, like in a functional programming language.
 %}
-\section{Composable Morphisms and Categories}%1575/1500%{
+\section{Composable Morphisms and Categories}%1527/1500%{
 Category theory is an abstract theory of functions and composition.
 A category is an arena in which composition takes place, and consists of \emph{morphisms}, abstract functions, \emph{objects}, the possible domains and codomains of the morphisms, and a \emph{composition law}, obeying certain conditions.
 We define a type of morphisms in HOL as a polymorphic record $$(\alpha,\beta,\gamma)\;\mathsf{morphism}=\langle\mathtt{dom}:\alpha,\,\mathtt{cod}:\beta,\,\mathtt{map}:\gamma\rangle$$
@@ -150,8 +150,8 @@ We define another notion, $\mathtt{cat\_iso}$, to cover functors of arbitrary ty
 
 Theorems stating properties of isomorphisms (like that the notion is symmetric) need to be repeated for both $\mathtt{iso\_pair}$ and $\mathtt{cat\_iso\_pair}$. 
 This situation shows the polymorphic record approach to categories getting in the way of expressing general categorical properties.
-We could define isomorphisms outside of any category in terms of arbitrary notions of composition and identity, prove theorems about the general definition, and then specialise it both to the case within a category and to the case where the requisite category is unavailable.
-We have not taken this route, partly because it seems unwieldy: to ensure a general type such a definition would need to take two copies each of an identity map and a composition rule.
+We could try using a general definition of isomorphism, outside of any category.
+But brief experiments make doing so seem unwieldy: such a definition would need to take two copies each (to ensure a general type) of an identity map and a composition rule as arguments.
 
 Having looked at some of the problems due to the type system and our use of a polymorphic record, we return to describing our development.
 An element of the $\mathsf{category}$ type is not necessarily a category.
@@ -163,8 +163,8 @@ This is because functions in HOL are total, but we are using them to model parti
 For example, if $x,y\notin c.\mathtt{obj}$ then we want $c.\mathtt{id}\;x=c.\mathtt{id}\;y$ even though the value of $c.\mathtt{id}\;x$ will never feature in any proof within the category $c$.
 We call this kind of restriction \emph{extensionality}\footnote{The adjective ``canonical'' might be better than ``extensional'': we are picking canonical representatives in the collection of total functions that agree on a given domain (thereby making the collection of canonical representatives extensional).}.
 
-We impose the same restriction on other structures involving partial functions, like functors and natural transformations, for example the morphism map of a functor $G$ is restricted to $G.\mathtt{dom}.\mathtt{mor}$.
-A non-extensional function (one that takes values other than $\mathtt{ARB}$ outside its desired domain) can easily be made extensional by changing its value at the relevant points: we use $$\mathtt{restrict}\;f\;s=\lambda{e}.\;\mathtt{if}\;e\in s\;\mathtt{then}\;f\;e\;\mathtt{else}\;\mathtt{ARB}$$ to restrict $f:\alpha\to\beta$ to $s:\alpha\;\mathsf{set}$.
+We impose the same restriction wherever partial functions arise, for example the morphism map of a functor $G$ is restricted to $G.\mathtt{dom}.\mathtt{mor}$.
+A non-extensional function (one taking values other than $\mathtt{ARB}$ outside its desired domain) can easily be made extensional: we use $$\mathtt{restrict}\;f\;s=\lambda{e}.\;\mathtt{if}\;e\in s\;\mathtt{then}\;f\;e\;\mathtt{else}\;\mathtt{ARB}$$ to restrict $f:\alpha\to\beta$ to $s:\alpha\;\mathsf{set}$.
 
 It is important to respect extensionality whenever possible; thus, for example, the actual definition of $\mathtt{id\_in}$ mentioned above is wrapped by a call to $\mathtt{restrict}$ on the set $c.\mathtt{obj}$ even though $c.\mathtt{id}$ is also restricted.
 We define $\mathtt{is\_category}\;c=\mathtt{category\_axioms}\;c\land\mathtt{extensional\_category}\;c$, where the second conjunct ensures $c.\mathtt{id}$ and $c.\mathtt{comp}$ are extensional.
@@ -194,10 +194,10 @@ Another choice is whether to include objects at all: we might avoid the need for
 This approach is taken by Roger Jones~\cite{RBJones17}, and allows a much slicker presentation than ours (for example, functors are just HOL functions).
 Categories are still polymorphic, but with just one type variable (for morphisms).
 %}
-\section{A Category of Classes and of Sets}%1415/1400%{
+\section{A Category of Classes and of Sets}%1423/1400%{
 \label{Set}
 \newcommand{\Set}{\ensuremath{\mathbf{Set}}}
-The category $\Set$ of sets has sets as objects and functions\footnote{with specified domain and codomain, so for example the empty functions $\bot:\emptyset\to\emptyset$ and $\bot:\emptyset\to\mathbb{N}$ are distinct} as morphisms.
+The category $\Set$ of sets has sets as objects and functions with specified domain and codomain\footnote{so for example the empty functions $\bot:\emptyset\to\emptyset$ and $\bot:\emptyset\to\mathbb{N}$ are distinct} as morphisms.
 A natural approach to defining $\Set$ in HOL is as an instance of the $\mathsf{category}$ record where $\mathtt{obj}:\alpha\;\mathsf{set}\;\mathsf{set}$ and the $\mathtt{map}$ field of each morphism is a function $\alpha\to\alpha$.
 This approach is the one taken by O'Keefe, which we follow by defining a category of ``sets within a universe'':
 \begin{align*}
@@ -237,7 +237,7 @@ Nevertheless, we need to use the ``untyped'' $\mathtt{set\_cat}$ if we want to f
 The reason much mathematics is encoded in set theory in the first place is that the universe of sets supports the encoding of almost all mathematical objects.
 We can tap into this idea by treating a HOL set (of type $\alpha\;\mathsf{set}$ for some type $\alpha$) as a ZFC set, in particular by finding a representative element of type $\mathsf{zfset}$ to which the HOL set corresponds.
 Since some HOL types contain more elements than there are ZFC sets, though, we can only hope to encode ``small'' HOL sets.
-Following ideas from Katovksy, we define a predicate $\mathtt{is\_small}:\alpha\;\mathsf{set}\to\mathsf{bool}$ by $\mathtt{is\_small}\;s=\exists{f,z}.\;\mathtt{INJ}\;f\;s\;\{x\mid x\operatorname{\mathtt{in}} z\}$, that is, a HOL set $s$ is small\footnote{<Note about how this differs from common usage of the word ``small'' in set theory.>} if there is an injection from $s$ to the (HOL) set of elements of some ZFC set.
+Following ideas from Katovksy, we define a predicate $\mathtt{is\_small}:\alpha\;\mathsf{set}\to\mathsf{bool}$ by $$\mathtt{is\_small}\;s=\exists{f,z}.\;\mathtt{INJ}\;f\;s\;\{x\mid x\operatorname{\mathtt{in}} z\}$$ so a HOL set $s$ is small\footnote{We do not mean \emph{hereditarily} small (or ``low-rank''), which is a common meaning of ``small'' in set theory; we focus just on cardinality.} if there is an injection from $s$ to the (HOL) set of elements of some ZFC set.
 
 Working with $\mathtt{ens\_cat}$ in HOL is easier than with $\mathtt{set\_cat}$, because the morphisms are based on HOL functions directly rather than encodings of ZFC functions as ZFC sets.
 We would expect $\mathtt{ens\_cat}$ to be more general than $\mathtt{set\_cat}$, since it is parameterised over an arbitrary universe of sets, and, happily, we can prove that $\mathtt{set\_cat}$ is isomorphic as a category to the $\mathtt{ens\_cat}$ of small sets of ZFC sets.
@@ -246,7 +246,7 @@ Specifically, we have proved
 &\vdash\mathtt{cat\_iso}\;\mathtt{set\_to\_ens}\text{, alongside}\\
 &\vdash\mathtt{is\_functor}\;\mathtt{set\_to\_ens}\text{,}\\
 &\vdash\mathtt{set\_to\_ens}.\mathtt{dom}=\mathtt{set\_cat}\text{, and}\\
-&\vdash\mathtt{set\_to\_ens}.\mathtt{cod}=\{s:\mathsf{zfset}\;\mathsf{set}\mid\mathtt{is\_small}\;s\}\text{.}
+&\vdash\mathtt{set\_to\_ens}.\mathtt{cod}=\mathtt{ens\_cat}\;\{s:\mathsf{zfset}\;\mathsf{set}\mid\mathtt{is\_small}\;s\}\text{.}
 \end{align*}
 %For the proof, we use the theorem that an isomorphism of categories is the same as a bijection between the classes of objects and between each hom, and the facts that ZFC sets are determined by their members, and explicitly typed ZFC functions correspond to explicitly typed HOL functions (between ZFC sets) by their action under ZFC function application.
 We define $\mathtt{ens\_to\_set}$ (using Hilbert choice) as the inverse functor.
@@ -348,7 +348,7 @@ This category is locally small because each hom contains at most one morphism, b
 \section{Binary Products and Other Limits}%408/250%{
 \label{limits}
 Like many constructions in abstract mathematics, \emph{limits} can be presented in different, equivalent ways, at different levels of generality.
-One fully general definition gives a limit as a \emph{universal} \emph{cone}, and one presentation of cones give them as objects in a certain \emph{comma category}.
+One fully general definition gives a limit as a \emph{universal} \emph{cone}, and one presentation of cones gives them as objects in a certain \emph{comma category}.
 We have defined comma categories in HOL and used them to define cones and limits.
 We have also instantiated this general definition to define binary products as limits of a functor, called $\mathtt{product\_diagram}$, from $\mathtt{discrete\_cat}\;\{1,2\}$, and then proved that these products are characterised by a less abstract and possibly more familiar description (the notation $f\operatorname{\mathtt{:-}}x\to y\operatorname{\mathtt{-:}}c$ is shorthand for $f.\mathtt{dom}=x\land f.\mathtt{cod}=y\land f\in c.\mathtt{mor}$):
 \begin{align*}
