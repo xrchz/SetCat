@@ -16,7 +16,7 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 \noindent Date
 
 \vspace{2em}
-\noindent Words: 5616 (Maximum: 5000)
+\noindent Words: 5568 (Maximum: 5000)
 \vspace{5em}
 %}
 \section*{Acknowledgements}%{
@@ -344,12 +344,12 @@ Katovsky's approach is problematic for at least two reasons: firstly, locally sm
 Indeed, there is a locally small category (albeit using our definition of ``small'') that cannot be represented with Katovsky's approach, namely, $\mathtt{discrete\_cat}\;\mathtt{UNIV}$.
 This category is locally small because each hom contains at most one morphism, but there is no injective representation of all functions as ZFC sets.
 %}
-\section{Binary Products and Other Limits}%408/250%{
+\section{Binary Products and Other Limits}%360/250%{
 \label{limits}
 Like many constructions in abstract mathematics, \emph{limits} can be presented in different, equivalent ways, at different levels of generality.
-One fully general definition gives a limit as a \emph{universal} \emph{cone}, and one presentation of cones gives them as objects in a certain \emph{comma category}.
-We have defined comma categories in HOL and used them to define cones and limits.
-We have also instantiated this general definition to define binary products as limits of a functor, called $\mathtt{product\_diagram}$, from $\mathtt{discrete\_cat}\;\{1,2\}$, and then proved that these products are characterised by a less abstract and possibly more familiar description (the notation $f\operatorname{\mathtt{:-}}x\to y\operatorname{\mathtt{-:}}c$ is shorthand for $f.\mathtt{dom}=x\land f.\mathtt{cod}=y\land f\in c.\mathtt{mor}$):
+We define limits in HOL via \emph{cones}, defined in turn via \emph{comma categories}.
+We define binary products as limits of a functor, called $\mathtt{product\_diagram}$, from $\mathtt{discrete\_cat}\;\{1,2\}$.
+We have proved a less abstract (standard) characterisation of binary products (the notation $f\operatorname{\mathtt{:-}}x\to y\operatorname{\mathtt{-:}}c$ is shorthand for $f.\mathtt{dom}=x\land f.\mathtt{cod}=y\land f\in c.\mathtt{mor}$):
 \begin{align*}
 &\vdash\forall{c,a,b,l}.\;\mathtt{is\_category}\;c\land a\in c.\mathtt{obj}\land b \in c.\mathtt{obj}\implies\\
 &\quad\mathtt{is\_limit}\;(\mathtt{product\_diagram}\;c\;a\;b)\;l\iff\\
@@ -362,7 +362,7 @@ p_2'\operatorname{\mathtt{:-}} ab' \to b \operatorname{\mathtt{-:}}c\implies\\
 m\operatorname{\mathtt{:-}}p\to ab\operatorname{\mathtt{-:}}c\land(p_1\circ m\operatorname{\mathtt{-:}}c = p_1')\land(p_2\circ m\operatorname{\mathtt{-:}}c = p_2')
 \end{align*}
 
-The characterisation of binary products above says that for every pair of objects $a$ and $b$ in a category $c$, there exists a canonical product object $ab$ with projections $p_1$ and $p_2$.
+The theorem above says that for every pair of objects $a$ and $b$ in a category $c$, there exists a canonical product object $ab$ with projections $p_1$ and $p_2$.
 We can use Hilbert choice to define constants $a\times b\operatorname{\mathtt{-:}}c$ , $\pi_1^{a,b,c}$, and $\pi_2^{a,b,c}$ to denote these terms whenever they exist.
 Thus we pick arbitrary, but fixed, objects and morphisms to denote ``the'' limit and its projections, which are characterised just by the universal property.
 This is in line with mathematical practice.
@@ -375,7 +375,7 @@ The fact that $\mathtt{set\_cat}$ has binary products is reassuring for the appr
 An important universal construction that is not an instance of a limit is the function space or exponential object.
 One definition gives exponential objects via an exponential functor that is defined as \emph{right adjoint} to the binary product functor.
 We can easily define the binary product functor using our work so far on binary products.
-However, some of the nicer formulations of adjunctions make use of categories we cannot define.
+However, the best way to treat adjunctions is not obvious.
 We could always define exponential objects directly, ignoring the adjunction, but to do so is to miss out on opportunities for abstraction, for proving a theorem once and using it in many different contexts.
 %}
 \section{Conclusions}%366/300%{
