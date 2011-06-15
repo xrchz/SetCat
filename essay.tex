@@ -16,7 +16,7 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 \noindent Date
 
 \vspace{2em}
-\noindent Words: 5824 (Maximum: 5000)
+\noindent Words: 5763 (Maximum: 5000)
 \vspace{5em}
 %}
 \section*{Acknowledgements}%{
@@ -193,7 +193,7 @@ Another choice is whether to include objects at all: we might avoid the need for
 This approach is taken by Roger Jones~\cite{RBJones17}, and allows a much slicker presentation than ours (for example, functors are just HOL functions).
 Categories are still polymorphic, but with just one type variable (for morphisms).
 %}
-\section{A Category of Classes and of Sets}%1480/1400%{
+\section{A Category of Classes and of Sets}%1423/1400%{
 \label{Set}
 \newcommand{\Set}{\ensuremath{\mathbf{Set}}}
 The category $\Set$ of sets has sets as objects and functions\footnote{with specified domain and codomain, so for example the empty functions $\bot:\emptyset\to\emptyset$ and $\bot:\emptyset\to\mathbb{N}$ are distinct} as morphisms.
@@ -212,23 +212,21 @@ However, in our polymorphic setting, $\mathtt{ens\_cat}$ does not capture the id
 
 The problem is that $\Set$ is usually formulated in an untyped setting, and when translated to the typed setting it includes functions from sets of elements of one type to those of another.
 For example, there is a function from the set of strings $\{\text{``an''},\text{``object''},\text{``in''},\text{``Set''}\}$ to the set of numbers $\{2,3,6\}$ that returns the length of a string, but in HOL, using idiomatic encodings, the former set would have type $\mathsf{string}\;\mathsf{set}$ while the latter would be a $\mathsf{num}\;\mathsf{set}$, and they cannot both be instances of $\alpha\;\mathsf{set}$ at the same time (since $\mathsf{string}$ and $\mathsf{num}$ are different types).
-Clearly, this is a problem at the level of types, so remains even if we take $u$ to be the universal set of type $\alpha\;\mathsf{set}\;\mathsf{set}$.
 
 More generally, consider the relationship in any formalisation between the collection of morphisms $c.\mathtt{mor}$ in a category and the notion of a set.
 If $c.\mathtt{mor}$ is itself a set, then there is no category whose morphisms are all the functions between sets because no set can contain all functions.
-So if we want $\Set$ we must arrange for $c.\mathtt{mor}$ to be a \emph{class}: some kind of collection that can be larger than a set.
+So if we want $\Set$ we must arrange for $c.\mathtt{mor}$ to be some kind of collection that can be larger than a set.
 
-We can introduce classes into HOL by means of a new type, $\mathsf{zfset}$, representing sets in an axiomatic set theory such as ZFC.
+A solution in HOL is to introduce a new type, $\mathsf{zfset}$, representing sets in an axiomatic set theory such as ZFC.
 Contrary to the way types are usually introduced in HOL, that is, by definition, the type $\mathsf{zfset}$ is created as a new primitive type (extending the logic) and its properties are asserted as new axioms of HOL.
 The new axioms are (higher-order versions of) the axioms of ZFC.
 We also define new terms for ZFC set membership ($\mathtt{in}:\mathsf{zfset}\to\mathsf{zfset}\to\mathsf{bool}$), set union, functions as graphs, and so on.
 
-<FIX>
-The effect on the semantics is that types must be interpreted as classes because any existing polymorphic type might be instantiated with $\mathsf{zfset}$; the constantly true predicate of type $\mathsf{zfset}\;\mathsf{set}$ now represents the class of all ZFC sets.
+The constantly true predicate of type $\mathsf{zfset}\;\mathsf{set}$ now represents the collection of all ZFC sets.
 This method of accessing set theory within the HOL logic was introduced by Mike Gordon \cite{DBLP:conf/tphol/Gordon96} (and independently by Bob Solovay, see~\cite{DBLP:conf/ictac/Obua06}) and is implemented in both HOL4 and Isabelle~\cite{DBLP:conf/ictac/Obua06}.
 We use it, following Katovksy, to define a non-polymorphic category of sets with $\mathtt{set\_cat}.\mathtt{obj}:\mathsf{zfset}\;\mathsf{set}$ and $\mathtt{set\_cat}.\mathtt{mor}:\mathsf{zfset}\;\mathsf{set}$ also (since functions between ZFC sets can be encoded as ZFC sets).
 
-It would be reasonable to formalise all categories non-polymorphically, using sets and classes, so our original $\mathsf{category}$ record would have an $\mathtt{obj}$ field of type $\mathtt{zfset}\;\mathtt{set}$ (although it might be better to use $\mathtt{obj}:\alpha$ and a convention to only instanstiate $\alpha$ by $\mathsf{zfset}\;\mathsf{set}$ or $\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}$ and so on, to allow arbitrarily large categories).
+It would be reasonable to formalise all categories non-polymorphically, revising our original $\mathsf{category}$ record to have an $\mathtt{obj}$ field of type $\mathtt{zfset}\;\mathtt{set}$ (although it might be better to use $\mathtt{obj}:\alpha$ and a convention to only instanstiate $\alpha$ by $\mathsf{zfset}\;\mathsf{set}$ or $\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}$ and so on, to allow arbitrarily large categories).
 This approach matches a mathematical view of categories based on set theory extended with proper classes (as in~\cite{MacLaneCFTWM} for example) if we take $\mathtt{zfset}$ seriously as our representation of sets.
 However, in HOL we have a competing representation of sets, namely the HOL types.
 If we formalise categories purely in terms of $\mathsf{zfset}$, then our categories remain disconnected from any other theories we have formalised in HOL using types such as $\mathsf{num}$ and $\mathsf{string}$.
@@ -237,8 +235,8 @@ It is for this reason we consider the polymorphic approach to be idiomatic.
 Nevertheless, we need to use the ``untyped'' $\mathtt{set\_cat}$ if we want to formalise the many properties of $\Set$ that are lost on $\mathtt{ens\_cat}$.
 The reason much mathematics is encoded in set theory in the first place is that the universe of sets supports the encoding of almost all mathematical objects.
 We can tap into this idea by treating a HOL set (of type $\alpha\;\mathsf{set}$ for some type $\alpha$) as a ZFC set, in particular by finding a representative element of type $\mathsf{zfset}$ to which the HOL set corresponds.
-Since HOL types now represent (possibly large) classes, we can only hope to encode small HOL sets.
-Following ideas from Katovksy, we define a predicate $\mathtt{is\_small}:\alpha\;\mathsf{set}\to\mathsf{bool}$ by $\mathtt{is\_small}\;s=\exists{f,z}.\;\mathtt{INJ}\;f\;s\;\{x\mid x\operatorname{\mathtt{in}} z\}$, that is, a HOL set $s$ is small if there is an injection from $s$ to the (HOL) set of elements of some ZFC set.
+Since some HOL types contain more elements than there are ZFC sets, though, we can only hope to encode ``small'' HOL sets.
+Following ideas from Katovksy, we define a predicate $\mathtt{is\_small}:\alpha\;\mathsf{set}\to\mathsf{bool}$ by $\mathtt{is\_small}\;s=\exists{f,z}.\;\mathtt{INJ}\;f\;s\;\{x\mid x\operatorname{\mathtt{in}} z\}$, that is, a HOL set $s$ is small\footnote{<Note about how this differs from common usage of the word ``small'' in set theory.>} if there is an injection from $s$ to the (HOL) set of elements of some ZFC set.
 
 Working with $\mathtt{ens\_cat}$ in HOL is easier than with $\mathtt{set\_cat}$, because the morphisms are based on HOL functions directly rather than encodings of ZFC functions as ZFC sets.
 We would expect $\mathtt{ens\_cat}$ to be more general than $\mathtt{set\_cat}$, since it is parameterised over an arbitrary universe of sets, and, happily, we can prove that $\mathtt{set\_cat}$ is isomorphic as a category to the $\mathtt{ens\_cat}$ of small sets of ZFC sets.
@@ -255,14 +253,14 @@ This isomorphism provides the initial link between small HOL sets and ZFC sets, 
 
 To view small HOL sets over an arbitrary type as being in the category of ZFC sets, we must choose a ZFC set to represent each small HOL set.
 We choose representatives globally, and once-and-for-all, using Hilbert choice.
-First, we prove that a class is small only if it is in bijection with the elements of a ZFC set (the definition only required an injection):
+First, we characterise smallness as being in bijection with the elements of a ZFC set (the definition only required an injection):
 \begin{align*}
 \vdash\forall{s}.\;\mathtt{is\_small}\;s\implies\exists{b,z}.\;&\mathtt{BIJ}\;b\;s\;\{\mathtt{SOME}\;x\mid x\operatorname{\mathtt{in}}z\}\land{}\\
 &\forall{x}.\;x\notin s\implies(b\;x=\mathtt{NONE})
 \end{align*}
 (Here we ensure extensionality of the bijection $b$ with the $\mathsf{option}$ type ($\mathtt{SOME}$ versus $\mathtt{NONE}$) rather than with $\mathtt{ARB}$, because $\mathtt{ARB}$ may be in $z$ and we would rather be able to tell whether $x\in s$ from the value of $b\;x$.)
-Given this existence theorem, it makes sense to define using Hilbert choice for every small HOL set $s:\alpha\;\mathsf{set}$ a bijection $(\mathtt{zfbij}\;s):\alpha\to\mathsf{zfset}\;\mathsf{option}$ and a class of ZFC sets $(\mathtt{zfrep}\;s):\mathsf{zfset}\;\mathsf{set}$ that is the image of $(\mathtt{zfbij}\;s)$ under $\mathtt{SOME}$.
-Using this bijection and its inverse, we can also define constants $\mathtt{zfel}$ and $\mathtt{elzf}$ satisfying the following theorems
+Given this existence theorem, we can define, using Hilbert choice, a constant
+$\mathtt{zfrep}$ (for $z$), and constants $\mathtt{zfel}$ and $\mathtt{elzf}$ (for $b$ and its inverse) satisfying the following theorems for any HOL set $s:\alpha\;\mathsf{set}$
 \begin{align*}
 &\vdash\forall{s,z}.\;\mathtt{is\_small}\;s\implies(z\operatorname{\mathtt{in}}\mathtt{zfrep}\;s\iff\exists{x}.\; x \in s \land z = \mathtt{zfel}\;s\;x)\\
 &\vdash\forall{s,x}.\;\mathtt{is\_small}\;s\land x \in s\implies\mathtt{elzf}\;s\;(\mathtt{zfel}\;s\;x) = x\\
@@ -275,8 +273,8 @@ The action of $\mathtt{rep\_functor}\;u$ on morphisms is given by
 f\mapsto\langle&\mathtt{dom}=\{z\mid z\operatorname{\mathtt{in}}\mathtt{zfrep}\;f.\mathtt{dom}\},\,\mathtt{cod}=\{z\mid z\operatorname{\mathtt{in}}\mathtt{zfrep}\;f.\mathtt{cod}\},\\
 &\mathtt{map}=\lambda{z}.\;\mathtt{zfel}\;f.\mathtt{cod}\;(f.\mathtt{map}\;(\mathtt{elzf}\;f.\mathtt{dom}\;z)\rangle
 \end{align*}
-Thus, the action on objects is to send a set $s$ (in $u$) to the class of ZFC sets that are members of the chosen representation of $s$ as a ZFC set.
-This kind of translation back and forth between ZFC sets, classes of their elements, and the HOL sets they might represent is more pervasive in Katovksy's formalisation of $\Set$; we try to contain it all in $\mathtt{rep\_functor}\;u$ so the rest of the development is less cluttered.
+Thus, the action on objects is to send a set $s$ (in $u$) to the collection of ZFC sets that are members of the chosen representation of $s$ as a ZFC set.
+This kind of translation back and forth between ZFC sets, HOL sets of their elements, and the small HOL sets they might represent is more pervasive in Katovksy's formalisation of $\Set$; we try to contain it all in $\mathtt{rep\_functor}\;u$ so the rest of the development is less cluttered.
 
 The most important property of $\mathtt{rep\_functor}\;u$ is that it is an \emph{embedding}.
 In general, a functor is an embedding if it is \emph{full} and \emph{faithful}.
