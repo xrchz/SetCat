@@ -16,7 +16,7 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 \noindent Date
 
 \vspace{2em}
-\noindent Words: 5568 (Maximum: 5000)
+\noindent Words: 5530 (Maximum: 5000)
 \vspace{5em}
 %}
 \section*{Acknowledgements}%{
@@ -84,7 +84,7 @@ Standard defined types include the type $\mathsf{unit}$ with a single element $(
 Generalising product types, it is possible to define a new type to represent a record given the desired names and types of the record fields.
 New terms can be defined in terms of existing ones, like in a functional programming language.
 %}
-\section{Composable Morphisms and Categories}%1527/1500%{
+\section{Composable Morphisms and Categories}%1496/1400%{
 Category theory is an abstract theory of functions and composition.
 A category is an arena in which composition takes place, and consists of \emph{morphisms}, abstract functions, \emph{objects}, the possible domains and codomains of the morphisms, and a \emph{composition law}, obeying certain conditions.
 We define a type of morphisms in HOL as a polymorphic record $$(\alpha,\beta,\gamma)\;\mathsf{morphism}=\langle\mathtt{dom}:\alpha,\,\mathtt{cod}:\beta,\,\mathtt{map}:\gamma\rangle$$
@@ -165,8 +165,6 @@ We call this kind of restriction \emph{extensionality}\footnote{The adjective ``
 
 We impose the same restriction wherever partial functions arise, for example the morphism map of a functor $G$ is restricted to $G.\mathtt{dom}.\mathtt{mor}$.
 A non-extensional function (one taking values other than $\mathtt{ARB}$ outside its desired domain) can easily be made extensional: we use $$\mathtt{restrict}\;f\;s=\lambda{e}.\;\mathtt{if}\;e\in s\;\mathtt{then}\;f\;e\;\mathtt{else}\;\mathtt{ARB}$$ to restrict $f:\alpha\to\beta$ to $s:\alpha\;\mathsf{set}$.
-
-It is important to respect extensionality whenever possible; thus, for example, the actual definition of $\mathtt{id\_in}$ mentioned above is wrapped by a call to $\mathtt{restrict}$ on the set $c.\mathtt{obj}$ even though $c.\mathtt{id}$ is also restricted.
 We define $\mathtt{is\_category}\;c=\mathtt{category\_axioms}\;c\land\mathtt{extensional\_category}\;c$, where the second conjunct ensures $c.\mathtt{id}$ and $c.\mathtt{comp}$ are extensional.
 In a dependently typed setting, both the category axioms and extensionality can be encoded directly in the definition of the $\mathsf{category}$ type (as in~\cite{DBLP:conf/birthday/HuetS00,Sozeau,Megacz}).
 
@@ -194,7 +192,7 @@ Another choice is whether to include objects at all: we might avoid the need for
 This approach is taken by Roger Jones~\cite{RBJones17}, and allows a much slicker presentation than ours (for example, functors are just HOL functions).
 Categories are still polymorphic, but with just one type variable (for morphisms).
 %}
-\section{A Category of Classes and of Sets}%1423/1400%{
+\section{Two Categories of Sets}%1420/1400%{
 \label{Set}
 \newcommand{\Set}{\ensuremath{\mathbf{Set}}}
 The category $\Set$ of sets has sets as objects and functions with specified domain and codomain\footnote{so for example the empty functions $\bot:\emptyset\to\emptyset$ and $\bot:\emptyset\to\mathbb{N}$ are distinct} as morphisms.
@@ -289,7 +287,7 @@ But our definition of $\mathtt{zfrep}$ does not ensure injectivity: there is no 
 Indeed by considering $s_1,s_2\in u$ where $u$ is larger than the collection of all ZFC sets, which is possible when $u:\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}\;\mathsf{set}$, we see that $\mathtt{zfrep}$ could not be injective.
 It is unfortunate, but not fatal to our later results, that we cannot ensure literal injectivity of $\mathtt{rep\_functor}\;u$ when $u$ is small.
 %}
-\section{The Yoneda Embedding}%774/600%{
+\section{The Yoneda Embedding}%774/700%{
 \label{Yoneda}
 \newcommand{\op}{\ensuremath{\sp{\mathrm{op}}}}
 \newcommand{\blank}{\rule[0.5ex]{0.6em}{.4pt}}
@@ -385,7 +383,7 @@ The foundational difficulties posed by category theory reveal themselves as the 
 \item We cannot collect all categories as the objects of a single category.
 The separation of categories by HOL types seems not to accommodate a stratification by size (one of the mathematical remedies) well.
 \item
-As a result, we are forced to define some things (like $\mathtt{iso}$) multiple times: once within categories, and once for every instance in higher categories that are unavailable.
+As a result, we are forced to define some things (like $\mathtt{iso}$) multiple times: once within our categories, and once for every instance in categories we cannot define.
 \item
 Since HOL functions are total but the type system is relatively weak, we need to restrict partial functions so that they are extensional, that is, comparable by their action on their domains only.
 Extensionality is infectious.
