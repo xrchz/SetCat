@@ -1,32 +1,31 @@
 \documentclass[twoside,titlepage,11pt]{article}
-\usepackage{a4wide}
-\headsep 0in
-\oddsidemargin 0.25in
-\evensidemargin 0in
+\usepackage[a4paper,inner=1.5in,outer=1.2in]{geometry}
 \usepackage{url,amsmath,amssymb}
 \title{The Category of Sets in Higher-Order Logic}
 \author{Ramana Kumar\\MPhil in Advanced Computer Science\\Peterhouse}
 \begin{document}
 \maketitle
+\vspace*{\fill}
 \section*{Declaration}%{
 \thispagestyle{empty}
 I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Computer Science, hereby declare that this research essay and the work described in it are my own work, unaided except as may be specified below, and that the research essay does not contain material that has already been used to any substantial extent for a comparable purpose.
 
-\vspace{1em}
+\vspace{2em}
 \noindent Signed
 
-\vspace{1em}
+\vspace{2em}
 \noindent Date
 
-\vspace{2em}
-\noindent Words: 4906%\footnote{\texttt{detex essay.tex | wc -w} after removing Declaration, Acknowledgments, Abstract, and References.}
-\vspace{5em}
+\vspace{3em}
+\noindent Words: 4892%\footnote{\texttt{detex essay.tex | wc -w} after removing Declaration, Acknowledgments, Abstract, and References.}
 %}
+\vfill
 \section*{Acknowledgements}%{
 I thank my supervisor, Sam Staton, for many helpful discussions and comments.
 I also thank Mike Gordon, Paul Giannaros, and Zongyan Huang for reading a draft and providing feedback.
 Special thanks to Roger Jones for his detailed reading and criticism.
 %}
+\vspace*{\fill}
 \begin{abstract}%{
 The foundational difficulties presented by category theory make it difficult to formalise.
 Nevertheless, it is possible to formalise category theory in higher-order logic, extended with a type of small sets, in a way that fits naturally into the idiom of the logic but can still express some basic but foundationally-challenging categorical results.
@@ -99,7 +98,7 @@ We use a polymorphic record for categories\footnote{This is just the data; the c
 (\alpha,\beta)\;\mathsf{category}=\langle&\mathtt{obj}:\alpha\;\mathsf{set},\,\mathtt{mor}:(\alpha,\beta)\;\mathsf{mor}\;\mathsf{set},\,\mathtt{id}:\alpha\to\beta,\\&\mathtt{comp}:(\alpha,\beta)\;\mathsf{mor}\to(\alpha,\beta)\;\mathsf{mor}\to\beta\rangle
 \end{align*}
 Thus an $(\alpha,\beta)\;\mathsf{category}$ has objects of type $\alpha$ and morphisms of type $\beta$ (wrapped in $(\alpha,\beta)\;\mathsf{mor}$ records).
-The $\mathtt{id}$ and $\mathtt{comp}$ fields, intended to assign an identity morphism to every object and a composite morphism to every pair of composable morphisms, just return the $\mathtt{map}$ field because the $\mathtt{dom}$ and $\mathtt{cod}$ fields can be inferred: we define $\mathtt{id\_in}\;c\;x=\langle\mathtt{dom}=x,\,\mathtt{cod}=x,\,\mathtt{map}=c.\mathtt{id}\;x\rangle$ and $\mathtt{compose\_in}$ similarly.
+The $\mathtt{id}$ and $\mathtt{comp}$ fields, intended to assign an identity morphism to every object and a composite morphism to every pair of composable morphisms, just return the $\mathtt{map}$ part because the $\mathtt{dom}$ and $\mathtt{cod}$ fields can be inferred: we define $\mathtt{id\_in}\;c\;x=\langle\mathtt{dom}=x,\,\mathtt{cod}=x,\,\mathtt{map}=c.\mathtt{id}\;x\rangle$ and $\mathtt{compose\_in}$ similarly.
 
 As a very simple example, we define the discrete category (which has no morphisms except identity morphisms) on a set $s$ as follows:
 \begin{align*}
@@ -141,7 +140,7 @@ Terms with these types could not all be objects of a $(\tau_1,\tau_2)\;\mathsf{c
 
 Let us look now at a longer example of this problem.
 In category theory, the notion of \emph{isomorphism} plays a role similar to, and often more important than, equality.
-An isomorphism is a morphism with an inverse (for composition), and two objects are isomorphic if there is an isomorphism between them.
+An isomorphism is a morphism with an inverse, and two objects are isomorphic if there is an isomorphism between them.
 We define what it means for a pair of morphisms to be inverses:
 \begin{align*}
 \mathtt{iso\_pair}\;c\;f\;g\iff f\leadsto g\operatorname{\mathtt{-:}}c\land f\circ g\operatorname{\mathtt{-:}}c=\mathtt{id}\;g.\mathtt{dom}\operatorname{\mathtt{-:}}c\land g\circ f\operatorname{\mathtt{-:}}c=\mathtt{id}\;f.\mathtt{dom}\operatorname{\mathtt{-:}}c
@@ -180,7 +179,7 @@ Extensionality enables us to characterise equality between natural transformatio
 &(\forall{x}.\;x\in \eta.\mathtt{dom}.\mathtt{dom}.\mathtt{obj}\implies(\eta.\mathtt{map}\;x= \mu.\mathtt{map}\;x))\implies (\eta = \mu)
 \end{align*}
 (and similarly for categories and functors).
-Given a functor $F$, we can define a natural transformation $\mathtt{id\_nt}\;F$ whose component at $x$ is the identity morphism for $F$'s action on $x$.
+Given a functor $f$, we can define a natural transformation $\mathtt{id\_nt}\;f$ whose component at $x$ is the identity morphism for $f$'s action on $x$.
 Our theorem about natural transformation equality lets us prove
 \[\vdash\forall{\eta}.\;\mathtt{is\_nt}\;\eta\implies(\eta\circ\mathtt{id\_nt}\;\eta.\mathtt{dom} = \eta)\]
 because our definition of natural transformation composition (the $\circ$ operator above) produces an extensional natural transformation, so comparison with $\eta$ depends only on categorical properties.
@@ -189,7 +188,7 @@ We have defined, for any two categories $c_1$ and $c_2$, the category $[c_1\to c
 
 An alternative approach to categories gives a set of morphisms, called a \emph{hom}, for each type (pair of objects) rather than giving all the morphisms at once.
 This has not been formalised in HOL, but is used by Huet and Sa{\"i}bi, for example.
-We can define homs after categories: $\mathtt{hom}\;c\;x\;y=\{f\mid f.\mathtt{dom}=x\land f.\mathtt{cod}=y\land f\in c.\mathtt{mor}\}$.
+We can define homs after categories $$\mathtt{hom}\;c\;x\;y=\{f\mid f.\mathtt{dom}=x\land f.\mathtt{cod}=y\land f\in c.\mathtt{mor}\}$$
 The approaches are essentially equivalent, because if we defined categories in terms of homs, we could then define the collection of all morphisms in a category as $\mathtt{mor}\;c=\{f\mid\exists{x,y}.\;x\in c.\mathtt{obj}\land y\in c.\mathtt{obj}\land f\in c.\mathtt{hom}\;x\;y\}$.
 %An advantage of starting with homs instead might be that we could put off mentioning the collection of all morphisms.
 %We will return to this point in Section~\ref{Yoneda} when describing locally small categories.
@@ -232,7 +231,7 @@ This method of accessing set theory within HOL was introduced by Mike Gordon \ci
 We use it, following Katovksy\footnote{Agerholm~\cite{Agerholm95} does a similar thing in HOL4.}, to define a non-polymorphic category of sets with $\mathtt{set\_cat}.\mathtt{obj}:\mathsf{zfset}\;\mathsf{set}$ and $\mathtt{set\_cat}.\mathtt{mor}:\mathsf{zfset}\;\mathsf{set}$ also (since functions between ZFC sets can be encoded as ZFC sets).
 
 It would be reasonable to formalise all categories non-polymorphically, revising our original $\mathsf{category}$ record to have an $\mathtt{obj}$ field of type $\mathtt{zfset}\;\mathtt{set}$.
-%(although it might be better to use $\mathtt{obj}:\alpha$ and a convention to only instanstiate $\alpha$ by $\mathsf{zfset}\;\mathsf{set}$ or $\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}$ and so on, to allow arbitrarily large categories).
+%(although it might be better to use $\mathtt{obj}:\alpha$ and a convention to only instantiate $\alpha$ by $\mathsf{zfset}\;\mathsf{set}$ or $\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}$ and so on, to allow arbitrarily large categories).
 This approach matches a mathematical view of categories based on set theory (e.g., \cite{MacLaneCFTWM}) if we take $\mathtt{zfset}$ seriously as our representation of sets.
 However, in HOL we have a competing representation of sets, namely the HOL types.
 If we formalise categories purely in terms of $\mathsf{zfset}$, then our categories remain disconnected from other theories we have formalised in HOL using types such as $\mathsf{num}$ and $\mathsf{string}$.
@@ -291,7 +290,7 @@ We have proved, in HOL, that embeddings are essentially injective, and that $\ma
 We cannot prove, however, that $\mathtt{rep\_functor}\;u$ is literally injective on objects (if two objects are mapped to the same place they are equal).
 To do so would be to conclude that two small HOL sets $s_1$ and $s_2$ are equal just because $\mathtt{zfrep}\;s_1=\mathtt{zfrep}\;s_2$.
 But our definition of $\mathtt{zfrep}$ does not ensure injectivity: there is no reason Hilbert choice cannot pick the same ZFC set to represent two small HOL sets of the same cardinality.
-Indeed by considering $s_1,s_2\in u$ where $u$ is larger than the collection of all ZFC sets, which is possible when $u:\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}\;\mathsf{set}$, we see that $\mathtt{zfrep}$ could not be injective.
+Indeed there are more small sets of type $\mathtt{zfrep}\;\mathsf{set}$ than ZFC sets, so $\mathtt{zfrep}$ could not be injective.
 It is unfortunate, but not fatal to our later results, that we cannot ensure literal injectivity of $\mathtt{rep\_functor}\;u$ when $u$ is small.
 %}
 \section{The Yoneda Embedding}%776/700%{
@@ -392,7 +391,7 @@ The separation of categories by HOL types seems not to accommodate a stratificat
 As a result, we are forced to define some things (like $\mathtt{iso}$) multiple times: once within our categories, and once for every instance in categories we cannot define.
 \item
 Since HOL functions are total, we need to restrict partial functions so that they are extensional, that is, comparable by their action on their domains only.
-Extensionality is infectious.
+The need for extensionality is pervasive.
 \item
 We cannot collect all sets in a single set, so to formalise the category of sets we need at least two notions of ``collection'' (we use HOL sets and ZFC sets).
 \item
