@@ -16,7 +16,7 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 \noindent Date
 
 \vspace{2em}
-\noindent Words: 5530 (Maximum: 5000)
+\noindent Words: 5463 (Maximum: 5000)
 \vspace{5em}
 %}
 \section*{Acknowledgements}%{
@@ -30,8 +30,8 @@ Nevertheless, it is possible to formalise category theory in higher-order logic,
 It is not obvious that this approach can be pushed very far.
 A more satisfying formalisation of category theory may require new foundations for abstract mathematics.
 \end{abstract}%}
-\section{Introduction}%374/300%{
-Category theory provides a framework for studying various notions common to diverse areas of mathematics.
+\section{Introduction}%365/300%{
+Category theory provides a framework for studying notions common to diverse areas of mathematics.
 It has applications in computer science ranging from semantics of formal systems (e.g., \cite{CroleCT,JacobsCLTT}) to models of concurrency~\cite{DBLP:conf/csl/CattaniW96}.
 Since its inception, category theory has challenged the traditional foundations of mathematics, namely in set theory, by dealing with collections that fail to be sets.
 
@@ -39,21 +39,21 @@ Formalisation is a good way to test the limits of foundational choices, because 
 There is no resort to arguments by analogy or implied generalisation, especially in formalisations developed mechanically with a proof assistant.
 In this essay we present a new mechanisation of category theory\footnote{Our proof scripts are available online at \url{https://github.com/xrchz/HOL/tree/category/examples/category}, as well as in the HOL4 repository (\url{http://sf.net/projects/hol/develop}) from revision <9115?>.}, refining two previous developments in higher-order logic, and investigate the foundational issues.
 
-Higher-order logic (HOL)\footnote{By HOL we mean the logic implemented by the HOL4 theorem prover~\cite{DBLP:conf/tphol/SlindN08}.} is a simple but expressive formal system, implemented by many proof assistants in which formal mathematics has been developed.
+Higher-order logic (HOL)\footnote{By HOL we mean the logic implemented by the HOL4 theorem prover~\cite{DBLP:conf/tphol/SlindN08}.} is a simple but expressive formal system, implemented by many proof assistants.
 HOL has a semantics in set theory without inaccessible cardinals, and therefore cannot capture large categorical constructions directly.
-However, it can be extended with extra axioms that assert the existence of large collections. 
+However, it can be extended with extra axioms that assert the existence of large collections.
 
 We formalise the category of sets in higher-order logic so extended.
 We try to fit naturally into the idiom of the logic while retaining the ability to express some basic but foundationally-challenging categorical results.
 We comment on the limitations of our approach and compare our mechanisation to others.
 
 This essay is structured as a high-level tour of our mechanisation, with discussions of foundational issues, and comparisons to existing work, as they come up.
-We begin with a brief introduction to HOL, then look at our formalisation of category theory, the category of sets in particular, how we treat the Yoneda embedding, and the start of work on categorical limits.
+We begin with an introduction to HOL, then look at our formalisation of category theory, the category of sets in particular, how we treat the Yoneda embedding, and the start of work on categorical limits.
 
 The discussion is suitable for readers unfamiliar with either category theory or theorem proving in HOL, although they may prefer to skim over the displayed formulae giving select definitions and theorems from our development.
 We assume passing acquaintance with introductory logic, set theory, and type theory.
 %}
-\section{Higher-Order Logic}%420/400%{
+\section{Higher-Order Logic}%403/400%{
 \newcommand{\bool}{\ensuremath{\mathsf{bool}}}
 Higher-order logic (HOL) is a formal system that has proved popular for formalising mathematics as well as properties of hardware and software.
 HOL is a sequent calculus with the syntax of the simply typed lambda calculus.
@@ -70,25 +70,25 @@ In the semantics of HOL, the meaning of a type is a non-empty set, and the meani
 
 A \emph{predicate} is a term of type $\alpha\to\bool$ for some type $\alpha$.
 The type $\alpha\to\bool$ is abbreviated by $\alpha\;\mathsf{set}$: a predicate on $\alpha$ is the characteristic function of a subset of elements of type $\alpha$.
-HOL4 includes much support for the representation of sets as predicates; we will use mathematical notation (such as $\{f\;x\mid P\;x\}$) for HOL sets.
+HOL4 includes much support for the representation of sets as predicates; we use mathematical notation (such as $\{f\;x\mid P\;x\}$) for HOL sets.
 The constantly true predicate is denoted $\mathtt{UNIV}$.
 
-Boolean connectives can be defined as functions in HOL, for example conjunction has type $\bool\to\bool\to\bool$.
+Boolean connectives are defined as functions in HOL, for example conjunction has type $\bool\to\bool\to\bool$.
 In addition to the standard connectives and quantifiers, HOL includes a \emph{Hilbert choice} term that, given a predicate $P$ as argument, denotes an arbitrary (but fixed) element $c$ such that $P\; c$ holds, if any such element exists, otherwise denotes an arbitrary element (of the right type).
 The behaviour of Hilbert choice is one of the axioms of HOL.
 The primitive rules of inference include, for example, modus ponens, reflexivity of equality, and generalisation (universal quantification) of free variables.
 
 HOL provides principles for defining new types and new (term) constants.
 The primitive types include function types ($\alpha\to\beta$ with arguments $\alpha$ and $\beta$) and Booleans ($\bool$).
-Standard defined types include the type $\mathsf{unit}$ with a single element $()$, the option type with constructors $\mathtt{NONE}:\alpha\;\mathsf{option}$ and $\mathtt{SOME}:\alpha\to\alpha\;\mathsf{option}$, and the product type operator producing a type $\alpha\times\beta$ from arguments $\alpha$ and $\beta$.
-Generalising product types, it is possible to define a new type to represent a record given the desired names and types of the record fields.
-New terms can be defined in terms of existing ones, like in a functional programming language.
+Standard defined types include the type $\mathsf{unit}$ with a single element $()$, the option type with constructors $\mathtt{NONE}:\alpha\;\mathsf{option}$ and $\mathtt{SOME}:\alpha\to\alpha\;\mathsf{option}$, and products ($\alpha\times\beta$ with arguments $\alpha$ and $\beta$).
+Generalising product types, we can define record types given the desired names and types of the record fields.
+New terms can be defined using existing ones, like in a functional programming language.
 %}
-\section{Composable Morphisms and Categories}%1496/1400%{
+\section{Composable Morphisms and Categories}%1485/1400%{
 Category theory is an abstract theory of functions and composition.
 A category is an arena in which composition takes place, and consists of \emph{morphisms}, abstract functions, \emph{objects}, the possible domains and codomains of the morphisms, and a \emph{composition law}, obeying certain conditions.
 We define a type of morphisms in HOL as a polymorphic record $$(\alpha,\beta,\gamma)\;\mathsf{morphism}=\langle\mathtt{dom}:\alpha,\,\mathtt{cod}:\beta,\,\mathtt{map}:\gamma\rangle$$
-We use a polymorphic record for categories as well, abbreviating $(\alpha,\alpha,\beta)\;\mathsf{morphism}$ by $(\alpha,\beta)\;\mathsf{mor}$:
+We use a polymorphic record for categories\footnote{This is just the data; the conditions come later.} as well, abbreviating $(\alpha,\alpha,\beta)\;\mathsf{morphism}$ by $(\alpha,\beta)\;\mathsf{mor}$:
 \begin{align*}
 (\alpha,\beta)\;\mathsf{category}=\langle&\mathtt{obj}:\alpha\;\mathsf{set},\,\mathtt{mor}:(\alpha,\beta)\;\mathsf{mor}\;\mathsf{set},\,\mathtt{id}:\alpha\to\beta,\\&\mathtt{comp}:(\alpha,\beta)\;\mathsf{mor}\to(\alpha,\beta)\;\mathsf{mor}\to\beta\rangle
 \end{align*}
@@ -107,23 +107,23 @@ Every category $c$ has an opposite category $c^{\mathrm{op}}$, which provides an
 \end{align*}
 where $\mathtt{op\_mor}\;f=\langle\mathtt{dom}=f.\mathtt{cod},\,\mathtt{cod}=f.\mathtt{dom},\,\mathtt{map}=f.\mathtt{map}\rangle$.
 
-We will look at two previous formalisations of category theory in detail, one by Greg O'Keefe in 2004~\cite{DBLP:journals/entcs/OKeefe04} and another by Alex Katovsky in 2010~\cite{Katovsky}.
+We look at two previous formalisations of category theory in detail, one by Greg O'Keefe in 2004~\cite{DBLP:journals/entcs/OKeefe04} and another by Alex Katovsky in 2010~\cite{Katovsky}.
 Both also use a polymorphic record type for categories.
 However, their categories have two additional fields of type $\beta\to\alpha$ intended to assign a domain and codomain to each morphism: there is no separate record for morphisms.
 The advantage of having morphisms independent of categories (also done by Simpson~\cite{Simpson04}) is that notions like composability and composition can be defined generically then applied when there is no containing category.
 
 Functors and natural transformations can be defined as instances of morphisms (between categories and between functors respectively) rather than as new record types.
 For example, we use $(\alpha,\beta,\gamma,\delta)\;\mathsf{functor}$ to abbreviate the type \[((\alpha,\beta)\;\mathsf{category},(\gamma,\delta)\;\mathsf{category},(\alpha,\beta)\;\mathsf{mor}\to(\gamma,\delta)\;\mathsf{mor})\;\mathsf{morphism}\] whose instances we intend to be functors from an $(\alpha,\beta)\;\mathsf{category}$ to a $(\gamma,\delta)\;\mathsf{category}$.
-The $\mathtt{map}$ field of a functor gives its action on morphisms; following Katovsky we omit the action on objects from the record, since it can be defined (using Hilbert choice) in terms of the action on identity morphisms.
+A functor's $\mathtt{map}$ field gives its action on morphisms; following Katovsky we omit the action on objects, since it can be defined (using Hilbert choice) from the action on identity morphisms.
 
 Instances of the $\mathsf{morphism}$ record are not necessarily attached to any instance of the $\mathsf{category}$ record.
 It could be argued, however, that all composable morphisms occur in some category.
 For example, functors are the morphisms in a category of categories.
-However, this notion is problematic for several reasons, one of which is that objects in our categories must all have the same type, but we make use of functors between categories of different types.
-Indeed, the separation of elements into different types in the semantics of HOL, which is a feature common to all type theories, presents difficulties whenever we want to collect elements across types into a totality.
+However, this notion is problematic for several reasons, one being that objects in our categories all have the same type, but we make use of functors between categories of different types.
+Indeed, the separation of elements into different types in the semantics of HOL, a feature common to all type theories, presents difficulties whenever we want to collect elements across types into a totality.
 
 Categories are abstract structures---many different things can play the roles of objects and morphisms---so it is natural to use a polymorphic type to model categories in HOL.
-The polymorphism enables the same definition of $\mathtt{id\_in}$, for example, to be used for categories with all different types.
+Polymorphism enables the same definition of $\mathtt{id\_in}$ to be used for categories with all different types.
 At the same time, polymorphism prevents us from collecting all categories in a single HOL set: in forming a term of type $(\alpha,\beta)\;\mathsf{category}\;\mathsf{set}$ we fix the types $\alpha$ and $\beta$, and therefore the set denoted cannot contain, for example, an element of type $(\alpha\times\alpha,\beta)\;\mathsf{category}$.
 
 Coquand~\cite{DBLP:conf/lics/Coquand86} has shown that a category of categories cannot exist in many frameworks, because it leads to paradox.
@@ -146,7 +146,7 @@ We define $\mathtt{iso}\;c\;f \iff\exists{g}.\;\mathtt{iso\_pair}\;c\;f\;g$.
 
 The morphism $f$ in the definition of $\mathtt{iso}$ has type $(\alpha,\beta)\;\mathsf{mor}$, where $\alpha$ is the type of both the domain and codomain of the morphism.
 Therefore if we want to consider an isomorphism between categories (a functor that is an isomorphism), we cannot use $\mathtt{iso}$ unless the functor is between categories of the same type (e.g., we could instantiate $\alpha$ with $(\gamma,\delta)\;\mathsf{category}$ then $f$ would have type $(\gamma,\delta,\gamma,\delta)\;\mathsf{functor}$).
-We define another notion, $\mathtt{cat\_iso}$, to cover functors of arbitrary types, by replacing all the ``$\operatorname{\mathtt{-:}}c$'' notions above as appropriate (e.g., replace $f\circ g\operatorname{\mathtt{-:}}c$ by functor composition).
+We define another notion, $\mathtt{cat\_iso}$, to cover functors of arbitrary types, by replacing all the ``$\operatorname{\mathtt{-:}}c$'' notions above (e.g., replace $f\circ g\operatorname{\mathtt{-:}}c$ by functor composition).
 
 Theorems stating properties of isomorphisms (like that the notion is symmetric) need to be repeated for both $\mathtt{iso\_pair}$ and $\mathtt{cat\_iso\_pair}$. 
 This situation shows the polymorphic record approach to categories getting in the way of expressing general categorical properties.
@@ -164,7 +164,7 @@ For example, if $x,y\notin c.\mathtt{obj}$ then we want $c.\mathtt{id}\;x=c.\mat
 We call this kind of restriction \emph{extensionality}\footnote{The adjective ``canonical'' might be better than ``extensional'': we are picking canonical representatives in the collection of total functions that agree on a given domain (thereby making the collection of canonical representatives extensional).}.
 
 We impose the same restriction wherever partial functions arise, for example the morphism map of a functor $G$ is restricted to $G.\mathtt{dom}.\mathtt{mor}$.
-A non-extensional function (one taking values other than $\mathtt{ARB}$ outside its desired domain) can easily be made extensional: we use $$\mathtt{restrict}\;f\;s=\lambda{e}.\;\mathtt{if}\;e\in s\;\mathtt{then}\;f\;e\;\mathtt{else}\;\mathtt{ARB}$$ to restrict $f:\alpha\to\beta$ to $s:\alpha\;\mathsf{set}$.
+A non-extensional function (taking values other than $\mathtt{ARB}$ outside its desired domain) can easily be made extensional: we use $$\mathtt{restrict}\;f\;s=\lambda{e}.\;\mathtt{if}\;e\in s\;\mathtt{then}\;f\;e\;\mathtt{else}\;\mathtt{ARB}$$ to restrict $f:\alpha\to\beta$ to $s:\alpha\;\mathsf{set}$.
 We define $\mathtt{is\_category}\;c=\mathtt{category\_axioms}\;c\land\mathtt{extensional\_category}\;c$, where the second conjunct ensures $c.\mathtt{id}$ and $c.\mathtt{comp}$ are extensional.
 In a dependently typed setting, both the category axioms and extensionality can be encoded directly in the definition of the $\mathsf{category}$ type (as in~\cite{DBLP:conf/birthday/HuetS00,Sozeau,Megacz}).
 
@@ -174,7 +174,7 @@ Extensionality enables us to characterise equality between natural transformatio
 &(\forall{x}.\;x\in \eta.\mathtt{dom}.\mathtt{dom}.\mathtt{obj}\implies(\eta.\mathtt{map}\;x= \mu.\mathtt{map}\;x))\implies (\eta = \mu)
 \end{align*}
 (and similarly for categories and functors).
-Given a functor $F$, we can define an identity natural transformation whose component at $x$ is the identity morphism for $F$'s action on $x$.
+Given a functor $F$, we can define a natural transformation $\mathtt{id\_nt}\;F$ whose component at $x$ is the identity morphism for $F$'s action on $x$.
 Our theorem about natural transformation equality lets us prove
 \[\vdash\forall{\eta}.\;\mathtt{is\_nt}\;\eta\implies(\eta\circ\mathtt{id\_nt}\;\eta.\mathtt{dom} = \eta)\]
 because our definition of natural transformation composition (the $\circ$ operator above) produces an extensional natural transformation, so comparison with $\eta$ depends only on categorical properties.
@@ -192,12 +192,12 @@ Another choice is whether to include objects at all: we might avoid the need for
 This approach is taken by Roger Jones~\cite{RBJones17}, and allows a much slicker presentation than ours (for example, functors are just HOL functions).
 Categories are still polymorphic, but with just one type variable (for morphisms).
 %}
-\section{Two Categories of Sets}%1420/1400%{
+\section{Two Categories of Sets}%1393/1400%{
 \label{Set}
 \newcommand{\Set}{\ensuremath{\mathbf{Set}}}
 The category $\Set$ of sets has sets as objects and functions with specified domain and codomain\footnote{so for example the empty functions $\bot:\emptyset\to\emptyset$ and $\bot:\emptyset\to\mathbb{N}$ are distinct} as morphisms.
 A natural approach to defining $\Set$ in HOL is as an instance of the $\mathsf{category}$ record where $\mathtt{obj}:\alpha\;\mathsf{set}\;\mathsf{set}$ and the $\mathtt{map}$ field of each morphism is a function $\alpha\to\alpha$.
-This approach is the one taken by O'Keefe, which we follow by defining a category of ``sets within a universe'':
+This is the approach taken by O'Keefe, which we follow by defining a category of ``sets within a universe'':
 \begin{align*}
 &\mathtt{ens\_cat}\;(u:\alpha\;\mathsf{set}\;\mathsf{set})=\\
 &\quad\langle\mathtt{obj}=u,\\
@@ -225,10 +225,11 @@ The constantly true predicate of type $\mathsf{zfset}\;\mathsf{set}$ now represe
 This method of accessing set theory within the HOL logic was introduced by Mike Gordon \cite{DBLP:conf/tphol/Gordon96} (and independently by Bob Solovay, see~\cite{DBLP:conf/ictac/Obua06}) and is implemented in both HOL4 and Isabelle~\cite{DBLP:conf/ictac/Obua06}.
 We use it, following Katovksy, to define a non-polymorphic category of sets with $\mathtt{set\_cat}.\mathtt{obj}:\mathsf{zfset}\;\mathsf{set}$ and $\mathtt{set\_cat}.\mathtt{mor}:\mathsf{zfset}\;\mathsf{set}$ also (since functions between ZFC sets can be encoded as ZFC sets).
 
-It would be reasonable to formalise all categories non-polymorphically, revising our original $\mathsf{category}$ record to have an $\mathtt{obj}$ field of type $\mathtt{zfset}\;\mathtt{set}$ (although it might be better to use $\mathtt{obj}:\alpha$ and a convention to only instanstiate $\alpha$ by $\mathsf{zfset}\;\mathsf{set}$ or $\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}$ and so on, to allow arbitrarily large categories).
+It would be reasonable to formalise all categories non-polymorphically, revising our original $\mathsf{category}$ record to have an $\mathtt{obj}$ field of type $\mathtt{zfset}\;\mathtt{set}$.
+%(although it might be better to use $\mathtt{obj}:\alpha$ and a convention to only instanstiate $\alpha$ by $\mathsf{zfset}\;\mathsf{set}$ or $\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}$ and so on, to allow arbitrarily large categories).
 This approach matches a mathematical view of categories based on set theory extended with proper classes (as in~\cite{MacLaneCFTWM} for example) if we take $\mathtt{zfset}$ seriously as our representation of sets.
 However, in HOL we have a competing representation of sets, namely the HOL types.
-If we formalise categories purely in terms of $\mathsf{zfset}$, then our categories remain disconnected from any other theories we have formalised in HOL using types such as $\mathsf{num}$ and $\mathsf{string}$.
+If we formalise categories purely in terms of $\mathsf{zfset}$, then our categories remain disconnected from other theories we have formalised in HOL using types such as $\mathsf{num}$ and $\mathsf{string}$.
 It is for this reason we consider the polymorphic approach to be idiomatic.
 
 Nevertheless, we need to use the ``untyped'' $\mathtt{set\_cat}$ if we want to formalise the many properties of $\Set$ that are lost on $\mathtt{ens\_cat}$.
@@ -238,7 +239,7 @@ Since some HOL types contain more elements than there are ZFC sets, though, we c
 Following ideas from Katovksy, we define a predicate $\mathtt{is\_small}:\alpha\;\mathsf{set}\to\mathsf{bool}$ by $$\mathtt{is\_small}\;s=\exists{f,z}.\;\mathtt{INJ}\;f\;s\;\{x\mid x\operatorname{\mathtt{in}} z\}$$ so a HOL set $s$ is small\footnote{We do not mean \emph{hereditarily} small (or ``low-rank''), which is a common meaning of ``small'' in set theory; we focus just on cardinality.} if there is an injection from $s$ to the (HOL) set of elements of some ZFC set.
 
 Working with $\mathtt{ens\_cat}$ in HOL is easier than with $\mathtt{set\_cat}$, because the morphisms are based on HOL functions directly rather than encodings of ZFC functions as ZFC sets.
-We would expect $\mathtt{ens\_cat}$ to be more general than $\mathtt{set\_cat}$, since it is parameterised over an arbitrary universe of sets, and, happily, we can prove that $\mathtt{set\_cat}$ is isomorphic as a category to the $\mathtt{ens\_cat}$ of small sets of ZFC sets.
+We would expect $\mathtt{ens\_cat}$ to be more general than $\mathtt{set\_cat}$, since it is parameterised over an arbitrary collection of sets, and, happily, we can prove that $\mathtt{set\_cat}$ is isomorphic as a category to the $\mathtt{ens\_cat}$ of small sets of ZFC sets.
 Specifically, we have proved
 \begin{align*}
 &\vdash\mathtt{cat\_iso}\;\mathtt{set\_to\_ens}\text{, alongside}\\
@@ -248,7 +249,7 @@ Specifically, we have proved
 \end{align*}
 %For the proof, we use the theorem that an isomorphism of categories is the same as a bijection between the classes of objects and between each hom, and the facts that ZFC sets are determined by their members, and explicitly typed ZFC functions correspond to explicitly typed HOL functions (between ZFC sets) by their action under ZFC function application.
 We define $\mathtt{ens\_to\_set}$ (using Hilbert choice) as the inverse functor.
-This isomorphism provides the initial link between small HOL sets and ZFC sets, but it is useless for arbitrary small HOL sets since the $\mathtt{ens\_cat}$ involved is over a universe of small HOL sets of ZFC sets, that is, of type $\mathsf{zfset}\;\mathsf{set}$ rather than $\alpha\;\mathsf{set}$.
+This isomorphism provides the initial link between small HOL sets and ZFC sets, but it is useless for arbitrary small HOL sets since the $\mathtt{ens\_cat}$ involved is over a collection of sets of ZFC sets, that is, of type $\mathsf{zfset}\;\mathsf{set}$ rather than $\alpha\;\mathsf{set}$.
 
 To view small HOL sets over an arbitrary type as being in the category of ZFC sets, we must choose a ZFC set to represent each small HOL set.
 We choose representatives globally, and once-and-for-all, using Hilbert choice.
