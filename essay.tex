@@ -1,5 +1,6 @@
 \documentclass[twoside,titlepage,11pt]{article}
 \usepackage{a4wide}
+\headsep 0in
 \oddsidemargin 0.25in
 \evensidemargin 0in
 \usepackage{url,amsmath,amssymb}
@@ -18,7 +19,7 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 \noindent Date
 
 \vspace{2em}
-\noindent Words: 4975
+\noindent Words: 5104
 \vspace{5em}
 %}
 \section*{Acknowledgements}%{
@@ -42,7 +43,7 @@ Since its inception, category theory has challenged the traditional foundations 
 
 Formalisation is a good way to test the limits of foundational choices, because a formal development must respect those choices throughout.
 There is no resort to arguments by analogy or implied generalisation, especially in formalisations developed mechanically with a proof assistant.
-In this essay we present a new mechanisation of category theory\footnote{Our proof scripts are available online at \url{https://github.com/xrchz/HOL/tree/category/examples/category}, as well as in the HOL4 repository (\url{http://sf.net/projects/hol/develop}) from revision <9115?>.}, refining two previous developments in higher-order logic, and investigate the foundational issues.
+In this essay we present a new mechanisation of category theory\footnote{Our proof scripts are available online at \url{https://github.com/xrchz/HOL/tree/category/examples/category}, as well as in the HOL4 repository (\url{http://sf.net/projects/hol/develop}) from revision 9128.}, refining two previous developments in higher-order logic, and investigate the foundational issues.
 
 Higher-order logic (HOL)\footnote{By HOL we mean the logic implemented by the HOL4 theorem prover~\cite{DBLP:conf/tphol/SlindN08}.} is a simple but expressive formal system, implemented by many proof assistants.
 HOL has a semantics in set theory without inaccessible cardinals, and therefore cannot capture large categorical constructions directly.
@@ -197,7 +198,7 @@ Another choice is whether to include objects at all: we might avoid the $\mathtt
 This approach is taken by Roger Jones~\cite{RBJones17}, and allows a much slicker presentation than ours (for example, functors are just HOL functions).
 Categories are still polymorphic, but with just one type variable (for morphisms).
 %}
-\section{Two Categories of Sets}%1357/1400%{
+\section{Two Categories of Sets}%1364/1400%{
 \label{Set}
 \newcommand{\Set}{\ensuremath{\mathbf{Set}}}
 The category $\Set$ of sets has sets as objects and functions with specified domain and codomain\footnote{so for example the empty functions $\bot:\emptyset\to\emptyset$ and $\bot:\emptyset\to\mathbb{N}$ are distinct} as morphisms.
@@ -228,7 +229,7 @@ We also define new terms for ZFC set membership ($\mathtt{in}:\mathsf{zfset}\to\
 
 The constantly true predicate of type $\mathsf{zfset}\;\mathsf{set}$ now represents the collection of all ZFC sets.
 This method of accessing set theory within HOL was introduced by Mike Gordon \cite{DBLP:conf/tphol/Gordon96} (and independently by Bob Solovay, see~\cite{DBLP:conf/ictac/Obua06}) and is implemented in both HOL4 and Isabelle~\cite{DBLP:conf/ictac/Obua06}.
-We use it, following Katovksy, to define a non-polymorphic category of sets with $\mathtt{set\_cat}.\mathtt{obj}:\mathsf{zfset}\;\mathsf{set}$ and $\mathtt{set\_cat}.\mathtt{mor}:\mathsf{zfset}\;\mathsf{set}$ also (since functions between ZFC sets can be encoded as ZFC sets).
+We use it, following Katovksy\footnote{Agerholm~\cite{Agerholm95} does a similar thing in HOL4.}, to define a non-polymorphic category of sets with $\mathtt{set\_cat}.\mathtt{obj}:\mathsf{zfset}\;\mathsf{set}$ and $\mathtt{set\_cat}.\mathtt{mor}:\mathsf{zfset}\;\mathsf{set}$ also (since functions between ZFC sets can be encoded as ZFC sets).
 
 It would be reasonable to formalise all categories non-polymorphically, revising our original $\mathsf{category}$ record to have an $\mathtt{obj}$ field of type $\mathtt{zfset}\;\mathtt{set}$.
 %(although it might be better to use $\mathtt{obj}:\alpha$ and a convention to only instanstiate $\alpha$ by $\mathsf{zfset}\;\mathsf{set}$ or $\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}$ and so on, to allow arbitrarily large categories).
@@ -293,7 +294,7 @@ But our definition of $\mathtt{zfrep}$ does not ensure injectivity: there is no 
 Indeed by considering $s_1,s_2\in u$ where $u$ is larger than the collection of all ZFC sets, which is possible when $u:\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}\;\mathsf{set}$, we see that $\mathtt{zfrep}$ could not be injective.
 It is unfortunate, but not fatal to our later results, that we cannot ensure literal injectivity of $\mathtt{rep\_functor}\;u$ when $u$ is small.
 %}
-\section{The Yoneda Embedding}%774/700%{
+\section{The Yoneda Embedding}%776/700%{
 \label{Yoneda}
 \newcommand{\op}{\ensuremath{\sp{\mathrm{op}}}}
 \newcommand{\blank}{\rule[0.5ex]{0.6em}{.4pt}}
@@ -340,19 +341,19 @@ where the action of $\mathtt{tag\_functor}\;c$ on a hom $h$ is the ZFC ordered p
 The ZFC sets now encode whether they are representing a hom of the form $c(x,x)$ or $c(x,y)$, therefore we can tell functors $c(\blank,x)$ and $c(\blank,y)$ apart (when $x\neq y$) by their action on $x$, even if they are isomorphic functors.
 
 We end this section with a comment about the other mechanisations' treatment of locally small categories.
-O'Keefe only proves the Yoneda lemma for $\mathtt{ens\_cat}$ so never needs to distinguish locally small categories.
+O'Keefe only proves the Yoneda lemma for $\mathtt{ens\_cat}\;\mathtt{UNIV}$ so never needs to distinguish locally small categories.
 Katovsky attaches, to categories intended to be locally small, an injective function that picks a ZFC set for each morphism in the category.
 The set representing a hom is given by collecting these sets-representing-morphisms as a single ZFC set; if such a ZFC set exists, the hom is small.
 
 Katovsky's approach is problematic for at least two reasons: firstly, locally small categories are not extensional, because the same category equipped with two different representations of its morphisms would be different records in HOL; secondly, it is unnatural to invent a representation of morphisms as sets in order to prove that a category is locally small.
-Indeed, there is a locally small category (albeit using our definition of ``small'') that cannot be represented with Katovsky's approach, namely, $\mathtt{discrete\_cat}\;\mathtt{UNIV}$.
-This category is locally small because each hom contains at most one morphism, but there is no injective representation of all functions as ZFC sets.
+Indeed, there is a locally small category (albeit using our definition of ``small'') that cannot be represented with Katovsky's approach, namely, $\mathtt{discrete\_cat}\;(\mathtt{UNIV}:\mathsf{zfset}\;\mathsf{set}\;\mathsf{set})$.
+This category is locally small because each hom contains at most one morphism, but there is no injective representation of collections of ZFC sets as ZFC sets.
 %}
-\section{Binary Products and Other Limits}%374/250%{
+\section{Binary Products and Other Limits}%359/250%{
 \label{limits}
 Like many constructions in abstract mathematics, \emph{limits} can be presented in different, equivalent ways, at different levels of generality.
 We define limits in HOL via \emph{cones}, defined in turn via \emph{comma categories}.
-We define binary products as limits of a functor, called $\mathtt{product\_diagram}$, from $\mathtt{discrete\_cat}\;\{1,2\}$.
+We define binary products as limits of a functor, called $\mathtt{product\_diagram}$, whose domain is $\mathtt{discrete\_cat}\;\{1,2\}$.
 We have proved a less abstract (standard) characterisation of binary products (the notation $f\operatorname{\mathtt{:-}}x\to y\operatorname{\mathtt{-:}}c$ is shorthand for $f.\mathtt{dom}=x\land f.\mathtt{cod}=y\land f\in c.\mathtt{mor}$):
 \begin{align*}
 &\vdash\forall{c,a,b,l}.\;\mathtt{is\_category}\;c\land a\in c.\mathtt{obj}\land b \in c.\mathtt{obj}\implies\\
@@ -366,23 +367,24 @@ p_2'\operatorname{\mathtt{:-}} ab' \to b \operatorname{\mathtt{-:}}c\implies\\
 m\operatorname{\mathtt{:-}}p\to ab\operatorname{\mathtt{-:}}c\land(p_1\circ m\operatorname{\mathtt{-:}}c = p_1')\land(p_2\circ m\operatorname{\mathtt{-:}}c = p_2')
 \end{align*}
 
-The theorem above says that for every pair of objects $a$ and $b$ in a category $c$, there exists a canonical product object $ab$ with projections $p_1$ and $p_2$.
-We can use Hilbert choice to define constants $a\times b\operatorname{\mathtt{-:}}c$ , $\pi_1^{a,b,c}$, and $\pi_2^{a,b,c}$ to denote these terms whenever they exist.
+The theorem above says for every pair of objects $a$ and $b$ in a category $c$ there exists a canonical product object $ab$ with projections $p_1$ and $p_2$.
+We use Hilbert choice to define constants $a\times b\operatorname{\mathtt{-:}}c$ , $\pi_1^{a,b,c}$, and $\pi_2^{a,b,c}$ to denote these terms whenever they exist.
 Thus we pick arbitrary, but fixed, objects and morphisms to denote ``the'' limit and its projections, which are characterised just by the universal property.
 This is in line with mathematical practice.
 %<readability?>
 
 We have proved that $\mathtt{set\_cat}$ has all limits of shape $\mathtt{discrete\_cat}\;\{1,2\}$.
-Ours is the first mechanisation of limits in HOL (although limits are covered by mechanisations in other formal systems, e.g., \cite{DBLP:conf/birthday/HuetS00,Simpson04}).
-The fact that $\mathtt{set\_cat}$ has binary products is reassuring for the approach that models sets with a new type $\mathsf{zfset}$; we would not expect to be able to prove that $\mathtt{ens\_cat}\;\mathtt{UNIV}$ has limits.
+Ours is the first mechanisation of limits in HOL (although limits are covered by mechanisations in other systems, e.g., \cite{DBLP:conf/birthday/HuetS00,Simpson04}).
+The fact that $\mathtt{set\_cat}$ has binary products is reassuring for $\mathsf{zfset}$ approach to sets.
+We would not expect to be able to prove that $\mathtt{ens\_cat}\;\mathtt{UNIV}$ has products.
 
-An important universal construction that is not an instance of a limit is the function space or exponential object.
+An important universal construction that is not an instance of a limit is the exponential object.
 One definition gives exponential objects via an exponential functor that is defined as \emph{right adjoint} to the binary product functor.
-We can easily define the binary product functor using our work so far on binary products.
+We can easily define the binary product functor using products as above.
 However, the best way to treat adjunctions is not obvious.
-We could always define exponential objects directly, ignoring the adjunction, but to do so is to miss out on opportunities for abstraction, for proving a theorem once and using it in many different contexts.
+We could define exponential objects directly, ignoring the adjunction, but to do so is to miss out on opportunities for abstraction, for proving a theorem once and using it in many different contexts.
 %}
-\section{Conclusions}%366/300%{
+\section{Conclusions}%363/300%{
 We have looked at a new mechanisation of category theory in higher-order logic.
 The foundational difficulties posed by category theory reveal themselves as the following issues during mechanisation:
 \begin{itemize}
@@ -394,14 +396,14 @@ As a result, we are forced to define some things (like $\mathtt{iso}$) multiple 
 Since HOL functions are total but the type system is relatively weak, we need to restrict partial functions so that they are extensional, that is, comparable by their action on their domains only.
 Extensionality is infectious.
 \item
-We cannot collect all sets up as a single set, so to formalise the category of sets we need to introduce some notion of proper classes.
+We cannot collect all sets up as a single set, so to formalise the category of sets we need at least two notions of ``collection'' (we use HOL sets and ZFC sets).
 \item
-We need to reconcile the elements of classes, which are pure ZFC sets for us, with the existing HOL types, which represent sets at the meta-level, by choosing representative ZFC sets for small classes.
+We need to reconcile ZFC sets with the existing HOL types (which represent sets at the meta-level) by choosing representative ZFC sets for small HOL sets.
 \end{itemize}
 
 HOL is a pleasant logic in which to formalise much mathematics; it is unfortunate that it has such difficulties with highly abstract mathematics.
 There has been, perhaps, more success in formalising category theory using dependent type theory.
-However, the continuing experimentation with approaches to sets---some use setoids~\cite{DBLP:conf/birthday/HuetS00,Carvalho,Wilander}, others the type class mechanism in Coq~\cite{DBLP:conf/mkm/CoquandS07,Sozeau,Megacz}, and yet others import axiomatic set theory somewhat as we do~\cite{Simpson04}---suggest that dependent type theory is not necessarily the final answer (Megacz~\cite{Megacz} does not formalise large categories because ``Coq's universe polymorphism is only $\pi_1$'').
+The continuing experimentation with approaches to sets---some use setoids~\cite{DBLP:conf/birthday/HuetS00,Carvalho,Wilander}, others the type class mechanism in Coq~\cite{DBLP:conf/mkm/CoquandS07,Sozeau,Megacz}, and yet others import axiomatic set theory somewhat as we do~\cite{Simpson04}---suggest that dependent type theory is not necessarily the final answer (Megacz~\cite{Megacz} does not formalise large categories because ``Coq's universe polymorphism is only $\pi_1$'').
 
 It may be better to do general abstract mathematics in a non-standard formal system.
 For example, Jones suggests a non-wellfounded set theory~\cite{RBJones18}.
