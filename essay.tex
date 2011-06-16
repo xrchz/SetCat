@@ -19,7 +19,7 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 \noindent Date
 
 \vspace{2em}
-\noindent Words: 5104
+\noindent Words: 5049
 \vspace{5em}
 %}
 \section*{Acknowledgements}%{
@@ -303,10 +303,10 @@ A \emph{presheaf} is a functor from ${c}\op$ to $\mathbf{Set}$, thus $\widehat{c
 The importance of the Yoneda embedding is that $\widehat{c}$ inherits much structure from $\mathbf{Set}$ (e.g., having small limits) so can be used when $c$ itself lacks this structure.
 The Yoneda lemma, used to prove that the Yoneda embedding is an embedding, is a basic milestone in any development about the category of sets, and is one of the main results in both O'Keefe's and Katovksy's developments.
 
-The Yoneda embedding sends an object $x$ in $c$ to the \emph{contravariant hom functor} $c(\blank,x)$, which in turn sends an object $y$ in $c$ to $c(y,x)$ (that is, $\mathtt{hom}\;c\;y\;x$).
+The Yoneda embedding sends an object $x$ in $c$ to the \emph{contravariant hom functor} $c(\blank,x)$, which in turn sends an object $y$ in $c$ to $c(y,x)$ (i.e., $\mathtt{hom}\;c\;y\;x$).
 In order for $c(\blank,x)$ to be a set-valued presheaf, however, every hom $c(y,x)$ must be a set.
-A category where every hom is a set is called \emph{locally small}, and it is only for locally small categories that the Yoneda embedding can be defined.
-However, the proof of the Yoneda lemma never mentions smallness explicitly, and the argument still goes through when we generalise from the category of sets to an arbitrary category whose objects are appropriately set-like and include the homs of $c$.
+A category where every hom is a set is called \emph{locally small}; the Yoneda embedding is only defined for locally small categories.
+However, the proof of the Yoneda lemma never mentions smallness explicitly, and the argument still goes through when we generalise from $\mathbf{Set}$ to an arbitrary category whose objects are appropriately set-like and include the homs of $c$.
 
 Therefore, we prove the Yoneda lemma, and define the embedding, for presheaves whose codomain is $\mathtt{ens\_cat}\;u$.
 We require $u$ to contain at least all the homs of $c$.
@@ -349,9 +349,8 @@ Katovsky's approach is problematic for at least two reasons: firstly, locally sm
 Indeed, there is a locally small category (albeit using our definition of ``small'') that cannot be represented with Katovsky's approach, namely, $\mathtt{discrete\_cat}\;(\mathtt{UNIV}:\mathsf{zfset}\;\mathsf{set}\;\mathsf{set})$.
 This category is locally small because each hom contains at most one morphism, but there is no injective representation of collections of ZFC sets as ZFC sets.
 %}
-\section{Binary Products and Other Limits}%359/250%{
+\section{Binary Products}%313/250%{
 \label{limits}
-Like many constructions in abstract mathematics, \emph{limits} can be presented in different, equivalent ways, at different levels of generality.
 We define limits in HOL via \emph{cones}, defined in turn via \emph{comma categories}.
 We define binary products as limits of a functor, called $\mathtt{product\_diagram}$, whose domain is $\mathtt{discrete\_cat}\;\{1,2\}$.
 We have proved a less abstract (standard) characterisation of binary products (the notation $f\operatorname{\mathtt{:-}}x\to y\operatorname{\mathtt{-:}}c$ is shorthand for $f.\mathtt{dom}=x\land f.\mathtt{cod}=y\land f\in c.\mathtt{mor}$):
@@ -375,16 +374,15 @@ This is in line with mathematical practice.
 
 We have proved that $\mathtt{set\_cat}$ has all limits of shape $\mathtt{discrete\_cat}\;\{1,2\}$.
 Ours is the first mechanisation of limits in HOL (although limits are covered by mechanisations in other systems, e.g., \cite{DBLP:conf/birthday/HuetS00,Simpson04}).
-The fact that $\mathtt{set\_cat}$ has binary products is reassuring for $\mathsf{zfset}$ approach to sets.
+The fact that $\mathtt{set\_cat}$ has binary products is reassuring for the $\mathsf{zfset}$ approach to sets.
 We would not expect to be able to prove that $\mathtt{ens\_cat}\;\mathtt{UNIV}$ has products.
 
-An important universal construction that is not an instance of a limit is the exponential object.
-One definition gives exponential objects via an exponential functor that is defined as \emph{right adjoint} to the binary product functor.
-We can easily define the binary product functor using products as above.
-However, the best way to treat adjunctions is not obvious.
-We could define exponential objects directly, ignoring the adjunction, but to do so is to miss out on opportunities for abstraction, for proving a theorem once and using it in many different contexts.
+Using products as above, we can define a binary product functor.
+One definition of \emph{exponential objects}, an important categorical construction, gives them via a functor that is \emph{right adjoint} to the binary product functor.
+The best way to treat adjunctions in HOL is not obvious.
+We could define exponential objects directly, ignoring the adjunction, but to do so is to miss out on opportunities for abstraction.
 %}
-\section{Conclusions}%363/300%{
+\section{Conclusions}%354/300%{
 We have looked at a new mechanisation of category theory in higher-order logic.
 The foundational difficulties posed by category theory reveal themselves as the following issues during mechanisation:
 \begin{itemize}
@@ -393,17 +391,17 @@ The separation of categories by HOL types seems not to accommodate a stratificat
 \item
 As a result, we are forced to define some things (like $\mathtt{iso}$) multiple times: once within our categories, and once for every instance in categories we cannot define.
 \item
-Since HOL functions are total but the type system is relatively weak, we need to restrict partial functions so that they are extensional, that is, comparable by their action on their domains only.
+Since HOL functions are total, we need to restrict partial functions so that they are extensional, that is, comparable by their action on their domains only.
 Extensionality is infectious.
 \item
-We cannot collect all sets up as a single set, so to formalise the category of sets we need at least two notions of ``collection'' (we use HOL sets and ZFC sets).
+We cannot collect all sets in a single set, so to formalise the category of sets we need at least two notions of ``collection'' (we use HOL sets and ZFC sets).
 \item
 We need to reconcile ZFC sets with the existing HOL types (which represent sets at the meta-level) by choosing representative ZFC sets for small HOL sets.
 \end{itemize}
 
 HOL is a pleasant logic in which to formalise much mathematics; it is unfortunate that it has such difficulties with highly abstract mathematics.
 There has been, perhaps, more success in formalising category theory using dependent type theory.
-The continuing experimentation with approaches to sets---some use setoids~\cite{DBLP:conf/birthday/HuetS00,Carvalho,Wilander}, others the type class mechanism in Coq~\cite{DBLP:conf/mkm/CoquandS07,Sozeau,Megacz}, and yet others import axiomatic set theory somewhat as we do~\cite{Simpson04}---suggest that dependent type theory is not necessarily the final answer (Megacz~\cite{Megacz} does not formalise large categories because ``Coq's universe polymorphism is only $\pi_1$'').
+However, the continuing experimentation with approaches to sets---some use setoids~\cite{DBLP:conf/birthday/HuetS00,Carvalho,Wilander}, others the type class mechanism in Coq~\cite{DBLP:conf/mkm/CoquandS07,Sozeau,Megacz}, and yet others import axiomatic set theory somewhat as we do~\cite{Simpson04}---suggests that this is not necessarily the final answer (Megacz~\cite{Megacz} does not formalise large categories because ``Coq's universe polymorphism is only $\pi_1$'').
 
 It may be better to do general abstract mathematics in a non-standard formal system.
 For example, Jones suggests a non-wellfounded set theory~\cite{RBJones18}.
