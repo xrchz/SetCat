@@ -16,7 +16,7 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 \noindent Date
 
 \vspace{2em}
-\noindent Words: 5463 (Maximum: 5000)
+\noindent Words: 5158
 \vspace{5em}
 %}
 \section*{Acknowledgements}%{
@@ -84,16 +84,16 @@ Standard defined types include the type $\mathsf{unit}$ with a single element $(
 Generalising product types, we can define record types given the desired names and types of the record fields.
 New terms can be defined using existing ones, like in a functional programming language.
 %}
-\section{Composable Morphisms and Categories}%1485/1400%{
+\section{Composable Morphisms and Categories}%1474/1400%{
 Category theory is an abstract theory of functions and composition.
 A category is an arena in which composition takes place, and consists of \emph{morphisms}, abstract functions, \emph{objects}, the possible domains and codomains of the morphisms, and a \emph{composition law}, obeying certain conditions.
 We define a type of morphisms in HOL as a polymorphic record $$(\alpha,\beta,\gamma)\;\mathsf{morphism}=\langle\mathtt{dom}:\alpha,\,\mathtt{cod}:\beta,\,\mathtt{map}:\gamma\rangle$$
-We use a polymorphic record for categories\footnote{This is just the data; the conditions come later.} as well, abbreviating $(\alpha,\alpha,\beta)\;\mathsf{morphism}$ by $(\alpha,\beta)\;\mathsf{mor}$:
+We use a polymorphic record for categories\footnote{This is just the data; the conditions come later.} as well ($(\alpha,\beta)\;\mathsf{mor}$ abbreviates $(\alpha,\alpha,\beta)\;\mathsf{morphism}$):
 \begin{align*}
 (\alpha,\beta)\;\mathsf{category}=\langle&\mathtt{obj}:\alpha\;\mathsf{set},\,\mathtt{mor}:(\alpha,\beta)\;\mathsf{mor}\;\mathsf{set},\,\mathtt{id}:\alpha\to\beta,\\&\mathtt{comp}:(\alpha,\beta)\;\mathsf{mor}\to(\alpha,\beta)\;\mathsf{mor}\to\beta\rangle
 \end{align*}
 Thus an $(\alpha,\beta)\;\mathsf{category}$ has objects of type $\alpha$ and morphisms of type $\beta$ (wrapped in $(\alpha,\beta)\;\mathsf{mor}$ records).
-The $\mathtt{id}$ and $\mathtt{comp}$ fields, intended to assign an identity morphism to every object and a composite morphism to every pair of composable morphisms, just return the $\mathtt{map}$ part of a morphism, because the $\mathtt{dom}$ and $\mathtt{cod}$ fields are determined by the conditions on a category: we define $\mathtt{id\_in}\;c\;x=\langle\mathtt{dom}=x,\,\mathtt{cod}=x,\,\mathtt{map}=c.\mathtt{id}\;x\rangle$ and $\mathtt{compose\_in}$ similarly.
+The $\mathtt{id}$ and $\mathtt{comp}$ fields, intended to assign an identity morphism to every object and a composite morphism to every pair of composable morphisms, just return the $\mathtt{map}$ field because the $\mathtt{dom}$ and $\mathtt{cod}$ fields can be inferred: we define $\mathtt{id\_in}\;c\;x=\langle\mathtt{dom}=x,\,\mathtt{cod}=x,\,\mathtt{map}=c.\mathtt{id}\;x\rangle$ and $\mathtt{compose\_in}$ similarly.
 
 As a very simple example, we define the discrete category (which has no morphisms except identity morphisms) on a set $s$ as follows:
 \begin{align*}
@@ -151,7 +151,7 @@ We define another notion, $\mathtt{cat\_iso}$, to cover functors of arbitrary ty
 Theorems stating properties of isomorphisms (like that the notion is symmetric) need to be repeated for both $\mathtt{iso\_pair}$ and $\mathtt{cat\_iso\_pair}$. 
 This situation shows the polymorphic record approach to categories getting in the way of expressing general categorical properties.
 We could try using a general definition of isomorphism, outside of any category.
-But brief experiments make doing so seem unwieldy: such a definition would need to take two copies each (to ensure a general type) of an identity map and a composition rule as arguments.
+But doing so would be unwieldy: such a definition would need to take two copies each (to ensure a general type) of an identity map and a composition rule as arguments.
 
 Having looked at some of the problems due to the type system and our use of a polymorphic record, we return to describing our development.
 An element of the $\mathsf{category}$ type is not necessarily a category.
@@ -168,7 +168,7 @@ A non-extensional function (taking values other than $\mathtt{ARB}$ outside its 
 We define $\mathtt{is\_category}\;c=\mathtt{category\_axioms}\;c\land\mathtt{extensional\_category}\;c$, where the second conjunct ensures $c.\mathtt{id}$ and $c.\mathtt{comp}$ are extensional.
 In a dependently typed setting, both the category axioms and extensionality can be encoded directly in the definition of the $\mathsf{category}$ type (as in~\cite{DBLP:conf/birthday/HuetS00,Sozeau,Megacz}).
 
-Extensionality enables us to characterise equality between natural transformations as follows (where $\mathtt{is\_nt}$ is a predicate like $\mathtt{is\_category}$ but for natural transformations):
+Extensionality enables us to characterise equality between natural transformations as follows (where $\mathtt{is\_nt}$ is like $\mathtt{is\_category}$ but for natural transformations):
 \begin{align*}
 \vdash\forall{\eta,\mu}.\;&\mathtt{is\_nt}\;\eta\land\mathtt{is\_nt}\;\mu\land(\eta.\mathtt{dom} = \mu.\mathtt{dom})\land(\eta.\mathtt{cod} = \mu.\mathtt{cod})\land{}\\
 &(\forall{x}.\;x\in \eta.\mathtt{dom}.\mathtt{dom}.\mathtt{obj}\implies(\eta.\mathtt{map}\;x= \mu.\mathtt{map}\;x))\implies (\eta = \mu)
@@ -188,11 +188,11 @@ The approaches are essentially equivalent, because if we defined categories in t
 %An advantage of starting with homs instead might be that we could put off mentioning the collection of all morphisms.
 %We will return to this point in Section~\ref{Yoneda} when describing locally small categories.
 
-Another choice is whether to include objects at all: we might avoid the need for an $\mathtt{obj}$ field by identifying objects with identity morphisms, as explained in pages 41--43 of \cite{DBLP:books/daglib/0023249}.
+Another choice is whether to include objects at all: we might avoid the $\mathtt{obj}$ field by identifying objects with identity morphisms, as explained in pages 41--43 of \cite{DBLP:books/daglib/0023249}.
 This approach is taken by Roger Jones~\cite{RBJones17}, and allows a much slicker presentation than ours (for example, functors are just HOL functions).
 Categories are still polymorphic, but with just one type variable (for morphisms).
 %}
-\section{Two Categories of Sets}%1393/1400%{
+\section{Two Categories of Sets}%1394/1400%{
 \label{Set}
 \newcommand{\Set}{\ensuremath{\mathbf{Set}}}
 The category $\Set$ of sets has sets as objects and functions with specified domain and codomain\footnote{so for example the empty functions $\bot:\emptyset\to\emptyset$ and $\bot:\emptyset\to\mathbb{N}$ are distinct} as morphisms.
@@ -343,7 +343,7 @@ Katovsky's approach is problematic for at least two reasons: firstly, locally sm
 Indeed, there is a locally small category (albeit using our definition of ``small'') that cannot be represented with Katovsky's approach, namely, $\mathtt{discrete\_cat}\;\mathtt{UNIV}$.
 This category is locally small because each hom contains at most one morphism, but there is no injective representation of all functions as ZFC sets.
 %}
-\section{Binary Products and Other Limits}%360/250%{
+\section{Binary Products and Other Limits}%374/250%{
 \label{limits}
 Like many constructions in abstract mathematics, \emph{limits} can be presented in different, equivalent ways, at different levels of generality.
 We define limits in HOL via \emph{cones}, defined in turn via \emph{comma categories}.
