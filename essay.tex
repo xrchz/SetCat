@@ -18,7 +18,7 @@ I Ramana Kumar of Peterhouse, being a candidate for the MPhil in Advanced Comput
 \noindent Date
 
 \vspace{2em}
-\noindent Words: 5158
+\noindent Words: 4975
 \vspace{5em}
 %}
 \section*{Acknowledgements}%{
@@ -197,7 +197,7 @@ Another choice is whether to include objects at all: we might avoid the $\mathtt
 This approach is taken by Roger Jones~\cite{RBJones17}, and allows a much slicker presentation than ours (for example, functors are just HOL functions).
 Categories are still polymorphic, but with just one type variable (for morphisms).
 %}
-\section{Two Categories of Sets}%1394/1400%{
+\section{Two Categories of Sets}%1357/1400%{
 \label{Set}
 \newcommand{\Set}{\ensuremath{\mathbf{Set}}}
 The category $\Set$ of sets has sets as objects and functions with specified domain and codomain\footnote{so for example the empty functions $\bot:\emptyset\to\emptyset$ and $\bot:\emptyset\to\mathbb{N}$ are distinct} as morphisms.
@@ -227,19 +227,19 @@ The new axioms are (higher-order versions of) the axioms of ZFC.
 We also define new terms for ZFC set membership ($\mathtt{in}:\mathsf{zfset}\to\mathsf{zfset}\to\mathsf{bool}$), set union, functions as graphs, and so on.
 
 The constantly true predicate of type $\mathsf{zfset}\;\mathsf{set}$ now represents the collection of all ZFC sets.
-This method of accessing set theory within the HOL logic was introduced by Mike Gordon \cite{DBLP:conf/tphol/Gordon96} (and independently by Bob Solovay, see~\cite{DBLP:conf/ictac/Obua06}) and is implemented in both HOL4 and Isabelle~\cite{DBLP:conf/ictac/Obua06}.
+This method of accessing set theory within HOL was introduced by Mike Gordon \cite{DBLP:conf/tphol/Gordon96} (and independently by Bob Solovay, see~\cite{DBLP:conf/ictac/Obua06}) and is implemented in both HOL4 and Isabelle~\cite{DBLP:conf/ictac/Obua06}.
 We use it, following Katovksy, to define a non-polymorphic category of sets with $\mathtt{set\_cat}.\mathtt{obj}:\mathsf{zfset}\;\mathsf{set}$ and $\mathtt{set\_cat}.\mathtt{mor}:\mathsf{zfset}\;\mathsf{set}$ also (since functions between ZFC sets can be encoded as ZFC sets).
 
 It would be reasonable to formalise all categories non-polymorphically, revising our original $\mathsf{category}$ record to have an $\mathtt{obj}$ field of type $\mathtt{zfset}\;\mathtt{set}$.
 %(although it might be better to use $\mathtt{obj}:\alpha$ and a convention to only instanstiate $\alpha$ by $\mathsf{zfset}\;\mathsf{set}$ or $\mathsf{zfset}\;\mathsf{set}\;\mathsf{set}$ and so on, to allow arbitrarily large categories).
-This approach matches a mathematical view of categories based on set theory extended with proper classes (as in~\cite{MacLaneCFTWM} for example) if we take $\mathtt{zfset}$ seriously as our representation of sets.
+This approach matches a mathematical view of categories based on set theory (e.g., \cite{MacLaneCFTWM}) if we take $\mathtt{zfset}$ seriously as our representation of sets.
 However, in HOL we have a competing representation of sets, namely the HOL types.
 If we formalise categories purely in terms of $\mathsf{zfset}$, then our categories remain disconnected from other theories we have formalised in HOL using types such as $\mathsf{num}$ and $\mathsf{string}$.
 It is for this reason we consider the polymorphic approach to be idiomatic.
 
 Nevertheless, we need to use the ``untyped'' $\mathtt{set\_cat}$ if we want to formalise the many properties of $\Set$ that are lost on $\mathtt{ens\_cat}$.
-The reason much mathematics is encoded in set theory in the first place is that the universe of sets supports the encoding of almost all mathematical objects.
-We can tap into this idea by treating a HOL set (of type $\alpha\;\mathsf{set}$ for some type $\alpha$) as a ZFC set, in particular by finding a representative element of type $\mathsf{zfset}$ to which the HOL set corresponds.
+Mathematics is traditionally encoded in set theory because it supports the encoding of almost all mathematical objects.
+We can tap into this idea by representing each HOL set (of type $\alpha\;\mathsf{set}$ for some type $\alpha$) as a ZFC set.
 Since some HOL types contain more elements than there are ZFC sets, though, we can only hope to encode ``small'' HOL sets.
 Following ideas from Katovksy, we define a predicate $\mathtt{is\_small}:\alpha\;\mathsf{set}\to\mathsf{bool}$ by $$\mathtt{is\_small}\;s=\exists{f,z}.\;\mathtt{INJ}\;f\;s\;\{x\mid x\operatorname{\mathtt{in}} z\}$$ so a HOL set $s$ is small\footnote{We do not mean \emph{hereditarily} small (or ``low-rank''), which is a common meaning of ``small'' in set theory; we focus just on cardinality.} if there is an injection from $s$ to the (HOL) set of elements of some ZFC set.
 
@@ -284,7 +284,7 @@ This kind of translation back and forth between ZFC sets, HOL sets of their elem
 The most important property of $\mathtt{rep\_functor}\;u$ is that it is an \emph{embedding}.
 In general, a functor is an embedding if it is \emph{full} and \emph{faithful}.
 Both notions refer to the action on morphisms of a fixed type: full means surjective on homs and faithful means injective on homs.
-An embedding is \emph{essentially injective on objects}, that is, if an embedding sends two objects in the source category to the same object in the target category, then those two objects are isomorphic in the source category.
+Every embedding is \emph{essentially injective on objects}: if it sends two objects in the source category to the same object in the target category, then those two objects are isomorphic in the source category.
 We have proved, in HOL, that embeddings are essentially injective, and that $\mathtt{rep\_functor}\;u$ is an embedding.
 
 We cannot prove, however, that $\mathtt{rep\_functor}\;u$ is literally injective on objects (if two objects are mapped to the same place they are equal).
